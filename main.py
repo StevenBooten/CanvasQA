@@ -14,6 +14,7 @@ def mainProgram():
     args, courseDetails, myCanvas = setupVariables()
     
     canvasQa = {}
+    canvasQa['usedFiles'] = []
     
     bar = progressbar.ProgressBar(maxval=len(courseDetails), \
             widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
@@ -25,7 +26,8 @@ def mainProgram():
         
         canvasQa['pages'] = moduleInfo.collectCoursePages(myCanvas)
         
-        canvasQa['modules'], canvasQa['usedFiles'] = moduleInfo.collectCourseModules(myCanvas)
+        canvasQa['modules'], usedFiles = moduleInfo.collectCourseModules(myCanvas)
+        canvasQa['usedFiles'] += usedFiles
         
         canvasQa['unattachedPages'] = moduleInfo.unattachedPages(myCanvas, canvasQa['modules'], canvasQa['pages'])
         
