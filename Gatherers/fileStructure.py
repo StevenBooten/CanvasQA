@@ -1,4 +1,4 @@
-def fileQA(myCanvas, usedFileIds):
+def collectCourseFiles(myCanvas, usedFileIds):
     
     ignoredFolders = ['QA Info', 'css']
     
@@ -18,9 +18,9 @@ def fileQA(myCanvas, usedFileIds):
         
         #- this generates a URL to the location of the file as the file.url variable is to directly download the file.    
         if folderName == '/':
-            folderUrl = f'http://lms.griffith.edu.au/courses/{qaInfo.course.courseId}/files/'
+            folderUrl = f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/files/'
         else:    
-            folderUrl = f'http://lms.griffith.edu.au/courses/{qaInfo.course.courseId}/files/folder{folderName}'
+            folderUrl = f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/files/folder{folderName}'
         
         
         fileList = []

@@ -3,11 +3,12 @@ import re
 
 #- Purpose of this module is  to cycle through every module in a course and pulls all necessary information
 #- Any manipulation of the data is done elsewhere
-def moduleQa(myCanvas):
+def collectCourseModules(myCanvas):
     
     moduleItem = {}
     moduleItemList = [] 
-    
+    moduleQa = {}
+    usedFiles = []
     
     for module in myCanvas.getModules():
         for item in myCanvas.getModuleItems(module.id):
@@ -30,7 +31,10 @@ def moduleQa(myCanvas):
             if item.published:
                 moduleItem['Published'] = 'Yes'
             else:
-                moduleItem['Published'] = 'No'         
+                moduleItem['Published'] = 'No' 
+                
+            if item.type == 'File':
+                usedFiles.append(item.content_id)
 
             moduleItemList.append(moduleItem)
             
@@ -48,7 +52,7 @@ def moduleQa(myCanvas):
         else:
             moduleQa[module.id]['published'] = 'No'
             
-    return moduleQa
+    return moduleQa, usedFiles
 
 #- finds all pages in a course and checks them against the module items dataset to attain
 #- whether they are linked to a module
@@ -65,13 +69,10 @@ def unattachedPages(myCanvas, moduleQa, pages):
     unattachedPages = {}
     
     for key, page in pages.items():
-        if page.id in pagesInModules or ignoredPages:
+        if key in pagesInModules or page['title'] in ignoredPages:
             continue
         
-        unattachedPages['position'] = page['position']
-        unattachedPages['indent'] = page['indent']
         unattachedPages['title'] = page['title']
-        unattachedPages['type'] = page['type']
         unattachedPages['id'] = key
         #- page url only holds "my-page-title" so creating a valid URL to the actual page in the course.
         unattachedPages['url'] = page['url']
@@ -80,27 +81,25 @@ def unattachedPages(myCanvas, moduleQa, pages):
     
     return unattachedPages
 
-def collectcoursePages(myCanvas):
+
+def collectCoursePages(myCanvas):
     
     myPages = {}
     
     for page in myCanvas.getPages():
         
-        myPages[page.id] = {}
-        myPages[page.id]['position'] = str(page.position)
-        myPages[page.id]['indent'] = str(page.indent)
-        myPages[page.id]['title'] = str(page.title)
-        myPages[page.id]['type'] = str(page.type)
+        myPages[page.page_id] = {}
+        myPages[page.page_id]['title'] = str(page.title)
         #- page url only holds "my-page-title" so creating a valid URL to the actual page in the course.
-        myPages[page.id]['url'] = f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/pages/{page.url}'
-        myPages[page.id]['body'] = myCanvas.getPage(page.id).body
-        myPages[page.id]['links'] = []
+        myPages[page.page_id]['url'] = f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/pages/{page.url}'
+        myPages[page.page_id]['body'] = myCanvas.getPage(page.page_id).body
+        myPages[page.page_id]['links'] = []
         
         #- Publishes returns a boolean value, so it needs to be converted to a string
         if page.published:
-            myPages[page.id]['published'] = 'Yes'
+            myPages[page.page_id]['published'] = 'Yes'
         else:
-            myPages[page.id]['published'] = 'No' 
+            myPages[page.page_id]['published'] = 'No' 
         
     return myPages
             
