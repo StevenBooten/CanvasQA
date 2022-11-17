@@ -76,7 +76,7 @@ def fileStructureHtml(files):
                     Td([], str(items['fileCount'])),
                     Td([],
                         Span([Class('tag is-info is-size-7')],
-                            A([Href(f'#collapsible-items-{folder}-img'), Data_('action','collapse')], 'Show Folder Contents')
+                            A([Href(f'#collapsible-items-{folder}-img'), Data_('action','collapse')], 'Show Folder Contents') if len(items['files']) > 0 else A([Data_('action','collapse')], 'No Folder Contents')
                             
                         )
                     ),
@@ -93,7 +93,7 @@ def fileStructureHtml(files):
                                                 #Th([], 'Image Link URL')                                                   
                                             )
                                         ),
-                                        fileStructureItems(items['files'])
+                                        fileStructureItems(items['files']) 
                                     )
                                 )
                             )

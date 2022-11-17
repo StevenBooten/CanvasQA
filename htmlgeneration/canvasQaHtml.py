@@ -1,6 +1,5 @@
 from htmlBuilder.attributes import *
 from htmlBuilder.tags import *
-from htmlBuilder.attributes import Class, Style as InlineStyle
 from datetime import datetime, timedelta
 from Checks.linkCheck import linkCheck
 
@@ -21,7 +20,7 @@ def generateQaHtml(myCanvas, canvasQa):
     function sectionExpand(id) {
         const collapsible = document.getElementById(id);
         const linkList = ["collapsible-img-check","collapsible-videoembed-check", "collapsible-modules-check", "collapsible-assessments-check", "collapsible-filestructure-check", "collapsible-link-check", "collapsible-placeholder-check", "collapsible-bb-check", "collapsible-span-check", "collapsible-unattachedpages-check", "collapsible-bbecho-check", "collapsible-quizzes-check"];
-        if (collapsible) {
+        if (collapsible.ariaExpanded == "false") {
             console.log('found it');
             //scroll to collapsible
             //collapsible.scrollIntoView(true);
@@ -39,6 +38,8 @@ def generateQaHtml(myCanvas, canvasQa):
             collapsible.bulmaCollapsible('open');
             setTimeout(() => {  console.log("Opened"); }, 5000);
             collapsible.scrollIntoView(true);
+        } else {
+            collapsible.bulmaCollapsible('close');
         }
     }"""
     
@@ -54,9 +55,10 @@ def generateQaHtml(myCanvas, canvasQa):
             
             Body([],
             Section([Class('section')],
-                    P([Class('header is-size-7')], [f'This report was automatically generated {runDate} at {runTime} and will be updated {updateDate} by {updateTime}<br>Canvas QA designed and built by'],
+                    P([Class('header'), Style('font-size:10px')],  [f'This report was automatically generated {runDate} at {runTime} and will be updated {updateDate} by {updateTime}<br>Canvas QA designed and built by'],
                         A([Href('mailto:s.booten@griffith.edu.au'), Target('_blank'), Rel('noopener noreferrer')], 'Steven Booten'),
-                Script([], f'{jsScript}'),
+                Script([], f'{jsScript}'), '<br><br>',
+                
                 
                 H1([Id('top'), Class('title')], [f'Quality Assurance report for Course: {myCanvas.courseCode.replace("_"," ")}']),
                 

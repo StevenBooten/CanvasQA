@@ -1,4 +1,5 @@
 import logging
+from simple_settings import settings
 
 def initialiseLogging(logFileName=None):
     """Set up basic logging information for all CAR generation

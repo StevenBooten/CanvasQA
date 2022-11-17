@@ -139,7 +139,7 @@ def bbhtmlCheck(soup):
         if span.has_attr('class'):
             if len(span.get('class')) > 0:
                 if span.get('class')[0] == 'vtbegenerated_div':
-                    instancesFound.append(span.get_text().strip())
+                    instancesFound .append(span.get_text().strip())
                     
     return instancesFound if len(instancesFound) > 0 else None
     

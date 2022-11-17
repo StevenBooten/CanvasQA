@@ -1,4 +1,4 @@
-jsons/CCJ10_2227 QA.json
+jsons/
 jsons/CCJ13_2227 QA.json
 jsons/CCJ19_2227 QA.json
 jsons/CCJ20_2227 QA.json
@@ -62,3 +62,13 @@ canvaslib/__pycache__/Canvaslib.cpython-39.pyc
 canvaslib/__pycache__/__init__.cpython-39.pyc
 canvaslib/__pycache__/CanvasAPIClass.cpython-39.pyc
 canvaslib/__pycache__/Canvaslib.cpython-39.pyc
+Gatherers/__pycache__/assessments.cpython-311.pyc
+canvaslib/__pycache__/CanvasAPIClass.cpython-311.pyc
+htmlgeneration/__pycache__/__init__.cpython-311.pyc
+htmlgeneration/__pycache__/canvasFilesHtml.cpython-311.pyc
+htmlgeneration/__pycache__/canvasModulesHtml.cpython-311.pyc
+htmlgeneration/__pycache__/canvasQaHtml.cpython-311.pyc
+htmlgeneration/__pycache__/extraHtmlFunctions.cpython-311.pyc
+.gitignore
+lib/scripts.js
+.gitignore
