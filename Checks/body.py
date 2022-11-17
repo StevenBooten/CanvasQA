@@ -1,14 +1,18 @@
 import bs4 as bs
 import re
+from pprint import pprint
 
 #This module is designed to be passed a dataset of pages to process the contents of the body and title of each page. Then returns the Pages dataset with the results of the checks added to the dataset.
 def checkPageBody(pages):
+    usedFiles = []
     for pageId, page in pages.items():
             
         body = page.get('body', None)
         
         if body is not None and type(body) == str:
             body = body.lower()
+        else:
+            continue
             
         soup = bs.BeautifulSoup(body, features="html.parser")
         
@@ -18,11 +22,65 @@ def checkPageBody(pages):
         page['bbEcho'] = getBBEcho(soup)
         page['imgTags'] = getPageImgTags(soup)
         page['links'] = getPageLinks(soup)
-        page['fileLinks'] = getFileLinks(soup)
         page['videoIframes'] = getVideoIframes(soup)
+        page['fileLinks'] = getFileLinks(soup)
         
-    return pages
         
+        usedFiles += checkForCanvasFileLink(page['links']) if page['links'] is not None else []
+        usedFiles += checkForCanvasFileLink(page['imgTags']) if page['imgTags'] is not None else []
+        
+    return pages, usedFiles
+
+def checkQuizBody(questions):
+    usedFiles = []
+    for id, question in questions.items():
+        
+        body = question.get('body', None)
+        
+        if body is not None and type(body) == str:
+            body = body.lower()
+        else:
+            continue
+            
+        soup = bs.BeautifulSoup(body, features="html.parser")
+        
+        question['bbTerms'] = BBtermCheck(body, question['title'])
+        question['placeholders'] = placeholderBodyCheck(body, question['title'], soup)
+        question['bbhtml'] = bbhtmlCheck(soup)
+        question['bbEcho'] = getBBEcho(soup)
+        question['imgTags'] = getPageImgTags(soup)
+        question['links'] = getPageLinks(soup)
+        question['fileLinks'] = getFileLinks(soup)
+        question['videoIframes'] = getVideoIframes(soup)
+        
+        
+        usedFiles += checkForCanvasFileLink(question['links']) if question['links'] is not None else []
+        usedFiles += checkForCanvasFileLink(question['imgTags']) if question['imgTags'] is not None else []
+    
+    return questions, usedFiles
+
+#checks links if they are a canvas file link to collect the ID for a later check of the file structure       
+def checkForCanvasFileLink(links):
+    
+    canvasUsedFilesId = []
+    
+    for title, link in links.items():
+        if link.find('lms.griffith.edu.au'):
+    
+            start = link.find('files/') + 6
+            end = link[start::].find('/')
+            if end == -1:
+                end = link[start::].find('?')
+            end += start
+            
+            usedFileId = link[start:end]
+            
+            if usedFileId.isdigit() or type(usedFileId) == int:
+                canvasUsedFilesId.append(int(usedFileId))
+            
+            
+    return list(set(canvasUsedFilesId))
+
 
 # checking page html for BB terms
 def BBtermCheck(body, title):
@@ -43,6 +101,8 @@ def BBtermCheck(body, title):
  
     
     return bbTermCheck if bbTermCheck != {} else None
+
+
         
 def placeholderBodyCheck(body, title, soup):
     #method 1 for placeholder checking

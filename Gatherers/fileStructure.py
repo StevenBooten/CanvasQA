@@ -1,12 +1,13 @@
 def collectCourseFiles(myCanvas, usedFileIds):
     
-    ignoredFolders = ['QA Info', 'css']
+    ignoredFolders = ['qa info', 'css']
     
     fileCount = {}
+    fileStructure = {}
     
     for folder in myCanvas.getFileFolders():
         
-        fileStructure = {}
+        
         if folder.name.lower() in ignoredFolders:
             continue
         
@@ -42,12 +43,14 @@ def collectCourseFiles(myCanvas, usedFileIds):
 
         fileStructure[folderName] = {}
         fileStructure[folderName]['fileCount'] = folder.files_count
+        fileStructure[folderName]['url'] = folderUrl
         fileStructure[folderName]['files'] = fileList
             
     #- this replaces the placeholder defined when cycling through the folder items if there are duplicates
-    for key, value in fileStructure.items():
-        for x in value['files']:
-            if fileCount.get(x['id'], 0) > 1:
-                x['count'] = fileCount[x['id']]
+    for key, values in fileStructure.items():
+        for key, value in values['files'].items():
+            for x in value['files']:
+                if fileCount.get(x['id'], 0) > 1:
+                    x['count'] = fileCount[x['id']]
                     
     return fileStructure

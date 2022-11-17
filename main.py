@@ -5,9 +5,13 @@ sys.path.append("../")
 from canvaslib.Canvaslib import databaseSearchCanvas, parseArgsCanvas, initialiseLogging
 from canvaslib.CanvasAPIClass import CanvasAPI
 from Checks import body, linkCheck
-from Gatherers import fileStructure, moduleInfo
+from Gatherers.assessments import collectCourseAssignments
+from Gatherers.fileStructure import collectCourseFiles
+from Gatherers.moduleInfo import collectCourseModules, unattachedPages, collectCoursePages
+from htmlgeneration.canvasQaHtml import generateQaHtml
 import json
 from pprint import pprint
+from pathlib import Path
 
 def mainProgram():
     
@@ -24,25 +28,39 @@ def mainProgram():
         
         myCanvas.getCourse(course['canvasCourseId'])
         
-        canvasQa['pages'] = moduleInfo.collectCoursePages(myCanvas)
+        canvasQa['pages'] = collectCoursePages(myCanvas)
         
-        canvasQa['modules'], usedFiles = moduleInfo.collectCourseModules(myCanvas)
+        canvasQa['modules'], usedFiles = collectCourseModules(myCanvas)
         canvasQa['usedFiles'] += usedFiles
         
-        canvasQa['unattachedPages'] = moduleInfo.unattachedPages(myCanvas, canvasQa['modules'], canvasQa['pages'])
+        canvasQa['assignments'], usedFiles = collectCourseAssignments(myCanvas)
+        canvasQa['usedFiles'] += usedFiles
         
-        canvasQa['pages'] = body.checkPageBody(canvasQa['pages'])
+        canvasQa['unattachedPages'] = unattachedPages(myCanvas, canvasQa['modules'], canvasQa['pages'])
         
-        canvasQa['files'] = fileStructure.collectCourseFiles(myCanvas, canvasQa['usedFiles'])
+        canvasQa['pages'], usedFiles = body.checkPageBody(canvasQa['pages'])
+        canvasQa['usedFiles'] += usedFiles
         
-        with open(f'./jsons/{myCanvas.courseId} QA.json', 'w') as outfile:
+        canvasQa['files'] = collectCourseFiles(myCanvas, canvasQa['usedFiles'])
+        
+        canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
+        saveQaHtml(canvasQaHtml, myCanvas)
+        
+        with open(f'./jsons/{myCanvas.courseCode} QA.json', 'w') as outfile:
             json.dump(canvasQa, outfile, indent=4)
         
         bar.update(count+1)
     bar.finish()
     
+def saveQaHtml(canvasQaHtml, myCanvas):
     
-
+    filePath = f'{settings.CANVAS_QA_DOWNLOAD_FOLDER}'
+    fileName = f'{myCanvas.courseCode.replace("_"," ").replace("/", "-").replace(":", "-").replace("?", "")} QA.html'
+    
+    # uploads the HTML report to the canvas course site
+    with open(Path(filePath, fileName), 'w', encoding="utf-8") as f:
+        f.write(canvasQaHtml.render(pretty=True, doctype=True))
+    
 
 def setupVariables():
         

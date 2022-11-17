@@ -12,7 +12,8 @@ class CanvasAPI():
     def getCourse(self, courseId, **kwargs):
         self.courseId = courseId
         self.course = self.canvasConnection.get_course(courseId, **kwargs)
-        self.courseId = self.course.sis_course_id
+        self.courseCode = self.course.sis_course_id
+        self.courseId = courseId
         
     def getTeachers(self):
         return self.course.get_enrollments(type='TeacherEnrollment')
@@ -22,6 +23,15 @@ class CanvasAPI():
     
     def getModuleItems(self, moduleId):
         return self.course.get_module(moduleId).get_module_items()
+    
+    def getAssignmentGroups(self, include):
+        return self.course.get_assignment_groups(include=include)
+    
+    def getQuiz(self, quizId):
+        return self.course.get_quiz(quizId)
+    
+    #def getGroupAssignments(self, group):
+    #    return self.course.get_assignments_for_group(group)
     
     def getPages(self):
         return self.course.get_pages()

@@ -6,11 +6,12 @@ import re
 def collectCourseModules(myCanvas):
     
     moduleItem = {}
-    moduleItemList = [] 
+    
     moduleQa = {}
     usedFiles = []
     
     for module in myCanvas.getModules():
+        moduleItemList = [] 
         for item in myCanvas.getModuleItems(module.id):
             #- Clears the dictionary for each module item
             moduleItem = {}
@@ -19,7 +20,7 @@ def collectCourseModules(myCanvas):
             moduleItem['position'] = str(item.position)
             moduleItem['indent'] = str(item.indent)
             moduleItem['title'] = str(item.title)
-            moduleItem['Type'] = str(item.type)
+            moduleItem['type'] = str(item.type)
             moduleItem['id'] = item.id
             #- Not all module items have a relevant URL ie subtitles
             try:
@@ -29,9 +30,9 @@ def collectCourseModules(myCanvas):
         
             #- Publishes returns a boolean value, so it needs to be converted to a string
             if item.published:
-                moduleItem['Published'] = 'Yes'
+                moduleItem['published'] = 'Yes'
             else:
-                moduleItem['Published'] = 'No' 
+                moduleItem['published'] = 'No' 
                 
             if item.type == 'File':
                 usedFiles.append(item.content_id)
@@ -42,7 +43,7 @@ def collectCourseModules(myCanvas):
         moduleQa[module.id] = {}
         moduleQa[module.id]['id'] = str(module.id)
         moduleQa[module.id]['position'] = str(module.position)
-        moduleQa[module.id]['mame'] = str(module.name)
+        moduleQa[module.id]['title'] = str(module.name)
         moduleQa[module.id]['itemsCount'] = module.items_count
         moduleQa[module.id]['url'] = str(f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/modules/#module_{module.id}')
         moduleQa[module.id]['items'] = moduleItemList
@@ -63,7 +64,7 @@ def unattachedPages(myCanvas, moduleQa, pages):
     
     for key, value in moduleQa.items():
         for item in value['items']:
-            if item['Type'] == 'Page':
+            if item['type'] == 'Page':
                 pagesInModules.append(item['id'])
                 
     unattachedPages = {}
