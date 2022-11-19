@@ -4,7 +4,7 @@ import progressbar
 sys.path.append("../")
 from canvaslib.Canvaslib import databaseSearchCanvas, parseArgsCanvas, initialiseLogging
 from canvaslib.CanvasAPIClass import CanvasAPI
-from Checks import body, linkCheck
+from Checks.body import checkPageBody
 from Gatherers.assessments import collectCourseAssignments
 from Gatherers.fileStructure import collectCourseFiles
 from Gatherers.moduleInfo import collectCourseModules, unattachedPages, collectCoursePages
@@ -19,6 +19,7 @@ def mainProgram():
     
     canvasQa = {}
     canvasQa['usedFiles'] = []
+    canvasQa['issues'] = {}
     
     bar = progressbar.ProgressBar(maxval=len(courseDetails), \
             widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
@@ -38,16 +39,16 @@ def mainProgram():
         
         canvasQa['unattachedPages'] = unattachedPages(myCanvas, canvasQa['modules'], canvasQa['pages'])
         
-        canvasQa['pages'], usedFiles = body.checkPageBody(canvasQa['pages'])
+        canvasQa['pages'], usedFiles = checkPageBody(canvasQa['pages'])
         canvasQa['usedFiles'] += usedFiles
         
-        canvasQa['files'] = collectCourseFiles(myCanvas, canvasQa['usedFiles'])
-        
-        canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
-        saveQaHtml(canvasQaHtml, myCanvas)
+        canvasQa['files'], canvasQa['issues']['File Structure Issues'] = collectCourseFiles(myCanvas, canvasQa['usedFiles'])
         
         with open(f'./jsons/{myCanvas.courseCode} QA.json', 'w') as outfile:
             json.dump(canvasQa, outfile, indent=4)
+            
+        canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
+        saveQaHtml(canvasQaHtml, myCanvas)
         
         bar.update(count+1)
     bar.finish()

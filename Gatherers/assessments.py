@@ -15,7 +15,7 @@ def collectCourseAssignments(myCanvas):
         #pprint(group.assignments)
         for assignment in group.assignments:
             assignmentInfo[group.id]['assignments'][assignment['id']] = {}
-            assignmentInfo[group.id]['assignments'][assignment['id']]['name'] = assignment['name']
+            assignmentInfo[group.id]['assignments'][assignment['id']]['title'] = assignment['name']
             assignmentInfo[group.id]['assignments'][assignment['id']]['description'] = assignment['description']
             assignmentInfo[group.id]['assignments'][assignment['id']]['points'] = assignment['points_possible']
             assignmentInfo[group.id]['assignments'][assignment['id']]['due'] = assignment['due_at']
@@ -52,20 +52,20 @@ def quizQa(myCanvas, quizId):
         
         
         if question.question_type == 'Hot Spot' or question.question_type == 'Quiz Bowl' or question.question_type == 'File Upload':
-            questionInfo[question.id]['quizIssues'] += ["Incompatible Question from BB to Canvas"]
+            questionInfo[question.id]['quizIssues'] = {question.question_type : "Incompatible Question from BB to Canvas"}
         if question.question_text.find('question text for this question was too long') > -1:
-            questionInfo[question.id]['quizIssues'] = ["Question is too Long will need to be remade"]
+            questionInfo[question.id]['quizIssues'] = {question.question_type : "Question is too Long will need to be remade"}
         if question.question_type == 'Calculated Formula' or question.question_type == 'Calculated Numeric':
-            questionInfo[question.id]['quizIssues'] += ["Math question can't be edited"]
+            questionInfo[question.id]['quizIssues'] = {question.question_type : "Question can't be edited"}
         
         if question.question_text.find(bbSearchTerm) > -1:
-            questionInfo[question.id]['bbBrokenLinks'] += ["Broken embed inside Question Body"]
+            questionInfo[question.id]['bbBrokenLinks'] = {'Question Text': "Broken embed inside Question Body"}
         if question.correct_comments_html is not None:
             if question.correct_comments_html.find(bbSearchTerm) > -1:
-                questionInfo[question.id]['bbBrokenLinks'] += ["Broken embed inside Correct Comments"]
+                questionInfo[question.id]['bbBrokenLinks'] += {'Correct Comment': "Broken embed inside Correct Comments"}
         if question.incorrect_comments_html is not None:
             if question.incorrect_comments_html.find(bbSearchTerm) > -1:
-                questionInfo[question.id]['bbBrokenLinks'] += ["Broken embed inside Incorrect Comments"]
+                questionInfo[question.id]['bbBrokenLinks'] += {'Incorrect Comments' : "Broken embed inside Incorrect Comments"}
     
     
     

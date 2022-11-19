@@ -1,11 +1,17 @@
 from htmlBuilder.attributes import *
 from htmlBuilder.tags import *
+from htmlBuilder.attributes import Class, Style
 from datetime import datetime, timedelta
-from Checks.linkCheck import linkCheck
-
 from htmlgeneration.canvasModulesHtml import moduleAccordian
 from htmlgeneration.canvasFilesHtml import fileStructureAccordian
+from htmlgeneration.canvasPlaceholderHtml import generatePlaceholderHtml
+from htmlgeneration.CanvasBBIssuesHtml import generateBBIssuesHtml
+import sys
+import io
+from pprint import pprint
 
+sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
 
 def generateQaHtml(myCanvas, canvasQa):
     dateNow = datetime.now()
@@ -43,6 +49,11 @@ def generateQaHtml(myCanvas, canvasQa):
         }
     }"""
     
+    htmlModule = moduleAccordian(myCanvas, canvasQa)
+    htmlFileStructure = fileStructureAccordian(myCanvas, canvasQa)
+    htmlBBIssues, canvasQa = generateBBIssuesHtml(myCanvas, canvasQa)
+    htmlPlaceholders, canvasQa = generatePlaceholderHtml(myCanvas, canvasQa)
+    
     html = Html([Lang("en")],
         Head([],
             Link([Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css")]),
@@ -55,7 +66,7 @@ def generateQaHtml(myCanvas, canvasQa):
             
             Body([],
             Section([Class('section')],
-                    P([Class('header'), Style('font-size:10px')],  [f'This report was automatically generated {runDate} at {runTime} and will be updated {updateDate} by {updateTime}<br>Canvas QA designed and built by'],
+                    P([Class('header'), Style('font-size:10px')],  [f'This report was automatically generated {runDate} at {runTime}'],# and will be updated {updateDate} by {updateTime}<br>Canvas QA designed and built by'],
                         A([Href('mailto:s.booten@griffith.edu.au'), Target('_blank'), Rel('noopener noreferrer')], 'Steven Booten'),
                 Script([], f'{jsScript}'), '<br><br>',
                 
@@ -74,8 +85,10 @@ def generateQaHtml(myCanvas, canvasQa):
                         #    Li([Class('is-size-7')], ['When viewed as a student, the student experience is as expected with clear wayfinding and links/LTIs working as intended.'])
                         #)    
                     ),
-                    moduleAccordian(myCanvas, canvasQa),
-                    fileStructureAccordian(myCanvas, canvasQa),
+                    htmlModule,
+                    htmlFileStructure,
+                    htmlBBIssues,
+                    htmlPlaceholders,
                 ), 
             )
         ),

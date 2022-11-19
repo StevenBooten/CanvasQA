@@ -72,3 +72,8 @@ htmlgeneration/__pycache__/extraHtmlFunctions.cpython-311.pyc
 .gitignore
 lib/scripts.js
 .gitignore
+canvaslib/__pycache__/CanvasAPIClass.cpython-311.pyc
+canvaslib/__pycache__/CanvasAPIClass.cpython-311.pyc
+.gitignore
+Checks/__pycache__/processIssues.cpython-311.pyc
+canvaslib/__pycache__/CanvasAPIClass.cpython-311.pyc

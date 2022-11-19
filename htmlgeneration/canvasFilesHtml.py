@@ -7,7 +7,7 @@ from lib.InfoPacks import getDescriptions
 
 
 def fileStructureAccordian(myCanvas, canvasQa):
-    
+        
     html = ''
     html = (   
         Article([Class('message')],
@@ -108,6 +108,7 @@ def fileStructureHtml(files):
 def fileStructureItems(items):
     html = ''
     for item in items:
+        
         html = (html, #Html([], html,
                 Tbody([],
                     Tr([],

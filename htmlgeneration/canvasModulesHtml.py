@@ -50,7 +50,6 @@ def moduleHtml(canvasQa):
     
     html = ''
     for id, module in canvasQa.items():
-        #html = Html([], html,
         html = (html, 
             Tbody([], 
                 Tr([],

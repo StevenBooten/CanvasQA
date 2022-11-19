@@ -16,9 +16,9 @@ def checkPageBody(pages):
             
         soup = bs.BeautifulSoup(body, features="html.parser")
         
-        page['bbTerms'] = BBtermCheck(body, page['title'])
-        page['placeholders'] = placeholderBodyCheck(body, page['title'], soup)
-        page['bbhtml'] = bbhtmlCheck(soup)
+        page['bbTerms'] = BBtermCheck(soup, page['title'])
+        page['placeholders'] = placeholderBodyCheck(soup, page['title'])
+        page['bbHtml'] = bbhtmlCheck(soup)
         page['bbEcho'] = getBBEcho(soup)
         page['imgTags'] = getPageImgTags(soup)
         page['links'] = getPageLinks(soup)
@@ -30,6 +30,23 @@ def checkPageBody(pages):
         usedFiles += checkForCanvasFileLink(page['imgTags']) if page['imgTags'] is not None else []
         
     return pages, usedFiles
+
+def highlightText(text, term):
+    start = 0
+    highlightedText = f' <mark><strong>{term}</strong></mark> '
+    searchTerm = f' {term} '
+    while start < len(text):
+        start = re.search(searchTerm, text[start:])
+        if start == None:
+            return text
+        else: 
+            end = start.end()
+            start = start.start()
+        
+        text = text[:start] + highlightedText + text[end:]
+        start = end + len(highlightedText)
+        
+    return text
 
 def checkQuizBody(questions):
     usedFiles = []
@@ -44,9 +61,9 @@ def checkQuizBody(questions):
             
         soup = bs.BeautifulSoup(body, features="html.parser")
         
-        question['bbTerms'] = BBtermCheck(body, question['title'])
-        question['placeholders'] = placeholderBodyCheck(body, question['title'], soup)
-        question['bbhtml'] = bbhtmlCheck(soup)
+        question['bbTerms'] = BBtermCheck(soup, question['title'])
+        question['placeholders'] = placeholderBodyCheck(soup, question['title'])
+        question['bbHtml'] = bbhtmlCheck(soup)
         question['bbEcho'] = getBBEcho(soup)
         question['imgTags'] = getPageImgTags(soup)
         question['links'] = getPageLinks(soup)
@@ -81,74 +98,90 @@ def checkForCanvasFileLink(links):
             
     return list(set(canvasUsedFilesId))
 
+def placeholderBodyCheck(soup, title):
+    #method 1 for placeholder checking
+    placeholderTerms = ['placeholder', 'unavailable', 'hidden', 'replace this text']
+    placeholderCheck = {}
+
+    for term in placeholderTerms:
+        for line in soup.findAll('p'):
+            if line is not None:
+                if re.search(f' {term} ', line.get_text()):#line.get_text().find(term) > -1:  
+                    #lineText = line.get_text().encode('ascii', 'ignore')
+                    #lineText = lineText.decode().strip('[]')
+                    
+                    lineText = highlightText(line.get_text(), term)
+                    placeholderCheck[term] = placeholderCheck.get(term, '') + lineText#'Found in Page Body'
+
+        if title.find(term) > -1:
+            if placeholderCheck.get(term, None) == None:
+                placeholderCheck[term] = f'Found in Title: {title}'
+            else:
+                placeholderCheck[term] = f'Found in Title: {title} and\n' + placeholderCheck[term]
+    
+    #method 2 for placeholder checking - w2c tags
+    for span in soup.findAll('span'):
+        if span.has_attr('class'):
+            if 'w2c-error' in span.get('class'):
+                placeholderCheck['w2c-error'] = span.get_text().strip()
+    
+    #method 3 for placeholder checking - word style tags
+    marks = []
+    for mark in soup.findAll('mark'):
+        #marks.append(re.sub('<[^<]+?>', '', str(mark)))
+        placeholderCheck[re.sub('<[^<]+?>', '', str(mark).strip('[]'))] = 'Author Placeholder'
+        
+    return placeholderCheck if placeholderCheck != {} else None
 
 # checking page html for BB terms
-def BBtermCheck(body, title):
+def BBtermCheck(soup, title):
     
     bbTerms = ["my marks", "collaborate", "blackboard", "bblearn", 'pass', 'pam', 'card', 
                'content', 'safeassign', 'journal', 'wiki', 'voicethread', 'fbf', 
                'feedback fruits', 'coversheet', 'cover sheet']
     
     bbTermCheck = {}
-    
     for term in bbTerms:
-        
-        if body.find(term) > -1:  
-            bbTermCheck[term] = 'Found in Page Body'
-        
+        if type(soup) == str:
+            if soup.find(term) > -1:
+                bbTermCheck[term] = 'Found in Page Body'
+        else:
+            for line in soup.findAll('p'):
+                if line is not None:
+                    if re.search(f' {term} ', line.get_text()):#if line.get_text().find(term) > -1:  
+                        #lineText = line.get_text().encode('ascii', 'ignore')
+                        #lineText = lineText.decode()
+                        lineText = highlightText(line.get_text(), term)
+                        bbTermCheck[term] = bbTermCheck.get(term, '') + lineText
+            
         if title.find(term) > -1:
-            bbTermCheck['title'] = f'{term.capitalize} found in Page Title'
+            if bbTermCheck.get(term, None) == None:
+                bbTermCheck[term] = f'Found in Title: {title}'
+            else:
+                bbTermCheck[term] = f'Found in Title: {title} and\n' + bbTermCheck[term]
+            #bbTermCheck['title'] = f'{term.capitalize} found in Page Title'
  
     
     return bbTermCheck if bbTermCheck != {} else None
-
-
-        
-def placeholderBodyCheck(body, title, soup):
-    #method 1 for placeholder checking
-    placeholderTerms = ['placeholder', 'unavailable', 'hidden', 'broken', 'add more', 'replace this text']
-    bodyCheck = {}
-    titleCheck = {}
-
-    for term in placeholderTerms:
-        
-        if body.find(term) > -1:  
-            bodyCheck[term] = 'Found in Page Body'
-        
-        if title.find(term) > -1:
-            titleCheck[term] = 'Found in Page Title'
-
-    
-    #method 2 for placeholder checking - w2c tags
-    for span in soup.findAll('span'):
-        if span.has_attr('class'):
-            if 'w2c-error' in span.get('class'):
-                bodyCheck['w2c-error'] = span.get_text().strip()
-    
-    #method 3 for placeholder checking - word style tags
-    marks = []
-    for mark in soup.findAll('mark'):
-        #marks.append(re.sub('<[^<]+?>', '', str(mark)))
-        bodyCheck[re.sub('<[^<]+?>', '', str(mark))] = 'Author Placeholder'
-        
-    return bodyCheck if bodyCheck != {} else None
       
 def bbhtmlCheck(soup):  
-    instancesFound = []
+    instancesFound = {}
     for span in soup.findAll('div'):
         if span.has_attr('class'):
             if len(span.get('class')) > 0:
                 if span.get('class')[0] == 'vtbegenerated_div':
-                    instancesFound .append(span.get_text().strip())
+                    instancesFound[span.get('class')[0]] = span.get_text().strip()
+                    #instancesFound.append(span.get_text().strip())
                     
     return instancesFound if len(instancesFound) > 0 else None
     
 def getBBEcho(soup):
-    instancesFound = []
+    instancesFound = {}
     for item in soup.findAll('iframe'):
         if item.has_attr('src'):
             if item['src'].find("echo-library-BB5bb") > -1:
-                instancesFound.append(item.get('title'))
+                instancesFound[item.get('title')] = item['src']
+                #instancesFound.append()
    
     return instancesFound if len(instancesFound) > 0 else None
     
