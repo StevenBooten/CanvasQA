@@ -7,8 +7,7 @@ from pprint import pprint
 
 
 def generateBBIssuesHtml(myCanvas, canvasQa):
-    
-    canvasQa['issues']['Blackboard Issues'] = 0
+    canvasQa['issues']['Blackboard Residuals'] = { 'id':"collapsible-bb-check", 'count' : 0 }
     bbIssues = {}
     bbIssues['Pages'] = {}
     bbIssues['Quizzes'] = {}
@@ -22,9 +21,9 @@ def generateBBIssuesHtml(myCanvas, canvasQa):
         bbIssues['Pages'][pageId]['bbTerms'] = pageData['bbTerms']
         bbIssues['Pages'][pageId]['bbEcho'] = pageData['bbEcho']
         bbIssues['Pages'][pageId]['bbHtml'] = pageData['bbHtml']
-        canvasQa['issues']['Blackboard Issues'] += len(pageData['bbTerms']) if pageData['bbTerms'] is not None else 0
-        canvasQa['issues']['Blackboard Issues'] += len(pageData['bbEcho']) if pageData['bbEcho'] is not None else 0
-        canvasQa['issues']['Blackboard Issues'] += len(pageData['bbHtml']) if pageData['bbHtml'] is not None else 0
+        canvasQa['issues']['Blackboard Residuals']['count'] += len(pageData['bbTerms']) if pageData['bbTerms'] is not None else 0
+        canvasQa['issues']['Blackboard Residuals']['count'] += len(pageData['bbEcho']) if pageData['bbEcho'] is not None else 0
+        canvasQa['issues']['Blackboard Residuals']['count'] += len(pageData['bbHtml']) if pageData['bbHtml'] is not None else 0
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
@@ -39,30 +38,30 @@ def generateBBIssuesHtml(myCanvas, canvasQa):
                 bbIssues['Quizzes'][assessmentId]['bbTerms'] = quizData['bbTerms']
                 bbIssues['Quizzes'][assessmentId]['bbEcho'] = quizData['bbEcho']
                 bbIssues['Quizzes'][assessmentId]['bbHtml'] = quizData['bbHtml']
-                canvasQa['issues']['Blackboard Issues'] += len(quizData['bbTerms']) if quizData['bbTerms'] is not None else 0
-                canvasQa['issues']['Blackboard Issues']+= len(quizData['bbEcho']) if quizData['bbEcho'] is not None else 0
-                canvasQa['issues']['Blackboard Issues']+= len(quizData['bbHtml']) if quizData['bbHtml'] is not None else 0
-    htmlBBIssues = htmlBBIssuesGenerate(bbIssues)
+                canvasQa['issues']['Blackboard Residuals']['count'] += len(quizData['bbTerms']) if quizData['bbTerms'] is not None else 0
+                canvasQa['issues']['Blackboard Residuals']['count'] += len(quizData['bbEcho']) if quizData['bbEcho'] is not None else 0
+                canvasQa['issues']['Blackboard Residuals']['count'] += len(quizData['bbHtml']) if quizData['bbHtml'] is not None else 0
+    htmlBBIssues = htmlBBIssuesGenerate(bbIssues, canvasQa['issues']['Blackboard Residuals']['id'])
     
-    return htmlBBIssues, canvasQa
+    return htmlBBIssues
 
 
-def htmlBBIssuesGenerate(bbIssues):
+def htmlBBIssuesGenerate(bbIssues, id):
     
     html = ''
     html = (html, 
                 Article([Class('message')],
                     Div([Class('message-header')],
-                        P([], Span([], 'Blackboard Issues'), #accordionError(len(qaInfo.bbTermsInPages.values())),
+                        P([], Span([], 'Blackboard Residuals'), #accordionError(len(qaInfo.bbTermsInPages.values())),
                             Span([Class('tag is-info ml-6')], 
-                                A([Onclick(f'sectionExpand("collapsible-bb-check");')], 'collapse/expand')
+                                A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                             ),
                             Span([Class('tag is-right is-info ml-6')], 
                                 A([Href(f'#top'), Data_('action','collapse')], 'Back to top')
                             )
                         )
                     ),
-                    Div([Id(f'collapsible-bb-check'), Class('message-body is-collapsible')],
+                    Div([Id(id), Class('message-body is-collapsible')],
                         Div([Class('message-body-content')],
                             Div([Class('columns is-multiline')],
                                 Div([Class('column is-8 is-narrow')],
@@ -79,6 +78,8 @@ def htmlBBIssuesGenerate(bbIssues):
 def htmlBBIssuesAccordian(bbIssues):
     html = ''
     for key, values in bbIssues.items():
+        if len(values) == 0:
+            continue
         html = (html,
                     Table([Class('table')],
                         Thead([],

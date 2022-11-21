@@ -1,9 +1,10 @@
 import bs4 as bs
 import re
 from pprint import pprint
+from Checks.linkCheck import linkCheck
 
 #This module is designed to be passed a dataset of pages to process the contents of the body and title of each page. Then returns the Pages dataset with the results of the checks added to the dataset.
-def checkPageBody(pages):
+def checkPageBody(pages, myCanvas):
     usedFiles = []
     for pageId, page in pages.items():
             
@@ -20,10 +21,10 @@ def checkPageBody(pages):
         page['placeholders'] = placeholderBodyCheck(soup, page['title'])
         page['bbHtml'] = bbhtmlCheck(soup)
         page['bbEcho'] = getBBEcho(soup)
-        page['imgTags'] = getPageImgTags(soup)
-        page['links'] = getPageLinks(soup)
-        page['videoIframes'] = getVideoIframes(soup)
-        page['fileLinks'] = getFileLinks(soup)
+        page['imgTags'] = getPageImgTags(soup, myCanvas)
+        page['links'] = getPageLinks(soup, myCanvas)
+        page['videoIframes'] = getVideoIframes(soup, myCanvas)
+        #page['fileLinks'] = getFileLinks(soup, myCanvas)
         
         
         usedFiles += checkForCanvasFileLink(page['links']) if page['links'] is not None else []
@@ -35,20 +36,19 @@ def highlightText(text, term):
     start = 0
     highlightedText = f' <mark><strong>{term}</strong></mark> '
     searchTerm = f' {term} '
+    
     while start < len(text):
-        start = re.search(searchTerm, text[start:])
-        if start == None:
+        match = re.search(searchTerm, text[start:])#.find(searchTerm)
+        if match == None:
             return text
-        else: 
-            end = start.end()
-            start = start.start()
-        
+        end = start + match.end()
+        start += match.start()
         text = text[:start] + highlightedText + text[end:]
         start = end + len(highlightedText)
         
     return text
 
-def checkQuizBody(questions):
+def checkQuizBody(questions, myCanvas):
     usedFiles = []
     for id, question in questions.items():
         
@@ -65,10 +65,10 @@ def checkQuizBody(questions):
         question['placeholders'] = placeholderBodyCheck(soup, question['title'])
         question['bbHtml'] = bbhtmlCheck(soup)
         question['bbEcho'] = getBBEcho(soup)
-        question['imgTags'] = getPageImgTags(soup)
-        question['links'] = getPageLinks(soup)
-        question['fileLinks'] = getFileLinks(soup)
-        question['videoIframes'] = getVideoIframes(soup)
+        question['imgTags'] = getPageImgTags(soup, myCanvas)
+        question['links'] = getPageLinks(soup, myCanvas)
+        #question['fileLinks'] = getFileLinks(soup, myCanvas)
+        question['videoIframes'] = getVideoIframes(soup, myCanvas)
         
         
         usedFiles += checkForCanvasFileLink(question['links']) if question['links'] is not None else []
@@ -82,6 +82,8 @@ def checkForCanvasFileLink(links):
     canvasUsedFilesId = []
     
     for title, link in links.items():
+        if type(link) == dict:
+            link = link.get('source', None)
         if link.find('lms.griffith.edu.au'):
     
             start = link.find('files/') + 6
@@ -185,27 +187,24 @@ def getBBEcho(soup):
    
     return instancesFound if len(instancesFound) > 0 else None
     
-def getPageImgTags(soup):
+def getPageImgTags(soup, myCanvas):
     imgs = {}
     for img in soup.findAll('img'):
         if img.has_attr('src'):
-            if img.has_attr('id'):
-                imgs[img.get('alt')] = img.get('src')
-            else:
-                imgs[img.get('alt')] = img.get('src')
+                imgs[img.get('alt')] = {'source': img.get('src'), 'statusCode' : linkCheck(img.get('src'), myCanvas)}
                 
     return imgs if len(imgs) > 0 else None
          
-def getFileLinks(soup):
+"""def getFileLinks(soup, myCanvas):
     fileLinks = []
     for link in soup.findAll('href'):
-        if link.get('href').find("https://griffitheduau.sharepoint.com") > -1 or link.get('href').find("https://griffitheduau-my.sharepoint.com") > -1:
+        if re.search("https://griffitheduau-*m*y*.sharepoint.com", link.get('href')):# link.get('href').find("https://griffitheduau.sharepoint.com") > -1 or link.get('href').find("https://griffitheduau-my.sharepoint.com") > -1:
             fileLinks[link.get_text().strip()] = link.get('href')
             
-    return fileLinks if len(fileLinks) > 0 else None
+    return fileLinks if len(fileLinks) > 0 else None"""
       
 #checking for links in page html
-def getPageLinks(soup):
+def getPageLinks(soup, myCanvas):
 
     links = {}
     for link in soup.findAll('a'):
@@ -223,28 +222,28 @@ def getPageLinks(soup):
 
     return links if len(links) > 0 else None
 
-def getVideoIframes(soup):
+def getVideoIframes(soup, myCanvas):
     iframeVideos = {}
     for item in soup.findAll('iframe'):
         if item.has_attr('src'):
             
-            if item.get('src').find('youtube.com') > 1:
+            if re.search('youtube.com', item['src']):#item.get('src').find('youtube.com') > 1:
                 host = 'YouTube'
-            elif item.get('src').find('echo360.net') > 1:
+            elif re.search('echo360.net', item['src']):#item.get('src').find('echo360.net') > 1:
                 host = 'Echo360'
-            elif item.get('src').find('instructuremedia.com') > 1:
+            elif re.search('instructuremedia.com', item['src']):#item.get('src').find('instructuremedia.com') > 1:
                 host = 'Canvas Studio'
-            elif item.get('src').find('vimeo.com') > 1:
+            elif re.search('vimeo.com', item['src']):#item.get('src').find('vimeo.com') > 1:
                 host = 'vimeo'
-            elif item.get('src').find('microsoftstream.com') > 1:
+            elif re.search('microsoftstream.com', item['src']):#item.get('src').find('microsoftstream.com') > 1:
                 host = 'Microsoft Stream'
-            elif item.get('src').find('google.com') > 1:
+            elif re.search('google.com', item['src']):#item.get('src').find('google.com') > 1:
                 host = 'Google'
-            elif item.get('src').find('griffitheduau-my.sharepoint.com') > 1:
+            elif re.search('griffitheduau-my.sharepoint.com', item['src']):#item.get('src').find('griffitheduau-my.sharepoint.com') > 1:
                 host = 'Griffith Sharepoint'
-            elif item.get('src').find('griffith.edu.au') > 1:
+            elif re.search('griffith.edu.au', item['src']):#item.get('src').find('griffith.edu.au') > 1:
                 host = 'Griffith Uni'
-            elif item.get('src').find('lms.griffith.edu.au') > 1:
+            elif re.search('lms.griffith.edu.au', item['src']):#item.get('src').find('lms.griffith.edu.au') > 1:
                 host = 'Canvas'
             else:
                 host = 'Unknown'

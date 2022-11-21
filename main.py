@@ -13,19 +13,21 @@ import json
 from pprint import pprint
 from pathlib import Path
 
+sys.setrecursionlimit(2000)
+
 def mainProgram():
     
     args, courseDetails, myCanvas = setupVariables()
-    
-    canvasQa = {}
-    canvasQa['usedFiles'] = []
-    canvasQa['issues'] = {}
     
     bar = progressbar.ProgressBar(maxval=len(courseDetails), \
             widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
     bar.start()
     
     for count, course in enumerate(courseDetails):
+        
+        canvasQa = {}
+        canvasQa['usedFiles'] = []
+        canvasQa['issues'] = {}
         
         myCanvas.getCourse(course['canvasCourseId'])
         
@@ -39,16 +41,16 @@ def mainProgram():
         
         canvasQa['unattachedPages'] = unattachedPages(myCanvas, canvasQa['modules'], canvasQa['pages'])
         
-        canvasQa['pages'], usedFiles = checkPageBody(canvasQa['pages'])
+        canvasQa['pages'], usedFiles = checkPageBody(canvasQa['pages'], myCanvas)
         canvasQa['usedFiles'] += usedFiles
         
-        canvasQa['files'], canvasQa['issues']['File Structure Issues'] = collectCourseFiles(myCanvas, canvasQa['usedFiles'])
-        
-        with open(f'./jsons/{myCanvas.courseCode} QA.json', 'w') as outfile:
-            json.dump(canvasQa, outfile, indent=4)
+        canvasQa['files'], canvasQa['issues']['File Structure'] = collectCourseFiles(myCanvas, canvasQa['usedFiles'])
             
         canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
         saveQaHtml(canvasQaHtml, myCanvas)
+        
+        with open(f'./jsons/{myCanvas.courseCode} QA.json', 'w') as outfile:
+            json.dump(canvasQa, outfile, indent=4)
         
         bar.update(count+1)
     bar.finish()

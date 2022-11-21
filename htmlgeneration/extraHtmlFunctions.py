@@ -236,20 +236,20 @@ def longName(name, length = 80):
     return newName
 
 #returns status code info from the dictionary based on the reponse code passed in.
-def statusCodeInfo(statusCode, qaInfo):
+def statusCodeInfo(statusCode):
     if statusCode >= 200 and statusCode < 300:
         html = (
-                Span([Class("tag is-success has-tooltip-right has-tooltip-multiline has-tooltip-right"), Data_('tooltip', statusCode(str(statusCode)))],[str(statusCode)]  
+                Span([Class("tag is-success has-tooltip-right has-tooltip-multiline"), Data_('tooltip', getStatusCode(str(statusCode)))],[str(statusCode)]  
                 )
         )
     elif statusCode > 200 and statusCode < 400:
         html = (
-                Span([Class("tag is-warning has-tooltip-right has-tooltip-multiline has-tooltip-right"), Data_('tooltip', statusCode(str(statusCode)))],[str(statusCode)]  
+                Span([Class("tag is-warning has-tooltip-right has-tooltip-multiline"), Data_('tooltip', getStatusCode(str(statusCode)))],[str(statusCode)]  
                 )
         )
     else:
         html = (
-                Span([Class("tag is-danger has-tooltip-right has-tooltip-multiline has-tooltip-right"), Data_('tooltip', statusCode(str(statusCode)))],[str(statusCode)]  
+                Span([Class("tag is-danger has-tooltip-right has-tooltip-multiline"), Data_('tooltip', getStatusCode(str(statusCode)))],[str(statusCode)]  
                 )
         )
     return html

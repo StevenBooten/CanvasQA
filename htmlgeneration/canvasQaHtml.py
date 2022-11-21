@@ -2,10 +2,11 @@ from htmlBuilder.attributes import *
 from htmlBuilder.tags import *
 from htmlBuilder.attributes import Class, Style
 from datetime import datetime, timedelta
-from htmlgeneration.canvasModulesHtml import moduleAccordian
-from htmlgeneration.canvasFilesHtml import fileStructureAccordian
+from htmlgeneration.canvasModulesHtml import generateModulesHtml
+from htmlgeneration.canvasFilesHtml import generateFileStructureHtml
 from htmlgeneration.canvasPlaceholderHtml import generatePlaceholderHtml
 from htmlgeneration.CanvasBBIssuesHtml import generateBBIssuesHtml
+from htmlgeneration.canvasImagesHtml import generateImagesHtml
 import sys
 import io
 from pprint import pprint
@@ -15,7 +16,7 @@ sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
 
 def generateQaHtml(myCanvas, canvasQa):
     dateNow = datetime.now()
-    runDate = dateNow.strftime("%d-%B")
+    runDate = dateNow.strftime("%d %B")
     runTime = dateNow.strftime("%I:%M %p")
     dateUpdate = dateNow + timedelta(days=1)
     updateDate = dateUpdate.strftime("%d-%B")
@@ -49,10 +50,11 @@ def generateQaHtml(myCanvas, canvasQa):
         }
     }"""
     
-    htmlModule = moduleAccordian(myCanvas, canvasQa)
-    htmlFileStructure = fileStructureAccordian(myCanvas, canvasQa)
-    htmlBBIssues, canvasQa = generateBBIssuesHtml(myCanvas, canvasQa)
-    htmlPlaceholders, canvasQa = generatePlaceholderHtml(myCanvas, canvasQa)
+    htmlModule = generateModulesHtml(myCanvas, canvasQa)
+    htmlFileStructure = generateFileStructureHtml(myCanvas, canvasQa)
+    htmlBBIssues = generateBBIssuesHtml(myCanvas, canvasQa)
+    htmlPlaceholders = generatePlaceholderHtml(myCanvas, canvasQa)
+    htmlImages = generateImagesHtml(myCanvas, canvasQa)
     
     html = Html([Lang("en")],
         Head([],
@@ -66,7 +68,7 @@ def generateQaHtml(myCanvas, canvasQa):
             
             Body([],
             Section([Class('section')],
-                    P([Class('header'), Style('font-size:10px')],  [f'This report was automatically generated {runDate} at {runTime}'],# and will be updated {updateDate} by {updateTime}<br>Canvas QA designed and built by'],
+                    P([Class('header'), Style('font-size:10px')],  [f'This report was automatically generated {runDate} at {runTime}<br>Canvas QA designed and built by'],# and will be updated {updateDate} by {updateTime}'],
                         A([Href('mailto:s.booten@griffith.edu.au'), Target('_blank'), Rel('noopener noreferrer')], 'Steven Booten'),
                 Script([], f'{jsScript}'), '<br><br>',
                 
@@ -89,6 +91,7 @@ def generateQaHtml(myCanvas, canvasQa):
                     htmlFileStructure,
                     htmlBBIssues,
                     htmlPlaceholders,
+                    htmlImages,
                 ), 
             )
         ),

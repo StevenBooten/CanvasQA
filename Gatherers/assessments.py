@@ -70,7 +70,7 @@ def quizQa(myCanvas, quizId):
     
     
     
-    return checkQuizBody(questionInfo)
+    return checkQuizBody(questionInfo, myCanvas)
 
 def hascorrectAnswer(question):
     if question.question_type in ['matching_question', 'essay_question']:

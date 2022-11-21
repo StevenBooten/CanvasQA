@@ -5,20 +5,27 @@ from Checks.linkCheck import linkCheck
 from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
 
-def moduleAccordian(myCanvas, canvasQa):
+def generateModulesHtml(myCanvas, canvasQa):
+    canvasQa['issues']['Modules'] = { 'id':"collapsible-modules-check", 'count' : 0 }
+    
+    htmlFileStructure = moduleAccordian(canvasQa, canvasQa['issues']['Modules']['id'])
+    
+    return htmlFileStructure
+    
+def moduleAccordian(canvasQa, id):
     html = (                    
         Article([Class('message')],
             Div([Class('message-header')],
                 P([], Span([], 'Modules Check'),
                     Span([Class('tag is-info ml-6')], 
-                        A([Onclick(f'sectionExpand("collapsible-modules-check");')], 'collapse/expand')
+                        A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                     ),
                     Span([Class('tag is-right is-info ml-6')], 
                         A([Href(f'#top'), Data_('action','collapse')], 'Back to top')
                     )
                 )
             ),
-            Div([Id(f'collapsible-modules-check'), Class('message-body is-collapsible')],
+            Div([Id(id), Class('message-body is-collapsible')],
                 Div([Class('message-body-content')],
                     Div([Class('columns is-multiline')],
                         Div([Class('column is-8 is-narrow')],

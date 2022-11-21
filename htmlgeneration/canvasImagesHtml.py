@@ -3,10 +3,12 @@ from htmlBuilder.tags import *
 from htmlBuilder.attributes import Class, Style
 from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
+from htmlgeneration.extraHtmlFunctions import statusCodeInfo
+from Checks.linkCheck import linkCheck
 from pprint import pprint
 
-def generatePlaceholderHtml(myCanvas, canvasQa):
-    canvasQa['issues']['Placeholders'] = { 'id':"collapsible-placeholder-check", 'count' : 0 }
+def generateImagesHtml(myCanvas, canvasQa):
+    canvasQa['issues']['Images'] = { 'id':"collapsible-img-check", 'count' : 0 }
     placeholderIssues = {}
     placeholderIssues['Pages'] = {}
     placeholderIssues['Quizzes'] = {}
@@ -17,8 +19,8 @@ def generatePlaceholderHtml(myCanvas, canvasQa):
         placeholderIssues['Pages'][pageId] = {}
         placeholderIssues['Pages'][pageId]['title'] = pageData['title']
         placeholderIssues['Pages'][pageId]['url'] = pageData['url']
-        placeholderIssues['Pages'][pageId]['placeholders'] = pageData['placeholders']
-        canvasQa['issues']['Placeholders']['count'] += len(pageData['placeholders']) if pageData['placeholders'] is not None else 0
+        placeholderIssues['Pages'][pageId]['images'] = pageData['imgTags']
+        #canvasQa['issues']['Placeholders']['count'] += len(pageData['placeholders']) if pageData['placeholders'] is not None else 0
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
@@ -30,17 +32,17 @@ def generatePlaceholderHtml(myCanvas, canvasQa):
                 placeholderIssues['Quizzes'][assessmentId] = {}
                 placeholderIssues['Quizzes'][assessmentId]['title'] = assessmentData['title']
                 placeholderIssues['Quizzes'][assessmentId]['url'] = assessmentData['url']
-                placeholderIssues['Quizzes'][assessmentId]['placeholders'] = quizData['placeholders']
-                canvasQa['issues']['Placeholders']['count'] += len(quizData['placeholders']) if quizData['placeholders'] is not None else 0
-    htmlPlaceholders = htmlPlaceholdersGenerate(placeholderIssues, canvasQa['issues']['Placeholders']['id'])
+                placeholderIssues['Quizzes'][assessmentId]['images'] = quizData['imgTags']
+                #canvasQa['issues']['Placeholders']['count'] += len(quizData['placeholders']) if quizData['placeholders'] is not None else 0
+    htmlPlaceholders = htmlImagesGenerate(placeholderIssues, canvasQa['issues']['Images']['id'], myCanvas)
     
     return htmlPlaceholders
 
-def htmlPlaceholdersGenerate(placeholderIssues, id):
+def htmlImagesGenerate(placeholderIssues, id, myCanvas):
     html = (
             Article([Class('message')],
                 Div([Class('message-header')],
-                    P([], Span([], 'Placeholders'),
+                    P([], Span([], 'Images'),
                         Span([Class('tag is-info ml-6')], 
                             A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                         ),
@@ -53,7 +55,7 @@ def htmlPlaceholdersGenerate(placeholderIssues, id):
                     Div([Class('message-body-content')],
                         Div([Class('columns is-multiline')],
                             Div([Class('column is-8 is-narrow')],
-                                htmlPlaceholdersAccordian(placeholderIssues)
+                                htmlImagesAccordian(placeholderIssues, myCanvas)
                             ), 
                             about('Placeholders Check', getDescriptions('Placeholder'))
                         )
@@ -63,7 +65,7 @@ def htmlPlaceholdersGenerate(placeholderIssues, id):
         )    
     return html
 
-def htmlPlaceholdersAccordian(placeholderIssues):
+def htmlImagesAccordian(placeholderIssues, myCanvas):
     html = ''
     for key, values in placeholderIssues.items():
         if len(values) == 0:
@@ -79,17 +81,17 @@ def htmlPlaceholdersAccordian(placeholderIssues):
                                 Th([], 'Show/Hide')
                             )
                         ),
-                        htmlPlaceholdersHeader(values)
+                        htmlImagesHeader(values, myCanvas)
                     )
                 )
                 
     return html
 
-def htmlPlaceholdersHeader(values):
+def htmlImagesHeader(values, myCanvas):
     
     html = ''
     for id, info in sorted(values.items()):
-        sumIssues = len(info['placeholders']) if info['placeholders'] is not None else 0
+        sumIssues = len(info['images']) if info['images'] is not None else 0
         if sumIssues == 0:
             continue
         html = (html,
@@ -111,11 +113,12 @@ def htmlPlaceholdersHeader(values):
                                     Table([Class('table is-fullwidth is-bordered is-striped is-size-7')],
                                         Thead([],
                                             Tr([], 
-                                                Th([], 'Issue Type'),
-                                                Th([], 'Information Text'),                                          
+                                                Th([], 'Status Code'),
+                                                Th([], 'Alt Text'),
+                                                Th([], 'Source URL'),                                          
                                             )
                                         ),
-                                        htmlPlaceholdersItems(info)
+                                        htmlImagesItems(info, myCanvas)
                                     )
                                 )
                             )
@@ -126,14 +129,18 @@ def htmlPlaceholdersHeader(values):
         )
     return html
 
-def htmlPlaceholdersItems(info):
+def htmlImagesItems(info, myCanvas):
     html = ''
-    for issueType, infoText in info['placeholders'].items():
+    for altTag, source in info['images'].items():
         html = (html,
         Tbody([],
             Tr([],
-                Td([], issueType if issueType is not None else ''),
-                Td([], infoText if infoText is not None else ''),
+                Td([], 
+                    statusCodeInfo(source['statusCode'])#linkCheck(source['statusCode'], myCanvas))
+                ),
+                Td([], altTag if altTag is not None else ''),
+                Td([], 
+                    A([Href(source['source']), Target('_blank'), Rel('noopener noreferrer')], source['source']))
                 ),
             )   
         )

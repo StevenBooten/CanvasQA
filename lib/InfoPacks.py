@@ -1,7 +1,7 @@
 def getStatusCode(code):
     
     statusCode = {
-                '0' : "The Link checker has failed, most likely due to SSO issues or it\'s a file which is shared with specific people. This link is likely okay.",
+                '0' : "The Link checker has failed, most likely due to SSO issues or it's a file which is shared with specific people. This link is likely okay.",
                 '100': "Continue. This means that the server in question has received your browser\'s request headers, and is now ready for the request body to be sent as well. This makes the request process more efficient since it prevents the browser from sending a body request even though the headers have been rejected.",
                 '101': "Switching protocols. Your browser has asked the server to change protocols, and the server has complied.",
                 '103': "Early hints. This returns some response headers before the rest of the server\'s response is ready.",
@@ -16,19 +16,19 @@ def getStatusCode(code):
                 '301': "The requested resource has been moved permanently. This code is delivered when a web page or resource has been permanently replaced with a different resource. It is used for permanent URL redirection.",
                 '302': "The requested resource has moved, but was found. This code is used to indicate that the requested resource was found, just not at the location where it was expected. It is used for temporary URL redirection.",
                 '303': "See Other. Understanding a 303 status code requires that you know the difference between the four primary HTTP request methods. Essentially, a 303 code tells your browser that it found the resource your browser requested via POST, PUT, or DELETE. However, to retrieve it using GET, you need to make the appropriate request to a different URL than the one you previously used.",
-                '304': "The requested resource has not been modified since the last time you accessed it. This code tells the browser that the resources stored in the browser cache haven\'t changed. It\'s used to speed up web page delivery by reusing previously-downloaded resources.",
+                '304': "The requested resource has not been modified since the last time you accessed it. This code tells the browser that the resources stored in the browser cache haven't changed. It's used to speed up web page delivery by reusing previously-downloaded resources.",
                 '307': "Temporary Redirect. This status code has replaced 302 “Found” as the appropriate action when a resource has been temporarily moved to a different URL. Unlike the 302 status code, it does not allow the HTTP method to change.",
                 '308': "Permanent Redirect. The 308 status code is the successor to the 301 “Moved Permanently” code. It does not allow the HTTP method to change and indicates that the requested resource is now permanently located at a new URL.",
-                '400': "Bad Request. The server can\'t return a response due to an error on the client's end. See our guide for resolving this error.",
+                '400': "Bad Request. The server can't return a response due to an error on the client's end. See our guide for resolving this error.",
                 '401': "Unauthorized or Authorization Required. This is returned by the server when the target resource lacks valid authentication credentials. You might see this if you\'ve set up basic HTTP authentication using htpasswd.",
                 '402': "Payment Required. Originally, this code was created for use as part of a digital cash system. However, that plan never followed through. Instead, it\'s used by a variety of platforms to indicate that a request cannot be fulfilled, usually due to a lack of required funds. Common instances include:",
                 '403': "Access to that resource is forbidden. This code is returned when a user attempts to access something that they don't have permission to view. For example, trying to reach password-protected content without logging in might produce a 403 error.",
                 '404': "The requested resource was not found. This is the most common error message of them all. This code means that the requested resource does not exist, and the server does not know if it ever existed.",
-                '405': "Method not allowed. This is generated when the hosting server (origin server) supports the method received, but the target resource doesn\'t.",
+                '405': "Method not allowed. This is generated when the hosting server (origin server) supports the method received, but the target resource doesn't.",
                 '406': "Not acceptable response. The requested resource is capable of generating only content that is not acceptable according to the accept headers sent in the request.",
                 '407': "Proxy Authentication Required. A proxy server is in use and requires your browser to authenticate itself before continuing.",
                 '408': "The server timed out waiting for the rest of the request from the browser. This code is generated when a server times out while waiting for the complete request from the browser. In other words, the server didn\'t get the full request that was sent by the browser. One possible cause could be net congestion resulting in the loss of data packets between the browser and the server.",
-                '409': "Conflict. A 409 status code means that the server couldn't process your browser's request because there\'s a conflict with the relevant resource. This sometimes occurs due to multiple simultaneous edits.",
+                '409': "Conflict. A 409 status code means that the server couldn't process your browser's request because there's a conflict with the relevant resource. This sometimes occurs due to multiple simultaneous edits.",
                 '410': "The requested resource is gone and won't be coming back. This is similar to a 404 “Not Found” code, except a 410 indicates that the condition is expected and permanent.",
                 '411': "Length Required. This means that the requested resource requires that the client specify a certain length and that it did not.",
                 '412': "Precondition Failed. Your browser included certain conditions in its request headers, and the server did not meet those specifications.",
@@ -57,6 +57,11 @@ def getStatusCode(code):
                 '511': "Network Authentication Required. This status code is sent when the network you\'re trying to use requires some form of authentication before sending your request to the server. For instance, you may need to agree to the Terms and Conditions of a public Wi-Fi hotspot.",
                 '521': "Web server is down. Error 521 is a Cloudflare-specific error message. It means that your web browser was able to successfully connect to Cloudflare, but Cloudflare was not able to connect to the origin web server.",
                 '525': "SSL Handshake Failed. Error 525 means that the SSL handshake between a domain using Cloudflare and the origin web server failed. If you are experiencing issues there are five methods you can try to easily fix error 525.",
+                '222': 'This is a link to another Canvas Course.',
+                '296': 'This is a Telephone Number',
+                '297': 'This is a Sharepoint Link and is locked behind a login.',
+                '298': 'This is an Email Link',
+                '998': 'This is a broken/missing link that likely needs http:// to be replaced with https://',
                 '999': "This is a Blackboard Link is either already broken or will stop working when Blackboard is taken down. Please fix asap."
                 }
     

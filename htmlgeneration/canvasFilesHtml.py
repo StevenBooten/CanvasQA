@@ -6,22 +6,29 @@ from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
 
 
-def fileStructureAccordian(myCanvas, canvasQa):
-        
+def generateFileStructureHtml(myCanvas, canvasQa):
+    canvasQa['issues']['File Structure']['id'] = "collapsible-filestructure-check"
+    
+    htmlFileStructure = fileStructureAccordian(canvasQa, canvasQa['issues']['File Structure']['id'])
+    
+    return htmlFileStructure
+    
+def fileStructureAccordian(canvasQa, id):
+    
     html = ''
     html = (   
         Article([Class('message')],
             Div([Class('message-header')],
                 P([], Span([], 'File Structure'), #accordionError(qaInfo.errorFiles['total']),
                     Span([Class('tag is-info ml-6')], 
-                        A([Onclick(f'sectionExpand("collapsible-filestructure-check");')], 'collapse/expand')
+                        A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                     ),
                     Span([Class('tag is-right is-info ml-6')], 
                         A([Href(f'#top'), Data_('action','collapse')], 'Back to top')
                     )
                 )
             ),
-            Div([Id(f'collapsible-filestructure-check'), Class('message-body is-collapsible')],
+            Div([Id(id), Class('message-body is-collapsible')],
                 Div([Class('message-body-content')],
                     Div([Class('columns is-multiline')],
                         Div([Class('column is-8 is-narrow toggle')],
@@ -76,14 +83,14 @@ def fileStructureHtml(files):
                     Td([], str(items['fileCount'])),
                     Td([],
                         Span([Class('tag is-info is-size-7')],
-                            A([Href(f'#collapsible-items-{folder}-img'), Data_('action','collapse')], 'Show Folder Contents') if len(items['files']) > 0 else A([Data_('action','collapse')], 'No Folder Contents')
+                            A([Href(f'#collapsible-items-{title}-img'), Data_('action','collapse')], 'Show Folder Contents') if len(items['files']) > 0 else A([Data_('action','collapse')], 'No Folder Contents')
                             
                         )
                     ),
-                    Tr([Id(f'collapsible-items-{folder}-img'), Class('is-collapsible')],
+                    Tr([Id(f'collapsible-items-{title}-img'), Class('is-collapsible')],
                         Td([Colspan('6')],
                             Div([],
-                                Div([Id(f'collapsible-items-{folder}-img'), Class('is-collapsible')],
+                                Div([Id(f'collapsible-items-{title}-img'), Class('is-collapsible')],
                                     Table([Class('table is-fullwidth is-bordered is-striped is-size-7')],
                                         Thead([],
                                             Tr([], 
