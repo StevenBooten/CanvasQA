@@ -4,11 +4,13 @@ from htmlBuilder.attributes import Class, Style as InlineStyle
 from Checks.linkCheck import linkCheck
 from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
+from htmlgeneration.extraHtmlFunctions import fileStructureFolderError
 
 
 def generateFileStructureHtml(myCanvas, canvasQa):
     canvasQa['issues']['File Structure']['id'] = "collapsible-filestructure-check"
-    
+    if canvasQa.get('files') is None:
+        return ''
     htmlFileStructure = fileStructureAccordian(canvasQa, canvasQa['issues']['File Structure']['id'])
     
     return htmlFileStructure
@@ -58,27 +60,30 @@ def fileStructureAccordian(canvasQa, id):
 def fileStructureHtml(files):
     
     html = ''
+    tabsize = 5
+    maxFolderSize = 30
+    overallHeadingSize = 100
     for folder, items in sorted(files.items()):
         if folder == '/':
             tabstring = ''
             count = 0
         else:
             count = folder.count('/')
-            tabstring = '&nbsp;'*(count*6)
+            tabstring = '&nbsp;'*(count*tabsize)
         if count > 1:
             folders = folder.split('/')
             title = ''
-            space = (135 - (len(folders[-1]) + (count*6)))//len(folders)
+            space = (overallHeadingSize - (len(folders[-1][:maxFolderSize]) + (count*tabsize)))//len(folders)
             for folder in folders[:-1]:
                 title += folder[:space] + '/'
-            title += folders[-1]
+            title += folders[-1][:maxFolderSize]
         else:
             title = folder
         html = (html,
             Tbody([],
                 Tr([],
                     Td([], tabstring,
-                        A([Href(items['url']), Target('_blank'), Rel('noopener noreferrer')], title), #errorFolder(qaInfo.errorFiles[key]),
+                        A([Href(items['url']), Target('_blank'), Rel('noopener noreferrer')], title), fileStructureFolderError(items['files']), 
                     ),
                     Td([], str(items['fileCount'])),
                     Td([],

@@ -5,6 +5,7 @@ def collectCourseFiles(myCanvas, usedFileIds):
     
     fileCount = {}
     fileStructure = {}
+    fileReference = {}
     
     for folder in myCanvas.getFileFolders():
         
@@ -37,6 +38,8 @@ def collectCourseFiles(myCanvas, usedFileIds):
             else:
                 fileInformation['used'] = False
                 fileIssues['unused'] = fileIssues.get('unused', 0) + 1
+                
+            fileReference[item.id] = item.filename
             
             #- tracks how many times a file shows up in the courses file structure to then be added to the placeholder at the end  
             fileCount[item.filename] = fileCount.get(item.filename, 0) + 1
@@ -55,4 +58,4 @@ def collectCourseFiles(myCanvas, usedFileIds):
             if file['count'] > 1:
                 fileIssues['duplicate'] = fileIssues.get('duplicate', 0) + 1
                     
-    return fileStructure, fileIssues
+    return fileStructure, fileIssues, fileReference

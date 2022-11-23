@@ -7,6 +7,8 @@ from htmlgeneration.canvasFilesHtml import generateFileStructureHtml
 from htmlgeneration.canvasPlaceholderHtml import generatePlaceholderHtml
 from htmlgeneration.CanvasBBIssuesHtml import generateBBIssuesHtml
 from htmlgeneration.canvasImagesHtml import generateImagesHtml
+from htmlgeneration.canvasUnattachedPageshtml import generateUnattachedPagesHtml
+from htmlgeneration.canvasAssignmentsHtml import generateAssignmentHtml
 import sys
 import io
 from pprint import pprint
@@ -21,40 +23,46 @@ def generateQaHtml(myCanvas, canvasQa):
     dateUpdate = dateNow + timedelta(days=1)
     updateDate = dateUpdate.strftime("%d-%B")
     updateTime = dateUpdate.strftime("%I:%M %p")
-           
-    
-    jsScript = """
-    function sectionExpand(id) {
-        const collapsible = document.getElementById(id);
-        const linkList = ["collapsible-img-check","collapsible-videoembed-check", "collapsible-modules-check", "collapsible-assessments-check", "collapsible-filestructure-check", "collapsible-link-check", "collapsible-placeholder-check", "collapsible-bb-check", "collapsible-span-check", "collapsible-unattachedpages-check", "collapsible-bbecho-check", "collapsible-quizzes-check"];
-        if (collapsible.ariaExpanded == "false") {
-            console.log('found it');
-            //scroll to collapsible
-            //collapsible.scrollIntoView(true);
-            let url = location.toString();
-            url = url.split('#')[0];
-            //remove the X and everything after it
-            console.log(location);
-            location = url + '#' + id;
-            for (let i = 0; i < linkList.length; i++) {
-                let link = document.getElementById(linkList[i]);
-                if (link) {
-                    link.bulmaCollapsible('close');
-                    }
-                }
-            collapsible.bulmaCollapsible('open');
-            setTimeout(() => {  console.log("Opened"); }, 5000);
-            collapsible.scrollIntoView(true);
-        } else {
-            collapsible.bulmaCollapsible('close');
-        }
-    }"""
     
     htmlModule = generateModulesHtml(myCanvas, canvasQa)
     htmlFileStructure = generateFileStructureHtml(myCanvas, canvasQa)
     htmlBBIssues = generateBBIssuesHtml(myCanvas, canvasQa)
     htmlPlaceholders = generatePlaceholderHtml(myCanvas, canvasQa)
     htmlImages = generateImagesHtml(myCanvas, canvasQa)
+    htmlUnattachedPages = generateUnattachedPagesHtml(myCanvas, canvasQa)
+    htmlAssignments = generateAssignmentHtml(myCanvas, canvasQa)
+    
+    #create the string of ID's for the JS to use
+    accordianIds = ''
+    for key, value in canvasQa['issues'].items():
+        accordianIds += f'"{value["id"]}",'
+    
+    
+    jsScript = "function sectionExpand(id) {\n" + \
+        "const collapsible = document.getElementById(id);\n" + \
+        f'const linkList = [{accordianIds}];\n' + \
+        'if (collapsible.ariaExpanded == "false") {\n' + \
+        "    console.log('found it');\n" + \
+        "    //scroll to collapsible\n" + \
+        "    //collapsible.scrollIntoView(true);\n" + \
+        "    let url = location.toString();\n" + \
+        "    url = url.split('#')[0];\n" + \
+        "    //remove the X and everything after it\n" + \
+        "    console.log(location);\n" + \
+        "    location = url + '#' + id;\n" + \
+        "    for (let i = 0; i < linkList.length; i++) {\n" + \
+        "        let link = document.getElementById(linkList[i]);\n" + \
+        "        if (link) {\n" + \
+        "            link.bulmaCollapsible('close');\n" + \
+        "            }\n" + \
+        "        }\n" + \
+        "    collapsible.bulmaCollapsible('open');\n" + \
+        "    setTimeout(() => {  console.log('Opened'); }, 5000);\n" + \
+        "    collapsible.scrollIntoView(true);\n" + \
+        "} else {\n" + \
+        "    collapsible.bulmaCollapsible('close');\n" + \
+        "}" + \
+    "}"
     
     html = Html([Lang("en")],
         Head([],
@@ -88,10 +96,13 @@ def generateQaHtml(myCanvas, canvasQa):
                         #)    
                     ),
                     htmlModule,
+                    htmlUnattachedPages,
                     htmlFileStructure,
                     htmlBBIssues,
                     htmlPlaceholders,
                     htmlImages,
+                    
+                    htmlAssignments
                 ), 
             )
         ),

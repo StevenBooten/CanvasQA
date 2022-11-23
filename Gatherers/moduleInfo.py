@@ -1,5 +1,6 @@
 from canvasapi import Canvas
 import re
+from pprint import pprint
 
 #- Purpose of this module is  to cycle through every module in a course and pulls all necessary information
 #- Any manipulation of the data is done elsewhere
@@ -21,12 +22,18 @@ def collectCourseModules(myCanvas):
             moduleItem['indent'] = str(item.indent)
             moduleItem['title'] = str(item.title)
             moduleItem['type'] = str(item.type)
-            moduleItem['id'] = item.id
-            #- Not all module items have a relevant URL ie subtitles
             try:
-                moduleItem['url'] = str(item.html_url)
-            except:
-                moduleItem['url'] = ''
+                moduleItem['id'] = item.content_id
+            except Exception as e:
+                moduleItem['id'] = item.id
+            #- Not all module items have a relevant URL ie subtitles
+            if item.type == 'Page':
+                moduleItem['url'] = f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/pages/{item.page_url}'
+            else:
+                try:
+                    moduleItem['url'] = str(item.html_url)
+                except:
+                    moduleItem['url'] = ''
         
             #- Publishes returns a boolean value, so it needs to be converted to a string
             if item.published:
@@ -59,28 +66,31 @@ def collectCourseModules(myCanvas):
 #- whether they are linked to a module
 def unattachedPages(myCanvas, moduleQa, pages):
     
-    ignoredPages = ['canvas-collections-configuration']
+    ignoredPages = ['canvas-collections-configuration', 'home page', 'home page - banner', 'learning journey', 'assessment overview', 'learning journey 2', 'teaching staff']
     pagesInModules = []
     
     for key, value in moduleQa.items():
         for item in value['items']:
             if item['type'] == 'Page':
-                pagesInModules.append(item['id'])
+                pagesInModules.append(item['url'])
                 
+               
     unattachedPages = {}
     
+    
     for key, page in pages.items():
-        if key in pagesInModules or page['title'] in ignoredPages:
+        if page['url'] in pagesInModules or page['title'].lower() in ignoredPages:
             continue
+        unattachedPages[key] = {}
+        unattachedPages[key]['title'] = page['title']
         
-        unattachedPages['title'] = page['title']
-        unattachedPages['id'] = key
         #- page url only holds "my-page-title" so creating a valid URL to the actual page in the course.
-        unattachedPages['url'] = page['url']
-        unattachedPages['published'] = page['published']
+        unattachedPages[key]['url'] = page['url']
+        unattachedPages[key]['published'] = page['published']
+        
  
     
-    return unattachedPages
+    return unattachedPages, {'count' : len(unattachedPages) }
 
 
 def collectCoursePages(myCanvas):

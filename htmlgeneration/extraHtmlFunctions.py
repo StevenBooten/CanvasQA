@@ -73,6 +73,31 @@ def errorFolder(count):
         
     return html
 
+def fileStructureFolderError(files):
+    unusedHtml = ''
+    duplicateHtml = ''
+    
+    
+    for item in files:
+        if item['used'] == False:
+            unusedHtml = (
+            Span([Class('tag is-warning has-tooltip-multiline has-tooltip-right'), Data_('tooltip', "There are file(s) in this folder that are not linked in the course.")],
+                    Span([Class('icon is-small')], 
+                        I([Class("fas fa-exclamation-triangle")])
+                    )
+                )
+            ),
+        if item['count'] > 1:
+            duplicateHtml = (\
+                Span([Class('tag is-warning has-tooltip-multiline has-tooltip-right'), Data_('tooltip', 'This contains a file which has a duplicate copy in the file structure.')],
+                    Span([Class('icon is-small')], 
+                        I([Class("fas fa-exclamation-triangle")])
+                    )
+                )
+            ),
+    
+    return unusedHtml, duplicateHtml
+
 #returns error for unused files
 def errorUnusedFiles(count):
     if count > 0:

@@ -73,7 +73,7 @@ def getDescriptions(key):
             'Module' : ['Module headings are consistent and logical', 'Page headings within modules are consistent and logical', 'Appropriate indenting has been used', 'Appropriate content has been published', 
                         'Logical sequence within migrated text (ie. limited repetitions, in-text headings are meaningful)', 'Page titles are consistent and logical'],
             'File Structure' : ['File structure is logical and supports the course approach presented within the module', 'Duplicate files need to be removed', 'Unused files are removed where appropriate', 'File names are consistent and logical', 'File names are meaningful'],
-            'Assessments' : ['All assessment submission points have been made and are set up to a submission type', 'Points have been allocated to each submission point (where applicable)', 
+            'Assignments' : ['All assessment submission points have been made and are set up to a submission type', 'Points have been allocated to each submission point (where applicable)', 
                              'Assessment groups are weighted to total 100% and connect content relevant to the submission with the submission point'],
             'Link Information' : ['Links are included in an accessible format and working', 'Alot of 3XX errors are a product of old links that are http:// instead of https://.'],
             'Custom Fonts' : ['Fonts are consistent where possible', 'Content brought in directly from BB might have weird font tags'],

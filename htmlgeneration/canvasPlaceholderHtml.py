@@ -32,6 +32,8 @@ def generatePlaceholderHtml(myCanvas, canvasQa):
                 placeholderIssues['Quizzes'][assessmentId]['url'] = assessmentData['url']
                 placeholderIssues['Quizzes'][assessmentId]['placeholders'] = quizData['placeholders']
                 canvasQa['issues']['Placeholders']['count'] += len(quizData['placeholders']) if quizData['placeholders'] is not None else 0
+    if placeholderIssues.get('pages') is None and placeholderIssues.get('quizzes') is None:
+        return ''
     htmlPlaceholders = htmlPlaceholdersGenerate(placeholderIssues, canvasQa['issues']['Placeholders']['id'])
     
     return htmlPlaceholders

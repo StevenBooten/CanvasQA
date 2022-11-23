@@ -41,6 +41,9 @@ def generateBBIssuesHtml(myCanvas, canvasQa):
                 canvasQa['issues']['Blackboard Residuals']['count'] += len(quizData['bbTerms']) if quizData['bbTerms'] is not None else 0
                 canvasQa['issues']['Blackboard Residuals']['count'] += len(quizData['bbEcho']) if quizData['bbEcho'] is not None else 0
                 canvasQa['issues']['Blackboard Residuals']['count'] += len(quizData['bbHtml']) if quizData['bbHtml'] is not None else 0
+                
+    if bbIssues.get('Pages') is None and bbIssues.get('Quizzes') is None:
+        return ''
     htmlBBIssues = htmlBBIssuesGenerate(bbIssues, canvasQa['issues']['Blackboard Residuals']['id'])
     
     return htmlBBIssues

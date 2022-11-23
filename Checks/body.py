@@ -4,9 +4,9 @@ from pprint import pprint
 from Checks.linkCheck import linkCheck
 
 #This module is designed to be passed a dataset of pages to process the contents of the body and title of each page. Then returns the Pages dataset with the results of the checks added to the dataset.
-def checkPageBody(pages, myCanvas):
+def checkPageBody(canvasQa, myCanvas):
     usedFiles = []
-    for pageId, page in pages.items():
+    for pageId, page in canvasQa['pages'].items():
             
         body = page.get('body', None)
         
@@ -22,7 +22,7 @@ def checkPageBody(pages, myCanvas):
         page['bbHtml'] = bbhtmlCheck(soup)
         page['bbEcho'] = getBBEcho(soup)
         page['imgTags'] = getPageImgTags(soup, myCanvas)
-        page['links'] = getPageLinks(soup, myCanvas)
+        page['links'] = getPageLinks(soup, myCanvas, canvasQa)
         page['videoIframes'] = getVideoIframes(soup, myCanvas)
         #page['fileLinks'] = getFileLinks(soup, myCanvas)
         
@@ -30,7 +30,7 @@ def checkPageBody(pages, myCanvas):
         usedFiles += checkForCanvasFileLink(page['links']) if page['links'] is not None else []
         usedFiles += checkForCanvasFileLink(page['imgTags']) if page['imgTags'] is not None else []
         
-    return pages, usedFiles
+    return usedFiles
 
 def highlightText(text, term):
     start = 0
@@ -48,8 +48,9 @@ def highlightText(text, term):
         
     return text
 
-def checkQuizBody(questions, myCanvas):
+def checkQuizBody(questions, myCanvas, canvasQa):
     usedFiles = []
+    
     for id, question in questions.items():
         
         body = question.get('body', None)
@@ -66,7 +67,7 @@ def checkQuizBody(questions, myCanvas):
         question['bbHtml'] = bbhtmlCheck(soup)
         question['bbEcho'] = getBBEcho(soup)
         question['imgTags'] = getPageImgTags(soup, myCanvas)
-        question['links'] = getPageLinks(soup, myCanvas)
+        question['links'] = getPageLinks(soup, myCanvas, canvasQa)
         #question['fileLinks'] = getFileLinks(soup, myCanvas)
         question['videoIframes'] = getVideoIframes(soup, myCanvas)
         
@@ -90,6 +91,8 @@ def checkForCanvasFileLink(links):
             end = link[start::].find('/')
             if end == -1:
                 end = link[start::].find('?')
+            if end == -1:
+                end = len(link)
             end += start
             
             usedFileId = link[start:end]
@@ -191,7 +194,13 @@ def getPageImgTags(soup, myCanvas):
     imgs = {}
     for img in soup.findAll('img'):
         if img.has_attr('src'):
-                imgs[img.get('alt')] = {'source': img.get('src'), 'statusCode' : linkCheck(img.get('src'), myCanvas)}
+            verifierPos = img.get('src').find('/preview')
+            if verifierPos > -1:
+                imageSource = img.get('src')[:verifierPos]
+            else:
+                imageSource = img.get('src')
+                
+            imgs[img.get('alt')] = {'source': imageSource, 'statusCode' : linkCheck(imageSource, myCanvas)}
                 
     return imgs if len(imgs) > 0 else None
          
@@ -204,21 +213,33 @@ def getPageImgTags(soup, myCanvas):
     return fileLinks if len(fileLinks) > 0 else None"""
       
 #checking for links in page html
-def getPageLinks(soup, myCanvas):
+def getPageLinks(soup, myCanvas, canvasQa):
 
     links = {}
+    tempHold = {}
     for link in soup.findAll('a'):
+        hrefHold = {}
         if link.has_attr('href'):
-            if link.has_attr('id'):
-                links[link.get_text().strip()] =  link.get('href')
+            if not link['href'].startswith('http'):
+                if link.get_text() == ' ':
+                    tempHold['canvasFile'] = link['href']
+                    continue
+            if link.has_attr('class') and len(tempHold) > 0:
+                if link.get('class')[0].startswith('instructure_file_link'):
+                    tempHold.clear()
+                else:
+                    links[tempHold.keys()[0]] = tempHold['canvasFile']
+                    tempHold.clear()
+
+            verifierPos = link.get('href').find('?verifier=')
+            if verifierPos > -1:
+                links[link.get_text().strip()] =  {'source' : link['href'][:verifierPos], 'statusCode' : linkCheck(link['href'][:verifierPos], myCanvas)}
             else:
-                links[link.get_text().strip()] =  link.get('href')
+                links[link.get_text().strip()] = {'source' : link['href'], 'statusCode' : linkCheck(link['href'], myCanvas)}
+                
     for link in soup.findAll('span'):
         if link.has_attr('href'):
-            if link.has_attr('id'):
-                links[link.get_text().strip()] =  link.get('href')
-            else:
-                links[link.get_text().strip()] =  link.get('href')
+            links[link.get_text().strip()] =  link.get('href')
 
     return links if len(links) > 0 else None
 
@@ -227,23 +248,23 @@ def getVideoIframes(soup, myCanvas):
     for item in soup.findAll('iframe'):
         if item.has_attr('src'):
             
-            if re.search('youtube.com', item['src']):#item.get('src').find('youtube.com') > 1:
+            if re.search('youtube.com', item['src']):
                 host = 'YouTube'
-            elif re.search('echo360.net', item['src']):#item.get('src').find('echo360.net') > 1:
+            elif re.search('echo360.net', item['src']):
                 host = 'Echo360'
-            elif re.search('instructuremedia.com', item['src']):#item.get('src').find('instructuremedia.com') > 1:
+            elif re.search('instructuremedia.com', item['src']):
                 host = 'Canvas Studio'
-            elif re.search('vimeo.com', item['src']):#item.get('src').find('vimeo.com') > 1:
+            elif re.search('vimeo.com', item['src']):
                 host = 'vimeo'
-            elif re.search('microsoftstream.com', item['src']):#item.get('src').find('microsoftstream.com') > 1:
+            elif re.search('microsoftstream.com', item['src']):
                 host = 'Microsoft Stream'
-            elif re.search('google.com', item['src']):#item.get('src').find('google.com') > 1:
+            elif re.search('google.com', item['src']):
                 host = 'Google'
-            elif re.search('griffitheduau-my.sharepoint.com', item['src']):#item.get('src').find('griffitheduau-my.sharepoint.com') > 1:
+            elif re.search('griffitheduau-my.sharepoint.com', item['src']):
                 host = 'Griffith Sharepoint'
-            elif re.search('griffith.edu.au', item['src']):#item.get('src').find('griffith.edu.au') > 1:
+            elif re.search('griffith.edu.au', item['src']):
                 host = 'Griffith Uni'
-            elif re.search('lms.griffith.edu.au', item['src']):#item.get('src').find('lms.griffith.edu.au') > 1:
+            elif re.search('lms.griffith.edu.au', item['src']):
                 host = 'Canvas'
             else:
                 host = 'Unknown'
@@ -251,7 +272,7 @@ def getVideoIframes(soup, myCanvas):
             if iframeVideos.get(host, None) == None:
                 iframeVideos[host] = {}
                 
-            iframeVideos[host][item.get_text().strip()] = item.get('src')
+            iframeVideos[host][item.get_text().strip()] = {'source' : item.get('src'), 'statusCode' : linkCheck(item.get('src'), myCanvas)}
     
     return iframeVideos if len(iframeVideos) > 0 else None
 

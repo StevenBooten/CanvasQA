@@ -5,7 +5,7 @@ sys.path.append("../")
 from canvaslib.Canvaslib import databaseSearchCanvas, parseArgsCanvas, initialiseLogging
 from canvaslib.CanvasAPIClass import CanvasAPI
 from Checks.body import checkPageBody
-from Gatherers.assessments import collectCourseAssignments
+from Gatherers.assignments import collectCourseAssignments
 from Gatherers.fileStructure import collectCourseFiles
 from Gatherers.moduleInfo import collectCourseModules, unattachedPages, collectCoursePages
 from htmlgeneration.canvasQaHtml import generateQaHtml
@@ -15,45 +15,63 @@ from pathlib import Path
 
 sys.setrecursionlimit(2000)
 
+MAXBAR = 100
+def updateBar(count, bar):
+    step = MAXBAR / 8 #This is the number of steps in the main program
+    
+    count += 1
+    
+    bar.update((MAXBAR/step) * count)
+
 def mainProgram():
     
     args, courseDetails, myCanvas = setupVariables()
     
-    bar = progressbar.ProgressBar(maxval=len(courseDetails), \
-            widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-    bar.start()
     
-    for count, course in enumerate(courseDetails):
-        
+    for course in courseDetails:
+        count = 1
         canvasQa = {}
         canvasQa['usedFiles'] = []
         canvasQa['issues'] = {}
         
         myCanvas.getCourse(course['canvasCourseId'])
+        print(f'Running: {myCanvas.courseCode}')
+        bar = progressbar.ProgressBar(maxval=MAXBAR, \
+            widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
         
+        bar.start()
         canvasQa['pages'] = collectCoursePages(myCanvas)
+        updateBar(count, bar)
         
         canvasQa['modules'], usedFiles = collectCourseModules(myCanvas)
         canvasQa['usedFiles'] += usedFiles
+        updateBar(count, bar)
         
-        canvasQa['assignments'], usedFiles = collectCourseAssignments(myCanvas)
+        usedFiles = collectCourseAssignments(myCanvas, canvasQa)
         canvasQa['usedFiles'] += usedFiles
+        updateBar(count, bar)
         
-        canvasQa['unattachedPages'] = unattachedPages(myCanvas, canvasQa['modules'], canvasQa['pages'])
+        canvasQa['unattachedPages'], canvasQa['issues']['Unattached Pages'] = unattachedPages(myCanvas, canvasQa['modules'], canvasQa['pages'])
+        updateBar(count, bar)
         
-        canvasQa['pages'], usedFiles = checkPageBody(canvasQa['pages'], myCanvas)
+        usedFiles = checkPageBody(canvasQa, myCanvas)
         canvasQa['usedFiles'] += usedFiles
+        updateBar(count, bar)
         
-        canvasQa['files'], canvasQa['issues']['File Structure'] = collectCourseFiles(myCanvas, canvasQa['usedFiles'])
+        canvasQa['files'], canvasQa['issues']['File Structure'], canvasQa['fileReference'] = collectCourseFiles(myCanvas, canvasQa['usedFiles'])
+        updateBar(count, bar)
+        
+        
             
         canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
         saveQaHtml(canvasQaHtml, myCanvas)
+        updateBar(count, bar)
         
         with open(f'./jsons/{myCanvas.courseCode} QA.json', 'w') as outfile:
             json.dump(canvasQa, outfile, indent=4)
+        updateBar(count, bar)
         
-        bar.update(count+1)
-    bar.finish()
+        bar.finish()
     
 def saveQaHtml(canvasQaHtml, myCanvas):
     

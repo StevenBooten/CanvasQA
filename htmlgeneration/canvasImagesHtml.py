@@ -9,36 +9,36 @@ from pprint import pprint
 
 def generateImagesHtml(myCanvas, canvasQa):
     canvasQa['issues']['Images'] = { 'id':"collapsible-img-check", 'count' : 0 }
-    placeholderIssues = {}
-    placeholderIssues['Pages'] = {}
-    placeholderIssues['Quizzes'] = {}
+    imagesData = {}
+    imagesData['Pages'] = {}
+    imagesData['Quizzes'] = {}
     
     for pageId, pageData in canvasQa['pages'].items():
-        if pageData.get('placeholders') == None:
+        if pageData.get('imgTags') == None:
             continue
-        placeholderIssues['Pages'][pageId] = {}
-        placeholderIssues['Pages'][pageId]['title'] = pageData['title']
-        placeholderIssues['Pages'][pageId]['url'] = pageData['url']
-        placeholderIssues['Pages'][pageId]['images'] = pageData['imgTags']
-        #canvasQa['issues']['Placeholders']['count'] += len(pageData['placeholders']) if pageData['placeholders'] is not None else 0
+        imagesData['Pages'][pageId] = {}
+        imagesData['Pages'][pageId]['title'] = pageData['title']
+        imagesData['Pages'][pageId]['url'] = pageData['url']
+        imagesData['Pages'][pageId]['images'] = pageData['imgTags']
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
             if 'online_quiz' not in assessmentData['submissionTypes']:
                 continue
             for questionId, quizData in assessmentData['quiz'].items():
-                if quizData['placeholders'] == None:
+                if quizData['imgTags'] == None:
                     continue
-                placeholderIssues['Quizzes'][assessmentId] = {}
-                placeholderIssues['Quizzes'][assessmentId]['title'] = assessmentData['title']
-                placeholderIssues['Quizzes'][assessmentId]['url'] = assessmentData['url']
-                placeholderIssues['Quizzes'][assessmentId]['images'] = quizData['imgTags']
-                #canvasQa['issues']['Placeholders']['count'] += len(quizData['placeholders']) if quizData['placeholders'] is not None else 0
-    htmlPlaceholders = htmlImagesGenerate(placeholderIssues, canvasQa['issues']['Images']['id'], myCanvas)
+                imagesData['Quizzes'][assessmentId] = {}
+                imagesData['Quizzes'][assessmentId]['title'] = assessmentData['title']
+                imagesData['Quizzes'][assessmentId]['url'] = assessmentData['url']
+                imagesData['Quizzes'][assessmentId]['images'] = quizData['imgTags']
+    if imagesData.get('Pages') is None and imagesData.get('Quizzes') is None:
+        return ''
+    htmlImages = htmlImagesGenerate(imagesData, canvasQa['issues']['Images']['id'], myCanvas) 
     
-    return htmlPlaceholders
+    return htmlImages
 
-def htmlImagesGenerate(placeholderIssues, id, myCanvas):
+def htmlImagesGenerate(imagesData, id, myCanvas):
     html = (
             Article([Class('message')],
                 Div([Class('message-header')],
@@ -55,7 +55,8 @@ def htmlImagesGenerate(placeholderIssues, id, myCanvas):
                     Div([Class('message-body-content')],
                         Div([Class('columns is-multiline')],
                             Div([Class('column is-8 is-narrow')],
-                                htmlImagesAccordian(placeholderIssues, myCanvas)
+                                htmlImagesAccordian(imagesData
+                            , myCanvas)
                             ), 
                             about('Placeholders Check', getDescriptions('Placeholder'))
                         )
@@ -65,9 +66,9 @@ def htmlImagesGenerate(placeholderIssues, id, myCanvas):
         )    
     return html
 
-def htmlImagesAccordian(placeholderIssues, myCanvas):
+def htmlImagesAccordian(imagesData, myCanvas):
     html = ''
-    for key, values in placeholderIssues.items():
+    for key, values in imagesData.items():
         if len(values) == 0:
             continue
         html = (html,

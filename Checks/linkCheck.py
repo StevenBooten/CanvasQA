@@ -39,6 +39,8 @@ def validate_url(url):
         
 def linkCheck(url, myCanvas):
     
+    return 0
+    
     if '@X@EmbeddedFile.requestUrlStub/' in url:
         return 999
     elif 'bbcollab' in url:
@@ -69,5 +71,7 @@ def linkCheck(url, myCanvas):
     if statusCode < 399 or statusCode < 300:
         if 'http://' in url:
             return 998
-        
+    if statusCode == 302:
+        if url.startswith('https://lms.griffith.edu.au/'):
+            statusCode = 200
     return statusCode
