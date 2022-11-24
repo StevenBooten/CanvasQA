@@ -4,46 +4,44 @@ from htmlBuilder.attributes import Class, Style
 from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
 from htmlgeneration.extraHtmlFunctions import statusCodeInfo, errorBrokenLink
-from Checks.linkCheck import linkCheck
-from pprint import pprint
 
-def generateImagesHtml(myCanvas, canvasQa):
+def generateEmbeddedContentHtml(myCanvas, canvasQa):
     
-    imagesData = {}
-    imagesData['Page'] = {}
-    imagesData['Quiz'] = {}
+    embeddedContentData = {}
+    embeddedContentData['Page'] = {}
+    embeddedContentData['Quiz'] = {}
     
     for pageId, pageData in canvasQa['pages'].items():
-        if pageData.get('imgTags') == None:
+        if pageData.get('embeddedContent') == None:
             continue
-        imagesData['Page'][pageId] = {}
-        imagesData['Page'][pageId]['title'] = pageData['title']
-        imagesData['Page'][pageId]['url'] = pageData['url']
-        imagesData['Page'][pageId]['images'] = pageData['imgTags']
+        embeddedContentData['Page'][pageId] = {}
+        embeddedContentData['Page'][pageId]['title'] = pageData['title']
+        embeddedContentData['Page'][pageId]['url'] = pageData['url']
+        embeddedContentData['Page'][pageId]['embeddedContent'] = pageData['embeddedContent']
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
             if 'online_quiz' not in assessmentData['submissionTypes']:
                 continue
             for questionId, quizData in assessmentData['quiz'].items():
-                if quizData['imgTags'] == None:
+                if quizData['embeddedContent'] == None:
                     continue
-                imagesData['Quiz'][assessmentId] = {}
-                imagesData['Quiz'][assessmentId]['title'] = assessmentData['title']
-                imagesData['Quiz'][assessmentId]['url'] = assessmentData['url']
-                imagesData['Quiz'][assessmentId]['images'] = quizData['imgTags']
+                embeddedContentData['Quiz'][assessmentId] = {}
+                embeddedContentData['Quiz'][assessmentId]['title'] = assessmentData['title']
+                embeddedContentData['Quiz'][assessmentId]['url'] = assessmentData['url']
+                embeddedContentData['Quiz'][assessmentId]['embeddedContent'] = quizData['embeddedContent']
                 
-    if imagesData.get('Page') is None and imagesData.get('Quiz') is None:
+    if embeddedContentData.get('Page') is None and embeddedContentData.get('Quiz') is None:
         return ''
-    htmlImages = htmlImagesGenerate(imagesData, canvasQa['issues']['Images']['id'], myCanvas) 
+    htmlembeddedContent = htmlEmbeddedContentGenerate(embeddedContentData, canvasQa['issues']['Embedded Content']['id'], myCanvas) 
     
-    return htmlImages
+    return htmlembeddedContent
 
-def htmlImagesGenerate(imagesData, id, myCanvas):
+def htmlEmbeddedContentGenerate(embeddedContentData, id, myCanvas):
     html = (
             Article([Class('message')],
                 Div([Class('message-header')],
-                    P([], Span([], 'Images'),
+                    P([], Span([], 'Embedded Content'),
                         Span([Class('tag is-info ml-6')], 
                             A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                         ),
@@ -56,10 +54,9 @@ def htmlImagesGenerate(imagesData, id, myCanvas):
                     Div([Class('message-body-content')],
                         Div([Class('columns is-multiline')],
                             Div([Class('column is-8 is-narrow')],
-                                htmlImagesAccordian(imagesData
-                            , myCanvas)
+                                htmlEmbeddedContentAccordian(embeddedContentData, myCanvas)
                             ), 
-                            about('Placeholders Check', getDescriptions('Placeholder'))
+                            about('Embedded Content', getDescriptions('Embedded Content'))
                         )
                     )
                 )
@@ -67,37 +64,35 @@ def htmlImagesGenerate(imagesData, id, myCanvas):
         )    
     return html
 
-def htmlImagesAccordian(imagesData, myCanvas):
+def htmlEmbeddedContentAccordian(embeddedContentData, myCanvas):
     html = ''
-    for key, values in imagesData.items():
+    for key, values in embeddedContentData.items():
         if len(values) == 0:
             continue
         html = (html,
                     Table([Class('table')],
                         Thead([],
-                            #P([], Em([], ['This is a list of any Blackboard Terms used in the course and associated items'])),
-                            #P([], Em([], ['These will need to be changed to reflect tools used in Canvas'])),
                             Tr([], 
                                 Th([], f'{key} Name'),
                                 Th([], '# of Items'),
                                 Th([], 'Show/Hide')
                             )
                         ),
-                        htmlImagesHeader(values, myCanvas)
+                        htmlEmbeddedContentHeader(values, myCanvas)
                     )
                 )
                 
     return html
 
-def htmlImagesHeader(values, myCanvas):
+def htmlEmbeddedContentHeader(values, myCanvas):
     
     html = ''
     for id, info in sorted(values.items()):
-        sumItems = len(info['images']) if info['images'] is not None else 0
+        sumItems = len(info['embeddedContent']) if info['embeddedContent'] is not None else 0
         if sumItems == 0:
             continue
         statusCodeError = False
-        for altTag, source in info['images'].items():
+        for altTag, source in info['embeddedContent'].items():
             if 200 > source['statusCode'] or source['statusCode'] >= 300:
                 statusCodeError = True
                 break
@@ -121,11 +116,11 @@ def htmlImagesHeader(values, myCanvas):
                                         Thead([],
                                             Tr([], 
                                                 Th([], 'Status Code'),
-                                                Th([], 'Alt Text'),
+                                                Th([], 'Host'),
                                                 Th([], 'Source URL'),                                          
                                             )
                                         ),
-                                        htmlImagesItems(info, myCanvas)
+                                        htmlEmbeddedContentItems(info, myCanvas)
                                     )
                                 )
                             )
@@ -136,16 +131,16 @@ def htmlImagesHeader(values, myCanvas):
         )
     return html
 
-def htmlImagesItems(info, myCanvas):
+def htmlEmbeddedContentItems(info, myCanvas):
     html = ''
-    for altTag, source in sorted(info['images'].items(), key=lambda x: x[1]['statusCode']):
+    for host, source in sorted(info['embeddedContent'].items(), key=lambda x: x[1]['statusCode']):
         html = (html,
         Tbody([],
             Tr([],
                 Td([], 
                     statusCodeInfo(source['statusCode'])
                 ),
-                Td([], altTag if altTag is not None else ''),
+                Td([], host),
                 Td([], 
                     A([Href(source['source']), Target('_blank'), Rel('noopener noreferrer')], source['source']))
                 ),

@@ -7,43 +7,43 @@ from htmlgeneration.extraHtmlFunctions import statusCodeInfo, errorBrokenLink
 from Checks.linkCheck import linkCheck
 from pprint import pprint
 
-def generateImagesHtml(myCanvas, canvasQa):
+def generateLinksHtml(myCanvas, canvasQa):
     
-    imagesData = {}
-    imagesData['Page'] = {}
-    imagesData['Quiz'] = {}
+    linksData = {}
+    linksData['Page'] = {}
+    linksData['Quiz'] = {}
     
     for pageId, pageData in canvasQa['pages'].items():
-        if pageData.get('imgTags') == None:
+        if pageData.get('links') == None:
             continue
-        imagesData['Page'][pageId] = {}
-        imagesData['Page'][pageId]['title'] = pageData['title']
-        imagesData['Page'][pageId]['url'] = pageData['url']
-        imagesData['Page'][pageId]['images'] = pageData['imgTags']
+        linksData['Page'][pageId] = {}
+        linksData['Page'][pageId]['title'] = pageData['title']
+        linksData['Page'][pageId]['url'] = pageData['url']
+        linksData['Page'][pageId]['links'] = pageData['links']
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
             if 'online_quiz' not in assessmentData['submissionTypes']:
                 continue
             for questionId, quizData in assessmentData['quiz'].items():
-                if quizData['imgTags'] == None:
+                if quizData['links'] == None:
                     continue
-                imagesData['Quiz'][assessmentId] = {}
-                imagesData['Quiz'][assessmentId]['title'] = assessmentData['title']
-                imagesData['Quiz'][assessmentId]['url'] = assessmentData['url']
-                imagesData['Quiz'][assessmentId]['images'] = quizData['imgTags']
+                linksData['Quiz'][assessmentId] = {}
+                linksData['Quiz'][assessmentId]['title'] = assessmentData['title']
+                linksData['Quiz'][assessmentId]['url'] = assessmentData['url']
+                linksData['Quiz'][assessmentId]['links'] = quizData['links']
                 
-    if imagesData.get('Page') is None and imagesData.get('Quiz') is None:
+    if linksData.get('Page') is None and linksData.get('Quiz') is None:
         return ''
-    htmlImages = htmlImagesGenerate(imagesData, canvasQa['issues']['Images']['id'], myCanvas) 
+    htmllinks = htmlLinksGenerate(linksData, canvasQa['issues']['Course Links']['id'], myCanvas) 
     
-    return htmlImages
+    return htmllinks
 
-def htmlImagesGenerate(imagesData, id, myCanvas):
+def htmlLinksGenerate(linksData, id, myCanvas):
     html = (
             Article([Class('message')],
                 Div([Class('message-header')],
-                    P([], Span([], 'Images'),
+                    P([], Span([], 'Course Links'),
                         Span([Class('tag is-info ml-6')], 
                             A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                         ),
@@ -56,10 +56,10 @@ def htmlImagesGenerate(imagesData, id, myCanvas):
                     Div([Class('message-body-content')],
                         Div([Class('columns is-multiline')],
                             Div([Class('column is-8 is-narrow')],
-                                htmlImagesAccordian(imagesData
+                                htmlLinksAccordian(linksData
                             , myCanvas)
                             ), 
-                            about('Placeholders Check', getDescriptions('Placeholder'))
+                            about('Course Links', getDescriptions('Course Links'))
                         )
                     )
                 )
@@ -67,37 +67,35 @@ def htmlImagesGenerate(imagesData, id, myCanvas):
         )    
     return html
 
-def htmlImagesAccordian(imagesData, myCanvas):
+def htmlLinksAccordian(linksData, myCanvas):
     html = ''
-    for key, values in imagesData.items():
+    for key, values in linksData.items():
         if len(values) == 0:
             continue
         html = (html,
                     Table([Class('table')],
                         Thead([],
-                            #P([], Em([], ['This is a list of any Blackboard Terms used in the course and associated items'])),
-                            #P([], Em([], ['These will need to be changed to reflect tools used in Canvas'])),
                             Tr([], 
                                 Th([], f'{key} Name'),
                                 Th([], '# of Items'),
                                 Th([], 'Show/Hide')
                             )
                         ),
-                        htmlImagesHeader(values, myCanvas)
+                        htmlLinksHeader(values, myCanvas)
                     )
                 )
                 
     return html
 
-def htmlImagesHeader(values, myCanvas):
+def htmlLinksHeader(values, myCanvas):
     
     html = ''
     for id, info in sorted(values.items()):
-        sumItems = len(info['images']) if info['images'] is not None else 0
+        sumItems = len(info['links']) if info['links'] is not None else 0
         if sumItems == 0:
             continue
         statusCodeError = False
-        for altTag, source in info['images'].items():
+        for altTag, source in info['links'].items():
             if 200 > source['statusCode'] or source['statusCode'] >= 300:
                 statusCodeError = True
                 break
@@ -125,7 +123,7 @@ def htmlImagesHeader(values, myCanvas):
                                                 Th([], 'Source URL'),                                          
                                             )
                                         ),
-                                        htmlImagesItems(info, myCanvas)
+                                        htmlLinksItems(info, myCanvas)
                                     )
                                 )
                             )
@@ -136,9 +134,9 @@ def htmlImagesHeader(values, myCanvas):
         )
     return html
 
-def htmlImagesItems(info, myCanvas):
+def htmlLinksItems(info, myCanvas):
     html = ''
-    for altTag, source in sorted(info['images'].items(), key=lambda x: x[1]['statusCode']):
+    for altTag, source in sorted(info['links'].items(), key=lambda x: x[1]['statusCode']):
         html = (html,
         Tbody([],
             Tr([],

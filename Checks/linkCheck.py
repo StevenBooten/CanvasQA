@@ -39,22 +39,23 @@ def validate_url(url):
         
 def linkCheck(url, myCanvas):
     
-    return 0
+    badLink = 1
+    goodLink = 0
     
     if '@X@EmbeddedFile.requestUrlStub/' in url:
-        return 999
+        return 999, badLink
     elif 'bbcollab' in url:
-        return 999
+        return 999, badLink
     elif 'blackboard' in url:
-        return 999
+        return 999, badLink
     elif 'EmbeddedFile.request' in url:
-        return 999
+        return 999, badLink
     elif 'mailto' in url:
-        return 298
-    elif 'https://griffitheduau.sharepoint.com' in url:
-        return 297
+        return 298, goodLink
+    #elif 'https://griffitheduau.sharepoint.com' in url:
+    #    return 297, 0
     elif 'tel:' in url:
-        return 296
+        return 296, goodLink
     
     start = re.match('https://lms.griffith.edu.au/courses/', url)
     if start is not None:
@@ -62,16 +63,20 @@ def linkCheck(url, myCanvas):
         if end is not None:
             courseId = url[start.end():end.start()]
             if courseId != myCanvas.courseId:
-                return 222
+                return 322, badLink
             
     
-    
+    #statusCode = 200
     statusCode = validate_url(url)
     
     if statusCode < 399 or statusCode < 300:
         if 'http://' in url:
-            return 998
+            return 998, badLink
     if statusCode == 302:
         if url.startswith('https://lms.griffith.edu.au/'):
             statusCode = 200
-    return statusCode
+            
+    if 200 <= statusCode < 300:
+        return statusCode, goodLink
+    
+    return statusCode, badLink

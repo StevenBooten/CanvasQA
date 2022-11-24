@@ -6,7 +6,7 @@ from lib.InfoPacks import getDescriptions
 from pprint import pprint
 
 def generatePlaceholderHtml(myCanvas, canvasQa):
-    canvasQa['issues']['Placeholders'] = { 'id':"collapsible-placeholder-check", 'count' : 0 }
+    
     placeholderIssues = {}
     placeholderIssues['Pages'] = {}
     placeholderIssues['Quizzes'] = {}

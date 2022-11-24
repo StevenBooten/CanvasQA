@@ -21,11 +21,9 @@ def checkPageBody(canvasQa, myCanvas):
         page['placeholders'] = placeholderBodyCheck(soup, page['title'])
         page['bbHtml'] = bbhtmlCheck(soup)
         page['bbEcho'] = getBBEcho(soup)
-        page['imgTags'] = getPageImgTags(soup, myCanvas)
+        page['imgTags'] = getPageImgTags(soup, myCanvas, canvasQa)
         page['links'] = getPageLinks(soup, myCanvas, canvasQa)
-        page['videoIframes'] = getVideoIframes(soup, myCanvas)
-        #page['fileLinks'] = getFileLinks(soup, myCanvas)
-        
+        page['embeddedContent'] = getVideoIframes(soup, myCanvas, canvasQa)
         
         usedFiles += checkForCanvasFileLink(page['links']) if page['links'] is not None else []
         usedFiles += checkForCanvasFileLink(page['imgTags']) if page['imgTags'] is not None else []
@@ -55,9 +53,10 @@ def checkQuizBody(questions, myCanvas, canvasQa):
         
         body = question.get('body', None)
         
-        if body is not None and type(body) == str:
-            body = body.lower()
-        else:
+        #if body is not None and type(body) == str:
+        #    body = body.lower()
+        #else:
+        if body is None:
             continue
             
         soup = bs.BeautifulSoup(body, features="html.parser")
@@ -66,10 +65,9 @@ def checkQuizBody(questions, myCanvas, canvasQa):
         question['placeholders'] = placeholderBodyCheck(soup, question['title'])
         question['bbHtml'] = bbhtmlCheck(soup)
         question['bbEcho'] = getBBEcho(soup)
-        question['imgTags'] = getPageImgTags(soup, myCanvas)
+        question['imgTags'] = getPageImgTags(soup, myCanvas, canvasQa)
         question['links'] = getPageLinks(soup, myCanvas, canvasQa)
-        #question['fileLinks'] = getFileLinks(soup, myCanvas)
-        question['videoIframes'] = getVideoIframes(soup, myCanvas)
+        question['videoIframes'] = getVideoIframes(soup, myCanvas, canvasQa)
         
         
         usedFiles += checkForCanvasFileLink(question['links']) if question['links'] is not None else []
@@ -111,14 +109,12 @@ def placeholderBodyCheck(soup, title):
     for term in placeholderTerms:
         for line in soup.findAll('p'):
             if line is not None:
-                if re.search(f' {term} ', line.get_text()):#line.get_text().find(term) > -1:  
-                    #lineText = line.get_text().encode('ascii', 'ignore')
-                    #lineText = lineText.decode().strip('[]')
+                if re.search(f' {term} ', line.get_text(), re.IGNORECASE):  
                     
                     lineText = highlightText(line.get_text(), term)
-                    placeholderCheck[term] = placeholderCheck.get(term, '') + lineText#'Found in Page Body'
+                    placeholderCheck[term] = placeholderCheck.get(term, '') + lineText
 
-        if title.find(term) > -1:
+        if title.lower().find(term) > -1:
             if placeholderCheck.get(term, None) == None:
                 placeholderCheck[term] = f'Found in Title: {title}'
             else:
@@ -147,24 +143,17 @@ def BBtermCheck(soup, title):
     
     bbTermCheck = {}
     for term in bbTerms:
-        if type(soup) == str:
-            if soup.find(term) > -1:
-                bbTermCheck[term] = 'Found in Page Body'
-        else:
-            for line in soup.findAll('p'):
-                if line is not None:
-                    if re.search(f' {term} ', line.get_text()):#if line.get_text().find(term) > -1:  
-                        #lineText = line.get_text().encode('ascii', 'ignore')
-                        #lineText = lineText.decode()
-                        lineText = highlightText(line.get_text(), term)
-                        bbTermCheck[term] = bbTermCheck.get(term, '') + lineText
+        for line in soup.findAll('p'):
+            if line is not None:
+                if re.search(f' {term} ', line.get_text(), re.IGNORECASE):
+                    lineText = highlightText(line.get_text(), term)
+                    bbTermCheck[term] = bbTermCheck.get(term, '') + lineText
             
-        if title.find(term) > -1:
+        if title.lower().find(term) > -1:
             if bbTermCheck.get(term, None) == None:
                 bbTermCheck[term] = f'Found in Title: {title}'
             else:
                 bbTermCheck[term] = f'Found in Title: {title} and\n' + bbTermCheck[term]
-            #bbTermCheck['title'] = f'{term.capitalize} found in Page Title'
  
     
     return bbTermCheck if bbTermCheck != {} else None
@@ -176,7 +165,6 @@ def bbhtmlCheck(soup):
             if len(span.get('class')) > 0:
                 if span.get('class')[0] == 'vtbegenerated_div':
                     instancesFound[span.get('class')[0]] = span.get_text().strip()
-                    #instancesFound.append(span.get_text().strip())
                     
     return instancesFound if len(instancesFound) > 0 else None
     
@@ -186,12 +174,12 @@ def getBBEcho(soup):
         if item.has_attr('src'):
             if item['src'].find("echo-library-BB5bb") > -1:
                 instancesFound[item.get('title')] = item['src']
-                #instancesFound.append()
    
     return instancesFound if len(instancesFound) > 0 else None
     
-def getPageImgTags(soup, myCanvas):
+def getPageImgTags(soup, myCanvas, canvasQa):
     imgs = {}
+    imageErrorCount = 0
     for img in soup.findAll('img'):
         if img.has_attr('src'):
             verifierPos = img.get('src').find('/preview')
@@ -199,22 +187,18 @@ def getPageImgTags(soup, myCanvas):
                 imageSource = img.get('src')[:verifierPos]
             else:
                 imageSource = img.get('src')
-                
-            imgs[img.get('alt')] = {'source': imageSource, 'statusCode' : linkCheck(imageSource, myCanvas)}
+            statusCode, error = linkCheck(imageSource, myCanvas)
+            imageErrorCount += error
+            imgs[img.get('alt')] = {'source': imageSource, 'statusCode' : statusCode}
+    
+    canvasQa['issues']['Images']['count'] += imageErrorCount
                 
     return imgs if len(imgs) > 0 else None
-         
-"""def getFileLinks(soup, myCanvas):
-    fileLinks = []
-    for link in soup.findAll('href'):
-        if re.search("https://griffitheduau-*m*y*.sharepoint.com", link.get('href')):# link.get('href').find("https://griffitheduau.sharepoint.com") > -1 or link.get('href').find("https://griffitheduau-my.sharepoint.com") > -1:
-            fileLinks[link.get_text().strip()] = link.get('href')
-            
-    return fileLinks if len(fileLinks) > 0 else None"""
       
 #checking for links in page html
 def getPageLinks(soup, myCanvas, canvasQa):
-
+    
+    linkErrorCount = 0
     links = {}
     tempHold = {}
     for link in soup.findAll('a'):
@@ -233,38 +217,47 @@ def getPageLinks(soup, myCanvas, canvasQa):
 
             verifierPos = link.get('href').find('?verifier=')
             if verifierPos > -1:
-                links[link.get_text().strip()] =  {'source' : link['href'][:verifierPos], 'statusCode' : linkCheck(link['href'][:verifierPos], myCanvas)}
+                statusCode, error = linkCheck(link.get('href')[:verifierPos], myCanvas)
+                linkErrorCount += error
+                links[link.get_text().strip()] =  {'source' : link['href'][:verifierPos], 'statusCode' : statusCode}
             else:
-                links[link.get_text().strip()] = {'source' : link['href'], 'statusCode' : linkCheck(link['href'], myCanvas)}
+                statusCode, error = linkCheck(link.get('href'), myCanvas)
+                linkErrorCount += error
+                links[link.get_text().strip()] = {'source' : link['href'], 'statusCode' : statusCode}
                 
     for link in soup.findAll('span'):
         if link.has_attr('href'):
-            links[link.get_text().strip()] =  link.get('href')
+            statusCode, error = linkCheck(link.get('href'), myCanvas)
+            linkErrorCount += error
+            links[link.get_text().strip()] =  {'source' : link['href'], 'statusCode' : statusCode}
+            
+    canvasQa['issues']['Course Links']['count'] += linkErrorCount
 
     return links if len(links) > 0 else None
 
-def getVideoIframes(soup, myCanvas):
+def getVideoIframes(soup, myCanvas, canvasQa):
     iframeVideos = {}
+    linkErrorCount = 0
     for item in soup.findAll('iframe'):
         if item.has_attr('src'):
             
-            if re.search('youtube.com', item['src']):
+            if re.search('youtube.com', item['src'], re.IGNORECASE):
                 host = 'YouTube'
-            elif re.search('echo360.net', item['src']):
+            elif re.search('echo360.net', item['src'], re.IGNORECASE):
                 host = 'Echo360'
-            elif re.search('instructuremedia.com', item['src']):
+            elif re.search('instructuremedia.com', item['src'], re.IGNORECASE):
                 host = 'Canvas Studio'
-            elif re.search('vimeo.com', item['src']):
+            elif re.search('vimeo.com', item['src'], re.IGNORECASE):
                 host = 'vimeo'
-            elif re.search('microsoftstream.com', item['src']):
+            elif re.search('microsoftstream.com', item['src'], re.IGNORECASE):
                 host = 'Microsoft Stream'
-            elif re.search('google.com', item['src']):
+            elif re.search('google.com', item['src'], re.IGNORECASE):
                 host = 'Google'
-            elif re.search('griffitheduau-my.sharepoint.com', item['src']):
+            elif re.search('griffitheduau-my.sharepoint.com', item['src'], re.IGNORECASE):
                 host = 'Griffith Sharepoint'
-            elif re.search('griffith.edu.au', item['src']):
+            elif re.search('griffith.edu.au', item['src'], re.IGNORECASE):
                 host = 'Griffith Uni'
-            elif re.search('lms.griffith.edu.au', item['src']):
+            elif re.search('lms.griffith.edu.au', item['src'], re.IGNORECASE):
                 host = 'Canvas'
             else:
                 host = 'Unknown'
@@ -272,7 +265,12 @@ def getVideoIframes(soup, myCanvas):
             if iframeVideos.get(host, None) == None:
                 iframeVideos[host] = {}
                 
-            iframeVideos[host][item.get_text().strip()] = {'source' : item.get('src'), 'statusCode' : linkCheck(item.get('src'), myCanvas)}
+            statusCode, error = linkCheck(item.get('src'), myCanvas)
+            linkErrorCount += error
+                
+            iframeVideos[host] = {'source' : item.get('src'), 'statusCode' : statusCode}
+            
+    canvasQa['issues']['Embedded Content']['count'] += linkErrorCount
     
     return iframeVideos if len(iframeVideos) > 0 else None
 

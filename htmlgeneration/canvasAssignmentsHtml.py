@@ -8,10 +8,10 @@ from lib.InfoPacks import getDescriptions
 
 
 def generateAssignmentHtml(myCanvas, canvasQa):
-    canvasQa['issues']['File Structure']['id'] = "collapsible-assignment-check"
+    
     if canvasQa.get('assignments') is None:
         return ''
-    htmlAssignment = AssignmentAccordian(canvasQa, canvasQa['issues']['File Structure']['id'])
+    htmlAssignment = AssignmentAccordian(canvasQa, canvasQa['issues']['Assignments']['id'])
     
     return htmlAssignment
     
@@ -72,7 +72,8 @@ def AssignmentHtml(assignments):
                     Td([], str(values['weight'])+"%"),
                     Td([],
                         Span([Class('tag is-info is-size-7')],
-                            A([Href(f'#collapsible-items-{key}-assignments'), Data_('action','collapse')], 'Show Folder Contents') if len(values['assignments']) > 0 else A([Data_('action','collapse')], 'No Folder Contents')
+                            A([Href(f'#collapsible-items-{key}-assignments'), Data_('action','collapse')], 'Show Assignments') 
+                            if len(values['assignments']) > 0 else 'No Assignments'
                             
                         )
                     ),

@@ -9,6 +9,9 @@ from htmlgeneration.CanvasBBIssuesHtml import generateBBIssuesHtml
 from htmlgeneration.canvasImagesHtml import generateImagesHtml
 from htmlgeneration.canvasUnattachedPageshtml import generateUnattachedPagesHtml
 from htmlgeneration.canvasAssignmentsHtml import generateAssignmentHtml
+from htmlgeneration.canvasLinksHtml import generateLinksHtml
+from htmlgeneration.canvasEmbeddedContentHtml import generateEmbeddedContentHtml
+from htmlgeneration.canvasSummaryHtml import generateContentsTable
 import sys
 import io
 from pprint import pprint
@@ -31,6 +34,9 @@ def generateQaHtml(myCanvas, canvasQa):
     htmlImages = generateImagesHtml(myCanvas, canvasQa)
     htmlUnattachedPages = generateUnattachedPagesHtml(myCanvas, canvasQa)
     htmlAssignments = generateAssignmentHtml(myCanvas, canvasQa)
+    htmlLinks = generateLinksHtml(myCanvas, canvasQa)
+    htmlEmbeddedContent = generateEmbeddedContentHtml(myCanvas, canvasQa)
+    htmlContentsTable = generateContentsTable(canvasQa)
     
     #create the string of ID's for the JS to use
     accordianIds = ''
@@ -95,14 +101,17 @@ def generateQaHtml(myCanvas, canvasQa):
                         #    Li([Class('is-size-7')], ['When viewed as a student, the student experience is as expected with clear wayfinding and links/LTIs working as intended.'])
                         #)    
                     ),
+                    htmlContentsTable,
                     htmlModule,
                     htmlUnattachedPages,
                     htmlFileStructure,
-                    htmlBBIssues,
-                    htmlPlaceholders,
+                    htmlAssignments,
+                    htmlLinks,
                     htmlImages,
+                    htmlEmbeddedContent,
+                    htmlPlaceholders,
+                    htmlBBIssues,
                     
-                    htmlAssignments
                 ), 
             )
         ),

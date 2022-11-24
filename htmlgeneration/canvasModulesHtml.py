@@ -6,7 +6,7 @@ from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
 
 def generateModulesHtml(myCanvas, canvasQa):
-    canvasQa['issues']['Modules'] = { 'id':"collapsible-modules-check", 'count' : 0 }
+    
     
     if canvasQa.get('modules') is None:
         return ''

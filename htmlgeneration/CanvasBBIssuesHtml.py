@@ -7,7 +7,7 @@ from pprint import pprint
 
 
 def generateBBIssuesHtml(myCanvas, canvasQa):
-    canvasQa['issues']['Blackboard Residuals'] = { 'id':"collapsible-bb-check", 'count' : 0 }
+    
     bbIssues = {}
     bbIssues['Pages'] = {}
     bbIssues['Quizzes'] = {}

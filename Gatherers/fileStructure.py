@@ -1,6 +1,5 @@
-def collectCourseFiles(myCanvas, usedFileIds):
+def collectCourseFiles(myCanvas, canvasQa):
     
-    fileIssues = {}
     ignoredFolders = ['qa info', 'css']
     
     fileCount = {}
@@ -33,11 +32,11 @@ def collectCourseFiles(myCanvas, usedFileIds):
             fileInformation['id'] = item.id
             fileInformation['url'] = f'{folderUrl}?preview={item.id}'
             fileInformation['count'] = 0
-            if item.id in usedFileIds:
+            if item.id in canvasQa['usedFiles']:
                 fileInformation['used'] = True
             else:
                 fileInformation['used'] = False
-                fileIssues['unused'] = fileIssues.get('unused', 0) + 1
+                canvasQa['issues']['File Structure']['unused'] = canvasQa['issues']['File Structure'].get('unused', 0) + 1
                 
             fileReference[item.id] = item.filename
             
@@ -56,6 +55,8 @@ def collectCourseFiles(myCanvas, usedFileIds):
         for file in values['files']:
             file['count'] = fileCount[file['name']]
             if file['count'] > 1:
-                fileIssues['duplicate'] = fileIssues.get('duplicate', 0) + 1
-                    
-    return fileStructure, fileIssues, fileReference
+                canvasQa['issues']['File Structure']['duplicate'] = canvasQa['issues']['File Structure'].get('duplicate', 0) + 1
+    
+    canvasQa['issues']['File Structure']['count'] = canvasQa['issues']['File Structure'].get('duplicate', 0)  + canvasQa['issues']['File Structure'].get('unused', 0)
+             
+    return fileStructure, fileReference

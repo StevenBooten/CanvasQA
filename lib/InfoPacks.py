@@ -57,11 +57,11 @@ def getStatusCode(code):
                 '511': "Network Authentication Required. This status code is sent when the network you\'re trying to use requires some form of authentication before sending your request to the server. For instance, you may need to agree to the Terms and Conditions of a public Wi-Fi hotspot.",
                 '521': "Web server is down. Error 521 is a Cloudflare-specific error message. It means that your web browser was able to successfully connect to Cloudflare, but Cloudflare was not able to connect to the origin web server.",
                 '525': "SSL Handshake Failed. Error 525 means that the SSL handshake between a domain using Cloudflare and the origin web server failed. If you are experiencing issues there are five methods you can try to easily fix error 525.",
-                '222': 'This is a link to another Canvas Course.',
+                '322': 'This is a link to another Canvas Course.',
                 '296': 'This is a Telephone Number',
                 '297': 'This is a Sharepoint Link and is locked behind a login.',
                 '298': 'This is an Email Link',
-                '998': 'This is a broken/missing link that likely needs http:// to be replaced with https://',
+                '998': 'The requested resource has moved, but was found. It needs http:// to be replaced with https:// to become a valid link.',
                 '999': "This is a Blackboard Link is either already broken or will stop working when Blackboard is taken down. Please fix asap."
                 }
     
@@ -75,7 +75,7 @@ def getDescriptions(key):
             'File Structure' : ['File structure is logical and supports the course approach presented within the module', 'Duplicate files need to be removed', 'Unused files are removed where appropriate', 'File names are consistent and logical', 'File names are meaningful'],
             'Assignments' : ['All assessment submission points have been made and are set up to a submission type', 'Points have been allocated to each submission point (where applicable)', 
                              'Assessment groups are weighted to total 100% and connect content relevant to the submission with the submission point'],
-            'Link Information' : ['Links are included in an accessible format and working', 'Alot of 3XX errors are a product of old links that are http:// instead of https://.'],
+            'Course Links' : ['Links are included in an accessible format and working', 'Alot of 3XX errors are a product of old links that are http:// instead of https://.'],
             'Custom Fonts' : ['Fonts are consistent where possible', 'Content brought in directly from BB might have weird font tags'],
             'Course Images' : ['Images are included in an accessible format and working', 'Alot of 3XX errors are a product of old links that are http:// instead of https://'],
             'Unattached Pages' : ['Check superfluous and duplicate pages have been removed', 'Made sure all pages are linked to the appropriate module', 'Unneeded Pages are removed.'],
@@ -83,7 +83,7 @@ def getDescriptions(key):
             'Blackboard Terms' : ['Text should not mention removed technologies or terminologies (ie. Collaborate)'],
             'BB Echo Embed Code': ["This is from a course being mirgrated directly from BB, The embed code for Echo360's wont work in Canvas and will need to be replaced."],
             'File Link Information' : ['These are files that have been linked from sharepoint instead of the Canvas File structure, discuss with course convenor if this is the most sustainable way to manage these files within the course'],
-            'Video Embed' : ['This is all the embedded content in your course.'],
+            'Embedded Content' : ['This is all the embedded content in your course.'],
             'Quizzes': ['TBD']
     }
     

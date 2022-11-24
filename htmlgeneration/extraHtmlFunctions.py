@@ -72,7 +72,7 @@ def errorFolder(count):
         )
         
     return html
-
+#adds a warning to the folder title of an accordion if there are any issues with files within that folder
 def fileStructureFolderError(files):
     unusedHtml = ''
     duplicateHtml = ''
@@ -80,19 +80,21 @@ def fileStructureFolderError(files):
     
     for item in files:
         if item['used'] == False:
-            unusedHtml = (
-            Span([Class('tag is-warning has-tooltip-multiline has-tooltip-right'), Data_('tooltip', "There are file(s) in this folder that are not linked in the course.")],
-                    Span([Class('icon is-small')], 
-                        I([Class("fas fa-exclamation-triangle")])
-                    )
+            unusedHtml = ('&nbsp;',
+                Span([Class('tag is-warning has-tooltip-multiline has-tooltip-right'), Data_('tooltip', "There are file(s) in this folder that are not linked in the course.")],
+                    'Unused Files',
+                    #Span([Class('icon is-small')], 
+                    #    I([Class("fas fa-exclamation-triangle")])
+                    #)
                 )
             ),
         if item['count'] > 1:
-            duplicateHtml = (\
+            duplicateHtml = ('&nbsp;',
                 Span([Class('tag is-warning has-tooltip-multiline has-tooltip-right'), Data_('tooltip', 'This contains a file which has a duplicate copy in the file structure.')],
-                    Span([Class('icon is-small')], 
-                        I([Class("fas fa-exclamation-triangle")])
-                    )
+                    'Duplicate Files',
+                    #Span([Class('icon is-small')], 
+                    #    I([Class("fas fa-exclamation-triangle")])
+                    #)
                 )
             ),
     
@@ -189,27 +191,17 @@ def errorPageSize(qaInfo, title, type):
     return html
         
 # returns warrning html if there is an error with the alt tag
-def hasAltTag(title, error):
-    if error == 1:
-        html = ( title,
-            Span([Class("tag is-warning has-tooltip-right has-tooltip-multiline has-tooltip-right"), Data_('tooltip',"A meaningful title helps students understand intent, esepcially thouse with screen readers.")],
-                Span([Class('icon is-small')],
-                    I([Class('fas fa-exclamation-triangle')]
-                    )
-                )
-            )
+def errorBrokenLink():
+    html = ('&nbsp;',
+        Span([Class("tag is-warning has-tooltip-right has-tooltip-multiline has-tooltip-right"), Data_('tooltip',"There are broken links in this page")],
+             'Broken Link(s)',
+            #Span([Class('icon is-small')],
+            #    I([Class('fas fa-exclamation-triangle')]
+            #    )
+            #)
         )
-    elif error == 2:
-        html = ( title,
-            Span([Class("tag is-warning has-tooltip-right has-tooltip-multiline has-tooltip-right"), Data_('tooltip', "A meaningful title helps students understand intent, esepcially thouse with screen readers.")],
-                Span([Class('icon is-small')],
-                    I([Class('fas fa-exclamation-triangle')]
-                    )
-                )
-            )
-        )
-    else:
-        html = title
+    )
+    
     return html    
  
 #returns appropriate html for the title error passed in       

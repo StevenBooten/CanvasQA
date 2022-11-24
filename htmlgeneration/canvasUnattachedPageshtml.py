@@ -5,7 +5,7 @@ from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
 
 def generateUnattachedPagesHtml(myCanvas, canvasQa):
-    canvasQa['issues']['Unattached Pages'] = { 'id':"collapsible-unattachedpages-check" }
+    
     
     if canvasQa.get('unattachedPages') is None:
         return ''
@@ -51,7 +51,7 @@ def htmlUnattachedPagesAccordion(UnattachedPages, myCanvas):
                         Tr([], 
                             Th([], "Page Title"),
                             Th([], 'Published'),
-                            Th([], 'Show/Hide')
+                            #Th([], 'Show/Hide')
                         )
                     ),
                     htmlUnattachedPagesHeader(UnattachedPages, myCanvas)

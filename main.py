@@ -33,6 +33,15 @@ def mainProgram():
         canvasQa = {}
         canvasQa['usedFiles'] = []
         canvasQa['issues'] = {}
+        canvasQa['issues']['Images'] = { 'id':"collapsible-img-check", 'count' : 0 }
+        canvasQa['issues']['Assignments'] = { 'id':"collapsible-assignment-check", 'count' : 0 }
+        canvasQa['issues']['Blackboard Residuals'] = { 'id':"collapsible-bb-check", 'count' : 0 }
+        canvasQa['issues']['File Structure'] = {'id': "collapsible-filestructure-check", 'count' : 0 }
+        canvasQa['issues']['Modules'] = { 'id':"collapsible-modules-check", 'count' : 0 }
+        canvasQa['issues']['Placeholders'] = { 'id':"collapsible-placeholder-check", 'count' : 0 }
+        canvasQa['issues']['Unattached Pages'] = { 'id':"collapsible-unattachedpages-check", 'count' : 0 }
+        canvasQa['issues']['Course Links'] = { 'id':"collapsible-link-check", 'count' : 0 }
+        canvasQa['issues']['Embedded Content'] = { 'id':"collapsible-video-check", 'count' : 0 }
         
         myCanvas.getCourse(course['canvasCourseId'])
         print(f'Running: {myCanvas.courseCode}')
@@ -51,14 +60,14 @@ def mainProgram():
         canvasQa['usedFiles'] += usedFiles
         updateBar(count, bar)
         
-        canvasQa['unattachedPages'], canvasQa['issues']['Unattached Pages'] = unattachedPages(myCanvas, canvasQa['modules'], canvasQa['pages'])
+        canvasQa['unattachedPages'] = unattachedPages(myCanvas, canvasQa)
         updateBar(count, bar)
         
         usedFiles = checkPageBody(canvasQa, myCanvas)
         canvasQa['usedFiles'] += usedFiles
         updateBar(count, bar)
         
-        canvasQa['files'], canvasQa['issues']['File Structure'], canvasQa['fileReference'] = collectCourseFiles(myCanvas, canvasQa['usedFiles'])
+        canvasQa['files'], canvasQa['fileReference'] = collectCourseFiles(myCanvas, canvasQa)
         updateBar(count, bar)
         
         

@@ -64,12 +64,12 @@ def collectCourseModules(myCanvas):
 
 #- finds all pages in a course and checks them against the module items dataset to attain
 #- whether they are linked to a module
-def unattachedPages(myCanvas, moduleQa, pages):
+def unattachedPages(myCanvas, canvasQa):
     
     ignoredPages = ['canvas-collections-configuration', 'home page', 'home page - banner', 'learning journey', 'assessment overview', 'learning journey 2', 'teaching staff']
     pagesInModules = []
     
-    for key, value in moduleQa.items():
+    for key, value in canvasQa['modules'].items():
         for item in value['items']:
             if item['type'] == 'Page':
                 pagesInModules.append(item['url'])
@@ -78,7 +78,7 @@ def unattachedPages(myCanvas, moduleQa, pages):
     unattachedPages = {}
     
     
-    for key, page in pages.items():
+    for key, page in canvasQa['pages'].items():
         if page['url'] in pagesInModules or page['title'].lower() in ignoredPages:
             continue
         unattachedPages[key] = {}
@@ -88,9 +88,9 @@ def unattachedPages(myCanvas, moduleQa, pages):
         unattachedPages[key]['url'] = page['url']
         unattachedPages[key]['published'] = page['published']
         
- 
+    canvasQa['issues']['Unattached Pages']['count'] = len(unattachedPages)
     
-    return unattachedPages, {'count' : len(unattachedPages) }
+    return unattachedPages
 
 
 def collectCoursePages(myCanvas):

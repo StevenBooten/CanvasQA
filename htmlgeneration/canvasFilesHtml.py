@@ -8,7 +8,7 @@ from htmlgeneration.extraHtmlFunctions import fileStructureFolderError
 
 
 def generateFileStructureHtml(myCanvas, canvasQa):
-    canvasQa['issues']['File Structure']['id'] = "collapsible-filestructure-check"
+    
     if canvasQa.get('files') is None:
         return ''
     htmlFileStructure = fileStructureAccordian(canvasQa, canvasQa['issues']['File Structure']['id'])
@@ -88,9 +88,7 @@ def fileStructureHtml(files):
                     Td([], str(items['fileCount'])),
                     Td([],
                         Span([Class('tag is-info is-size-7')],
-                            A([Href(f'#collapsible-items-{title}-img'), Data_('action','collapse')], 'Show Folder Contents') if len(items['files']) > 0 else A([Data_('action','collapse')], 'No Folder Contents')
-                            
-                        )
+                            A([Href(f'#collapsible-items-{title}-img'), Data_('action','collapse')], 'Show Folder Contents')) if len(items['files']) > 0 else Span([Class('tag is-primary is-size-7')], 'No Files in Folder')
                     ),
                     Tr([Id(f'collapsible-items-{title}-img'), Class('is-collapsible')],
                         Td([Colspan('6')],
@@ -101,8 +99,7 @@ def fileStructureHtml(files):
                                             Tr([], 
                                                 Th([], 'File Name'),
                                                 Th([], 'Used in Course'),
-                                                Th([], 'Copies Found')
-                                                #Th([], 'Image Link URL')                                                   
+                                                Th([], 'Copies Found')                                                
                                             )
                                         ),
                                         fileStructureItems(items['files']) 
