@@ -52,11 +52,11 @@ def htmlEmbeddedContentGenerate(embeddedContentData, id, myCanvas):
                 ),
                 Div([Id(id), Class('message-body is-collapsible')],
                     Div([Class('message-body-content')],
-                        Div([Class('columns is-multiline is-variable is-8')],
-                            Div([Class('column is-7 is-narrow')],
+                        Div([Class('columns')],
+                            Div([Class('column')],
                                 htmlEmbeddedContentAccordian(embeddedContentData, myCanvas)
                             ), 
-                            about('Embedded Content', getDescriptions('Embedded Content'))
+                            #about('Embedded Content', getDescriptions('Embedded Content'))
                         )
                     )
                 )
@@ -78,7 +78,9 @@ def htmlEmbeddedContentAccordian(embeddedContentData, myCanvas):
                                 Th([], 'Show/Hide')
                             )
                         ),
-                        htmlEmbeddedContentHeader(values, myCanvas)
+                        Tbody([],
+                            htmlEmbeddedContentHeader(values, myCanvas)
+                        )
                     )
                 )
                 
@@ -97,7 +99,6 @@ def htmlEmbeddedContentHeader(values, myCanvas):
                 statusCodeError = True
                 break
         html = (html,
-            Tbody([],
                 Tr([],
                     Td([], 
                         A([Href(info['url']), Target('_blank'), Rel('noopener noreferrer')], info['title']), errorBrokenLink() if statusCodeError else ''
@@ -120,7 +121,9 @@ def htmlEmbeddedContentHeader(values, myCanvas):
                                                 Th([], 'Source URL'),                                          
                                             )
                                         ),
-                                        htmlEmbeddedContentItems(info, myCanvas)
+                                        Tbody([],
+                                            htmlEmbeddedContentItems(info, myCanvas)
+                                        )
                                     )
                                 )
                             )
@@ -128,14 +131,12 @@ def htmlEmbeddedContentHeader(values, myCanvas):
                     )
                 )
             )
-        )
     return html
 
 def htmlEmbeddedContentItems(info, myCanvas):
     html = ''
     for host, source in sorted(info['embeddedContent'].items(), key=lambda x: x[1]['statusCode']):
         html = (html,
-        Tbody([],
             Tr([],
                 Td([], 
                     statusCodeInfo(source['statusCode'])
@@ -145,5 +146,4 @@ def htmlEmbeddedContentItems(info, myCanvas):
                     A([Href(source['source']), Target('_blank'), Rel('noopener noreferrer')], source['source']))
                 ),
             )   
-        )
     return html

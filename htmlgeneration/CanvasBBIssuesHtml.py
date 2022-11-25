@@ -67,10 +67,10 @@ def htmlBBIssuesGenerate(bbIssues, id):
                     Div([Id(id), Class('message-body is-collapsible')],
                         Div([Class('message-body-content')],
                             Div([Class('columns is-multiline is-variable is-8')],
-                                Div([Class('column is-7 is-narrow')],
+                                Div([Class('column')],
                                     htmlBBIssuesAccordian(bbIssues)
                                 ), 
-                                about('Blackboard Issues Check', getDescriptions('Blackboard Terms'))
+                                #about('Blackboard Issues Check', getDescriptions('Blackboard Terms'))
                             )
                         )
                     )
@@ -94,7 +94,9 @@ def htmlBBIssuesAccordian(bbIssues):
                                 Th([], 'Show/Hide')
                             )
                         ),
-                        bbIssuesHtml(values)
+                        Tbody([],
+                            bbIssuesHtml(values)
+                        )
                     )
                 )
                 
@@ -111,29 +113,29 @@ def bbIssuesHtml(values):
         if sumIssues == 0:
             continue
         html = (html,
-                    Tbody([],
-                        Tr([],
-                            Td([], 
-                                A([Href(info['url']), Target('_blank'), Rel('noopener noreferrer')], info['title']),
-                            ),
-                            Td([], str(sumIssues)),
-                            Td([],
-                                Span([Class('tag is-info is-size-7')],
-                                    A([Href(f'#collapsible-items-bb-{id}'), Data_('action','collapse')], 'Show Items')
-                                )
-                            ),
-                            Tr([Id(f'collapsible-items-bb-{id}'), Class('is-collapsible')],
-                                Td([Colspan('6')],
-                                    Div([],
-                                        Div([Id(f'collapsible-items-bb-{id}'), Class('is-collapsible')],
-                                            Table([Class('table is-fullwidth is-bordered is-striped is-size-7')],
-                                                Thead([],
-                                                    Tr([], 
-                                                        Th([], 'Issue Type'),
-                                                        Th([], 'Issue Term'),
-                                                        Th([], 'Associated Text')                                           
-                                                    )
-                                                ),
+                    Tr([],
+                        Td([], 
+                            A([Href(info['url']), Target('_blank'), Rel('noopener noreferrer')], info['title']),
+                        ),
+                        Td([], str(sumIssues)),
+                        Td([],
+                            Span([Class('tag is-info is-size-7')],
+                                A([Href(f'#collapsible-items-bb-{id}'), Data_('action','collapse')], 'Show Items')
+                            )
+                        ),
+                        Tr([Id(f'collapsible-items-bb-{id}'), Class('is-collapsible')],
+                            Td([Colspan('6')],
+                                Div([],
+                                    Div([Id(f'collapsible-items-bb-{id}'), Class('is-collapsible')],
+                                        Table([Class('table is-fullwidth is-bordered is-striped is-size-7')],
+                                            Thead([],
+                                                Tr([], 
+                                                    Th([], 'Issue Type'),
+                                                    Th([], 'Issue Term'),
+                                                    Th([], 'Associated Text')                                           
+                                                )
+                                            ),
+                                            Tbody([],
                                                 bbIssuesItems(info, keys)
                                             )
                                         )
@@ -153,12 +155,10 @@ def bbIssuesItems(info, keys):
             continue
         for text, source in info[key].items():
             html = (html,
-                        Tbody([],
-                            Tr([],
-                                Td([], issueType[key]),
-                                Td([], text if text is not None else ''),
-                                Td([], source if source is not None else ''),
-                                ),
-                            )   
-                        )
+                    Tr([],
+                        Td([], issueType[key]),
+                        Td([], text if text is not None else ''),
+                        Td([], source if source is not None else ''),
+                        ),
+                    )  
     return html

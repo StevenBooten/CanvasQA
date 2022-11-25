@@ -54,12 +54,12 @@ def htmlImagesGenerate(imagesData, id, myCanvas):
                 ),
                 Div([Id(id), Class('message-body is-collapsible')],
                     Div([Class('message-body-content')],
-                        Div([Class('columns is-multiline is-variable is-8')],
-                            Div([Class('column is-7')],
+                        Div([Class('columns')],
+                            Div([Class('column')],
                                 htmlImagesAccordian(imagesData
                             , myCanvas)
                             ), 
-                            about('Placeholders Check', getDescriptions('Placeholder'))
+                            #about('Placeholders Check', getDescriptions('Placeholder'))
                         )
                     )
                 )
@@ -83,7 +83,9 @@ def htmlImagesAccordian(imagesData, myCanvas):
                                 Th([], 'Show/Hide')
                             )
                         ),
-                        htmlImagesHeader(values, myCanvas)
+                        Tbody([],
+                            htmlImagesHeader(values, myCanvas)
+                        )
                     )
                 )
                 
@@ -96,16 +98,15 @@ def htmlImagesHeader(values, myCanvas):
         sumItems = len(info['images']) if info['images'] is not None else 0
         if sumItems == 0:
             continue
-        statusCodeError = False
+        statusCodeErrors = []
         for altTag, source in info['images'].items():
             if 200 > source['statusCode'] or source['statusCode'] >= 300:
-                statusCodeError = True
-                break
+                statusCodeErrors.append(source['statusCode'])
+        statusCodeErrors = list(set(statusCodeErrors))
         html = (html,
-            Tbody([],
                 Tr([],
                     Td([], 
-                        A([Href(info['url']), Target('_blank'), Rel('noopener noreferrer')], info['title']), errorBrokenLink() if statusCodeError else ''
+                        A([Href(info['url']), Target('_blank'), Rel('noopener noreferrer')], info['title']), errorBrokenLink(statusCodeErrors) if len(statusCodeErrors) > 0 else ''
                     ),
                     Td([], str(sumItems)),
                     Td([],
@@ -125,7 +126,9 @@ def htmlImagesHeader(values, myCanvas):
                                                 Th([], 'Source URL'),                                          
                                             )
                                         ),
-                                        htmlImagesItems(info, myCanvas)
+                                        Tbody([],
+                                            htmlImagesItems(info, myCanvas)
+                                        )
                                     )
                                 )
                             )
@@ -133,14 +136,12 @@ def htmlImagesHeader(values, myCanvas):
                     )
                 )
             )
-        )
     return html
 
 def htmlImagesItems(info, myCanvas):
     html = ''
     for altTag, source in sorted(info['images'].items(), key=lambda x: x[1]['statusCode']):
         html = (html,
-        Tbody([],
             Tr([],
                 Td([], 
                     statusCodeInfo(source['statusCode'])
@@ -149,6 +150,5 @@ def htmlImagesItems(info, myCanvas):
                 Td([], 
                     A([Href(source['source']), Target('_blank'), Rel('noopener noreferrer')], source['source']))
                 ),
-            )   
-        )
+            )
     return html

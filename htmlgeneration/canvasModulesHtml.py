@@ -2,7 +2,7 @@ from htmlBuilder.attributes import *
 from htmlBuilder.tags import *
 from htmlBuilder.attributes import Class, Style as InlineStyle
 from Checks.linkCheck import linkCheck
-from htmlgeneration.extraHtmlFunctions import about
+from htmlgeneration.extraHtmlFunctions import about, errorUnpublishedItems
 from lib.InfoPacks import getDescriptions
 
 def generateModulesHtml(myCanvas, canvasQa):
@@ -19,7 +19,7 @@ def moduleAccordian(canvasQa, id):
     html = (                    
         Article([Class('message')],
             Div([Class('message-header')],
-                P([], Span([], 'Modules Check'),
+                P([], Span([], 'Modules Check'), errorUnpublishedItems(canvasQa['issues']['Modules']['unpublishedModules'], 'modules'), errorUnpublishedItems(canvasQa['issues']['Modules']['unpublishedItems'], 'items'),
                     Span([Class('tag is-info ml-6')], 
                         A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                     ),
@@ -30,24 +30,26 @@ def moduleAccordian(canvasQa, id):
             ),
             Div([Id(id), Class('message-body is-collapsible')],
                 Div([Class('message-body-content')],
-                    Div([Class('columns is-multiline is-variable is-8')],
-                        Div([Class('column is-7 is-narrow')],
+                    Div([Class('columns')],
+                        Div([Class('column')],
                             Table([Class('table')],
                                 Thead([],
-                                    P([], Em([], ['This is a list of modules in the course and associated items'])), 
-                                    P([], Em([], ['Please Check that Module and Item names are correct, consistent, logical, and has been published.'])),
+                                    P([], Em([Class('is-multiline')], ['In Canvas, Modules are the primary tool for structuring student learning activities. \
+                                                                        The ability for students to easily find learning activities is the most significant predictor of student self-efficacy \
+                                                                        and motivation (Crews et al, 2017). The naming and availability of modules and module items can help. The UDL for Module Design page provides more advice'])), 
                                     Tr([], 
-                                        #Th([], 'ID'),
                                         Th([], 'Position'),
                                         Th([], 'Module Name'),
                                         Th([], '# of Items'),
                                         Th([], 'Published'),  
                                         Th([], 'Show/Hide')
                                     )
-                                ),
-                                moduleHtml(canvasQa['modules'])
+                                ), 
+                                Tbody([],
+                                    moduleHtml(canvasQa['modules'])
+                                )
                             )
-                        ), about('Modules Check', getDescriptions('Module'))
+                        ), #about('Modules Check', getDescriptions('Module'))
                     )
                 )
             )  
@@ -60,17 +62,17 @@ def moduleHtml(canvasQa):
     
     html = ''
     for id, module in canvasQa.items():
+        if type(module) == int:
+            continue
         html = (html, 
-            Tbody([], 
                 Tr([],
-                    #Td([], module['ID']),
                     Td([], module['position']),
                     Td([], 
-                        A([Href(module['url']), Target('_blank'), Rel('noopener noreferrer')], module['title']),
+                        A([Href(module['url']), Target('_blank'), Rel('noopener noreferrer')], module['title']), errorUnpublishedItems(module['unpublishedItems'], 'item') if module.get('unpublishedItems', 0) > 0 else '',
                     ),
                     Td([], str(module['itemsCount'])),   
                         
-                    Td([], module['published']),
+                    Td([], module['published']) if module['published'] == 'Yes' else Td([Class('is-warning has-tooltip-left has-tooltip-multiline'), Data_('tooltip', 'Students are unable to see unpublished Modules, Publish if students need to see it.')], 'No'),
                     Td([],
                         Span([Class('tag is-info is-size-7')],
                             A([Href(f'#collapsible-items-{id}'), Data_('action','collapse')], 'Show Module Contents')
@@ -91,31 +93,31 @@ def moduleHtml(canvasQa):
                                                 Th([], 'Published')                                                     
                                             )
                                         ),
-                                        moduleItems(module['items'])
+                                        Tbody([],
+                                            moduleItems(module['items'])
+                                        )
                                     )
                                 )
                             )
                         )
-                    )
+                    ) if module['itemsCount'] > 0 else '',
                 )
             )
-        )
     return html
 
 def moduleItems(items):
     html = ''
     for item in items:
         html = (html,
-                    Tbody([],
-                        Tr([],
-                            Td([], item['position']),
-                            Td([], item['indent']),
-                            Td([], 
-                                A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['title']),
-                            ),
-                            Td([], item['type']),
-                            Td([], item['published'])
-                        )   
-                    )
-                )
+                Tr([],
+                    Td([], item['position']),
+                    Td([], item['indent']),
+                    Td([], 
+                        A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['title'])
+                    ),
+                    Td([], item['type']),
+                    Td([], item['published']) if item['published'] == 'Yes' else Td([Class('is-warning has-tooltip-left has-tooltip-multiline'), Data_('tooltip', 'Students are unable to see unpublished items, Publish if students need to see it.')], 'No')
+                )   
+            )
+                
     return html

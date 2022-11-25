@@ -29,11 +29,16 @@ def htmlUnattachedPagesGenerate(UnattachedPages, id, myCanvas):
                 ),
                 Div([Id(id), Class('message-body is-collapsible')],
                     Div([Class('message-body-content')],
-                        Div([Class('columns is-multiline is-variable is-8')],
-                            Div([Class('column is-7')],
-                                htmlUnattachedPagesAccordion(UnattachedPages, myCanvas)
+                        Div([Class('columns')],
+                            Div([Class('column')],
+                                Table([Class('table')],
+                                    Thead([],
+                                        htmlUnattachedPagesAccordion(UnattachedPages, myCanvas)
+                                    )
+                                )
                             ), 
-                            about('Placeholders Check', getDescriptions('Placeholder'))
+                            
+                            #about('Placeholders Check', getDescriptions('Placeholder'))
                         )
                     )
                 )
@@ -44,19 +49,18 @@ def htmlUnattachedPagesGenerate(UnattachedPages, id, myCanvas):
 def htmlUnattachedPagesAccordion(UnattachedPages, myCanvas):
     html = ''
     html = (html,
-                Table([Class('table')],
-                    Thead([],
-                        #P([], Em([], ['This is a list of any Blackboard Terms used in the course and associated items'])),
-                        #P([], Em([], ['These will need to be changed to reflect tools used in Canvas'])),
-                        Tr([], 
-                            Th([], "Page Title"),
-                            Th([], 'Published'),
-                            #Th([], 'Show/Hide')
-                        )
-                    ),
-                    htmlUnattachedPagesHeader(UnattachedPages, myCanvas)
-                )
+            #P([], Em([], ['This is a list of any Blackboard Terms used in the course and associated items'])),
+            #P([], Em([], ['These will need to be changed to reflect tools used in Canvas'])),
+            Tr([], 
+                Th([], "Page Title"),
+                Th([], 'Published'),
+                #Th([], 'Show/Hide')
+            ),
+            Tbody([],
+                htmlUnattachedPagesHeader(UnattachedPages, myCanvas)
             )
+        )
+                   
                 
     return html
 
@@ -65,7 +69,6 @@ def htmlUnattachedPagesHeader(UnattachedPages, myCanvas):
     html = ''
     for id, page in UnattachedPages.items():
         html = (html,
-            Tbody([],
                 Tr([],
                     Td([], 
                         A([Href(page['url']), Target('_blank'), Rel('noopener noreferrer')], page['title']),
@@ -73,5 +76,4 @@ def htmlUnattachedPagesHeader(UnattachedPages, myCanvas):
                     Td([], page['published']),
                 )
             )
-        )
     return html

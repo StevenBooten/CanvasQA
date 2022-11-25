@@ -4,7 +4,7 @@ from htmlBuilder.attributes import Class, Style as InlineStyle
 from Checks.linkCheck import linkCheck
 from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
-from htmlgeneration.extraHtmlFunctions import fileStructureFolderError
+from htmlgeneration.extraHtmlFunctions import fileStructureFolderError, errorFileDuplicates
 
 
 def generateFileStructureHtml(myCanvas, canvasQa):
@@ -32,8 +32,8 @@ def fileStructureAccordian(canvasQa, id):
             ),
             Div([Id(id), Class('message-body is-collapsible')],
                 Div([Class('message-body-content')],
-                    Div([Class('columns is-multiline is-variable is-8')],
-                        Div([Class('column is-7')],
+                    Div([Class('columns')],
+                        Div([Class('column')],
                             Div([Class('table-container')],
                                 Table([Class('table')],
                                     Thead([],
@@ -45,10 +45,12 @@ def fileStructureAccordian(canvasQa, id):
                                             Th([], 'Show/Hide')
                                         )
                                     ),
-                                    fileStructureHtml(canvasQa['files'])
+                                    Tbody([],
+                                        fileStructureHtml(canvasQa)
+                                    )
                                 )
                             )
-                        ),about('File Structure Check', getDescriptions('File Structure'))
+                        ),#about('File Structure Check', getDescriptions('File Structure'))
                     )
                 )
             )  
@@ -57,13 +59,13 @@ def fileStructureAccordian(canvasQa, id):
     
     return html
 
-def fileStructureHtml(files):
+def fileStructureHtml(canvasQa):
     
     html = ''
     tabsize = 5
     maxFolderSize = 30
     overallHeadingSize = 100
-    for folder, items in sorted(files.items()):
+    for folder, items in sorted(canvasQa['files'].items()):
         if folder == '/':
             tabstring = ''
             count = 0
@@ -80,7 +82,6 @@ def fileStructureHtml(files):
         else:
             title = folder
         html = (html,
-            Tbody([],
                 Tr([],
                     Td([], tabstring,
                         A([Href(items['url']), Target('_blank'), Rel('noopener noreferrer')], title), fileStructureFolderError(items['files']), 
@@ -102,31 +103,30 @@ def fileStructureHtml(files):
                                                 Th([], 'Copies Found')                                                
                                             )
                                         ),
-                                        fileStructureItems(items['files']) 
+                                        Tbody([],
+                                            fileStructureItems(items['files'], canvasQa) 
+                                        )
                                     )
                                 )
                             )
                         )
-                    )
+                    ) if items['fileCount'] > 0 else ''
                 )
             )
-        )
         
     return html
 
-def fileStructureItems(items):
+def fileStructureItems(items, canvasQa):
     html = ''
     for item in items:
         
-        html = (html, #Html([], html,
-                Tbody([],
-                    Tr([],
-                        Td([],
-                        A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['name']), #errorUnusedFiles(item[6]), errorDuplicateFiles(item[5])
-                        ),
-                        Td([], 'Yes' if item['used'] == True else 'No'),
-                        Td([], str(item['count'])),
-                    )   
-                )
+        html = (html,
+                Tr([],
+                    Td([],
+                    A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['name']),
+                    ),
+                    Td([], 'Yes') if item['used'] == True else Td([Class('is-warning'), Data_('tooltip', "If a file is not being used anymore you may want to delete it.")], 'No'),
+                    Td([], str(item['count'])) if item['count'] == 1 else Td([Class('is-info')], errorFileDuplicates(item['name'], canvasQa['fileReference'])),
+                )   
             )
     return html

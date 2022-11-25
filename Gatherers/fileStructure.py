@@ -4,7 +4,7 @@ def collectCourseFiles(myCanvas, canvasQa):
     
     fileCount = {}
     fileStructure = {}
-    fileReference = {}
+    canvasQa['fileReference'] = {}
     
     for folder in myCanvas.getFileFolders():
         
@@ -37,8 +37,12 @@ def collectCourseFiles(myCanvas, canvasQa):
             else:
                 fileInformation['used'] = False
                 canvasQa['issues']['File Structure']['unused'] = canvasQa['issues']['File Structure'].get('unused', 0) + 1
-                
-            fileReference[item.id] = item.filename
+            
+            #creating a simple dictionary of files and related folders for use in other checks.
+            if canvasQa['fileReference'].get(item.filename, None) is None:
+                canvasQa['fileReference'][item.filename] = {}  
+                canvasQa['fileReference'][item.filename]['folders'] = []
+            canvasQa['fileReference'][item.filename]['folders'].append({folderName : folderUrl})
             
             #- tracks how many times a file shows up in the courses file structure to then be added to the placeholder at the end  
             fileCount[item.filename] = fileCount.get(item.filename, 0) + 1
@@ -59,4 +63,4 @@ def collectCourseFiles(myCanvas, canvasQa):
     
     canvasQa['issues']['File Structure']['count'] = canvasQa['issues']['File Structure'].get('duplicate', 0)  + canvasQa['issues']['File Structure'].get('unused', 0)
              
-    return fileStructure, fileReference
+    return fileStructure

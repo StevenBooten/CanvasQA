@@ -33,7 +33,7 @@ def AssignmentAccordian(canvasQa, id):
             Div([Id(id), Class('message-body is-collapsible')],
                 Div([Class('message-body-content')],
                     Div([Class('columns is-multiline is-variable is-8')],
-                        Div([Class('column is-7 is-narrow toggle')],
+                        Div([Class('column')],
                             Div([Class('table-container')],
                                 Table([Class('table')],
                                     Thead([],
@@ -46,10 +46,12 @@ def AssignmentAccordian(canvasQa, id):
                                             Th([], 'Show/Hide')
                                         )
                                     ),
-                                    AssignmentHtml(canvasQa['assignments'])
+                                    Tbody([],
+                                        AssignmentHtml(canvasQa['assignments'])
+                                    )
                                 )
                             )
-                        ),about('Assignments', getDescriptions('Assignments'))
+                        ),#about('Assignments', getDescriptions('Assignments'))
                     )
                 )
             )  
@@ -63,7 +65,6 @@ def AssignmentHtml(assignments):
     html = ''
     for key, values in assignments.items():
         html = (html,
-            Tbody([],
                 Tr([],
                     Td([],
                         A([Href(values['url']), Target('_blank'), Rel('noopener noreferrer')], values['title']), #AssignmentFolderError(items['files']), 
@@ -91,7 +92,8 @@ def AssignmentHtml(assignments):
                                                 Th([], 'Quiz Questions'),               
                                             )
                                         ),
-                                        AssignmentItems(values['assignments']) 
+                                        Tbody([],
+                                            AssignmentItems(values['assignments']) 
                                     )
                                 )
                             )
@@ -107,23 +109,22 @@ def AssignmentItems(items):
     html = ''
     for key, item in items.items():
         
-        html = (html, #Html([], html,
-                Tbody([],
-                    Tr([],
-                        Td([],
-                        A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['title']), #errorUnusedFiles(item[6]), errorDuplicateFiles(item[5])
-                        ),
-                        Td([], ', '.join(item['submissionTypes']).replace('_', ' ').capitalize()),
-                        Td([], str(item['points'])),
-                        Td([], 'Yes' if item['published'] is True else 'No'),
-                        Td([],  
-                            Span([Class('tag is-info is-size-7')],
-                                A([Href(f'#collapsible-items-{key}-quizzes'), Data_('action','collapse')], f'{item.get("questionCount", 0)} Questions')
-                            ) if item.get("questionCount", 0) > 0 else 'Quiz has 0 Questions' if item.get('quiz', None) is not None else 'Not a Quiz'
-                        ), quizQuestionHtml(item['quiz'], key, item.get("questionCount", 0)) if item.get('quiz', None) is not None else '' 
-                    ),  
-                )
+        html = (html,
+                Tr([],
+                    Td([],
+                    A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['title']), #errorUnusedFiles(item[6]), errorDuplicateFiles(item[5])
+                    ),
+                    Td([], ', '.join(item['submissionTypes']).replace('_', ' ').capitalize()),
+                    Td([], str(item['points'])),
+                    Td([], 'Yes' if item['published'] is True else 'No'),
+                    Td([],  
+                        Span([Class('tag is-info is-size-7')],
+                            A([Href(f'#collapsible-items-{key}-quizzes'), Data_('action','collapse')], f'{item.get("questionCount", 0)} Questions')
+                        ) if item.get("questionCount", 0) > 0 else 'Quiz has 0 Questions' if item.get('quiz', None) is not None else 'Not a Quiz'
+                    ), quizQuestionHtml(item['quiz'], key, item.get("questionCount", 0)) if item.get('quiz', None) is not None else '' 
+                ),  
             )
+            
     return html
 
 def quizQuestionHtml(questions, key, questionCount):
@@ -144,7 +145,9 @@ def quizQuestionHtml(questions, key, questionCount):
                                         Th([], 'BB Residual Issues'),              
                                     )
                                 ),
-                                questionItems(questions, questionCount) 
+                                Tbody([],
+                                    questionItems(questions, questionCount) 
+                                )
                             )
                         )
                     )
@@ -157,26 +160,22 @@ def quizQuestionHtml(questions, key, questionCount):
 def questionItems(items, questionCount):
     html = ''
     if len(items) < 1:
-        html = (html,
-                Tbody([],
-                    Tr([],
-                        Td([Colspan('6')], 'Questions pulled from Question Bank. Unable to list details.'),
-                    )
+        html = (
+                Tr([],
+                    Td([Colspan('6')], 'Questions pulled from Question Bank. Unable to list details.'),
                 )
             )
         
     for key, item in items.items():
         
-        html = (html,
-                Tbody([],
-                    Tr([],
-                        Td([], item['title'] if item['title'] is not None else 'No Title'), #errorUnusedFiles(item[6]), errorDuplicateFiles(item[5])
-                        Td([], item['questionType'].replace('_', ' ').capitalize()),
-                        Td([], str(item['points'])),
-                        Td([], 'Yes' if item['hasCorrectAnswer'] is True else 'No'),
-                        Td([], ', '.join(item['quizIssues'].values()) if len(item['quizIssues'].values()) > 1 else item['quizIssues'].values() if len(item['quizIssues'].values()) == 1 else 'No Migration Issues'),
-                        Td([], ', '.join(item['bbBrokenLinks'].values()) if len(item['bbBrokenLinks'].values()) > 1 else item['bbBrokenLinks'].values() if len(item['bbBrokenLinks'].values()) == 1 else 'No BB Residual Issues'),
-                    ),    
-                )
+        html = (
+                Tr([],
+                    Td([], item['title'] if item['title'] is not None else 'No Title'), #errorUnusedFiles(item[6]), errorDuplicateFiles(item[5])
+                    Td([], item['questionType'].replace('_', ' ').capitalize()),
+                    Td([], str(item['points'])),
+                    Td([], 'Yes' if item['hasCorrectAnswer'] is True else 'No'),
+                    Td([], ', '.join(item['quizIssues'].values()) if len(item['quizIssues'].values()) > 1 else item['quizIssues'].values() if len(item['quizIssues'].values()) == 1 else 'No Migration Issues'),
+                    Td([], ', '.join(item['bbBrokenLinks'].values()) if len(item['bbBrokenLinks'].values()) > 1 else item['bbBrokenLinks'].values() if len(item['bbBrokenLinks'].values()) == 1 else 'No BB Residual Issues'),
+                ),    
             )
     return html

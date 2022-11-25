@@ -54,12 +54,12 @@ def htmlLinksGenerate(linksData, id, myCanvas):
                 ),
                 Div([Id(id), Class('message-body is-collapsible')],
                     Div([Class('message-body-content')],
-                        Div([Class('columns is-multiline is-variable is-8')],
-                            Div([Class('column is-7')],
+                        Div([Class('columns')],
+                            Div([Class('column')],
                                 htmlLinksAccordian(linksData
                             , myCanvas)
                             ), 
-                            about('Course Links', getDescriptions('Course Links'))
+                            #about('Course Links', getDescriptions('Course Links'))
                         )
                     )
                 )
@@ -81,7 +81,9 @@ def htmlLinksAccordian(linksData, myCanvas):
                                 Th([], 'Show/Hide')
                             )
                         ),
-                        htmlLinksHeader(values, myCanvas)
+                        Tbody([],
+                            htmlLinksHeader(values, myCanvas)
+                        )
                     )
                 )
                 
@@ -94,16 +96,15 @@ def htmlLinksHeader(values, myCanvas):
         sumItems = len(info['links']) if info['links'] is not None else 0
         if sumItems == 0:
             continue
-        statusCodeError = False
+        statusCodeErrors = []
         for altTag, source in info['links'].items():
             if 200 > source['statusCode'] or source['statusCode'] >= 300:
-                statusCodeError = True
-                break
+                statusCodeErrors.append(source['statusCode'])
+        statusCodeErrors = list(set(statusCodeErrors))
         html = (html,
-            Tbody([],
                 Tr([],
                     Td([], 
-                        A([Href(info['url']), Target('_blank'), Rel('noopener noreferrer')], info['title']), errorBrokenLink() if statusCodeError else ''
+                        A([Href(info['url']), Target('_blank'), Rel('noopener noreferrer')], info['title']), errorBrokenLink(statusCodeErrors) if len(statusCodeErrors) > 0 else ''
                     ),
                     Td([], str(sumItems)),
                     Td([],
@@ -123,7 +124,9 @@ def htmlLinksHeader(values, myCanvas):
                                                 Th([], 'Source URL'),                                          
                                             )
                                         ),
-                                        htmlLinksItems(info, myCanvas)
+                                        Tbody([],
+                                            htmlLinksItems(info, myCanvas)
+                                        )
                                     )
                                 )
                             )
@@ -131,14 +134,12 @@ def htmlLinksHeader(values, myCanvas):
                     )
                 )
             )
-        )
     return html
 
 def htmlLinksItems(info, myCanvas):
     html = ''
     for altTag, source in sorted(info['links'].items(), key=lambda x: x[1]['statusCode']):
         html = (html,
-        Tbody([],
             Tr([],
                 Td([], 
                     statusCodeInfo(source['statusCode'])
@@ -148,5 +149,4 @@ def htmlLinksItems(info, myCanvas):
                     A([Href(source['source']), Target('_blank'), Rel('noopener noreferrer')], longName(source['source'])))
                 ),
             )   
-        )
     return html

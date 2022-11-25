@@ -53,8 +53,8 @@ def htmlPlaceholdersGenerate(placeholderIssues, id):
                 ),
                 Div([Id(id), Class('message-body is-collapsible')],
                     Div([Class('message-body-content')],
-                        Div([Class('columns is-multiline is-variable is-8')],
-                            Div([Class('column is-7')],
+                        Div([Class('columns')],
+                            Div([Class('column')],
                                 htmlPlaceholdersAccordian(placeholderIssues)
                             ), 
                             about('Placeholders Check', getDescriptions('Placeholder'))
@@ -81,7 +81,9 @@ def htmlPlaceholdersAccordian(placeholderIssues):
                                 Th([], 'Show/Hide')
                             )
                         ),
-                        htmlPlaceholdersHeader(values)
+                        Tbody([],
+                            htmlPlaceholdersHeader(values)
+                        )
                     )
                 )
                 
@@ -95,7 +97,6 @@ def htmlPlaceholdersHeader(values):
         if sumIssues == 0:
             continue
         html = (html,
-            Tbody([],
                 Tr([],
                     Td([], 
                         A([Href(info['url']), Target('_blank'), Rel('noopener noreferrer')], info['title']),
@@ -117,7 +118,9 @@ def htmlPlaceholdersHeader(values):
                                                 Th([], 'Information Text'),                                          
                                             )
                                         ),
-                                        htmlPlaceholdersItems(info)
+                                        Tbody([],
+                                            htmlPlaceholdersItems(info)
+                                        )
                                     )
                                 )
                             )
@@ -125,18 +128,15 @@ def htmlPlaceholdersHeader(values):
                     )
                 )
             )
-        )
     return html
 
 def htmlPlaceholdersItems(info):
     html = ''
     for issueType, infoText in info['placeholders'].items():
         html = (html,
-        Tbody([],
             Tr([],
                 Td([], issueType if issueType is not None else ''),
                 Td([], infoText if infoText is not None else ''),
                 ),
             )   
-        )
     return html

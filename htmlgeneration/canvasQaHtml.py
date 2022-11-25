@@ -27,15 +27,15 @@ def generateQaHtml(myCanvas, canvasQa):
     updateDate = dateUpdate.strftime("%d-%B")
     updateTime = dateUpdate.strftime("%I:%M %p")
     
-    htmlModule = generateModulesHtml(myCanvas, canvasQa)
-    htmlFileStructure = generateFileStructureHtml(myCanvas, canvasQa)
-    htmlBBIssues = generateBBIssuesHtml(myCanvas, canvasQa)
-    htmlPlaceholders = generatePlaceholderHtml(myCanvas, canvasQa)
-    htmlImages = generateImagesHtml(myCanvas, canvasQa)
-    htmlUnattachedPages = generateUnattachedPagesHtml(myCanvas, canvasQa)
-    htmlAssignments = generateAssignmentHtml(myCanvas, canvasQa)
-    htmlLinks = generateLinksHtml(myCanvas, canvasQa)
-    htmlEmbeddedContent = generateEmbeddedContentHtml(myCanvas, canvasQa)
+    canvasQa['issues']['Modules']['html'] = generateModulesHtml(myCanvas, canvasQa)
+    canvasQa['issues']['File Structure']['html'] = generateFileStructureHtml(myCanvas, canvasQa)
+    canvasQa['issues']['Blackboard Residuals']['html'] = generateBBIssuesHtml(myCanvas, canvasQa)
+    canvasQa['issues']['Placeholders']['html'] = generatePlaceholderHtml(myCanvas, canvasQa)
+    canvasQa['issues']['Images']['html'] = generateImagesHtml(myCanvas, canvasQa)
+    canvasQa['issues']['Unattached Pages']['html'] = generateUnattachedPagesHtml(myCanvas, canvasQa)
+    canvasQa['issues']['Assignments']['html'] = generateAssignmentHtml(myCanvas, canvasQa)
+    canvasQa['issues']['Course Links']['html'] = generateLinksHtml(myCanvas, canvasQa)
+    canvasQa['issues']['Embedded Content']['html'] = generateEmbeddedContentHtml(myCanvas, canvasQa)
     htmlContentsTable = generateContentsTable(canvasQa)
     
     #create the string of ID's for the JS to use
@@ -78,6 +78,8 @@ def generateQaHtml(myCanvas, canvasQa):
             Meta([Name("viewport"), Content("width=device-width, initial-scale=1")]),
             Script([Src("https://cdn.jsdelivr.net/npm/@creativebulma/bulma-collapsible@1.0.4/dist/js/bulma-collapsible.min.js")]),
             Link([Rel("stylesheet"), Href("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css")]),
+            Link([Rel("stylesheet"), Type('text/css'), Href("https://cdn.datatables.net/v/dt/dt-1.13.1/datatables.min.css")]),
+            Script([Type('text/javascript'), Src("https://cdn.datatables.net/v/dt/dt-1.13.1/datatables.min.js")]),
             ),
             
             Body([],
@@ -87,38 +89,32 @@ def generateQaHtml(myCanvas, canvasQa):
                 Script([], f'{jsScript}'), '<br><br>',
                 
                 
-                H1([Id('top'), Class('title')], [f'Quality Assurance report for Course: {myCanvas.courseCode.replace("_"," ")}']),
+                H1([Id('top'), Class('title')], [f'Quality Assurance report for Course Site: {myCanvas.courseCode.replace("_"," ")}']),
                 
                 Div([Class('content')],
                     Div([Class('columns is-multiline')],
-                        Div([Class('column is-3')],
+                        Div([Class('column is-4')],
                             htmlContentsTable,
-                        ),
-                        Div([Class('column is-1')]),
-                        Div([Class('column')],
-                            '<br>',
-                            Head([Class('message-header is-size-5 has-text-weight-bold')], 'Heuristics'),
-                                Ul([],
-                                    Li([Class('is-size-7')], ['The side navigation is refined to necessary course links and are organised so mutual content is next to each other (ie. content and assessment).']),
-                                    Li([Class('is-size-7')], ['The modules are easy to follow and not overwhelming to scroll through.']),
-                                    Li([Class('is-size-7')], ['The page accurately presents content that is clear and easy to follow.']),
-                                    Li([Class('is-size-7')], ['The discussions has been set up correctly.']),
-                                    Li([Class('is-size-7')], ['The content is accessible to those using screen-readers.']),
-                                    Li([Class('is-size-7')], ['The library areas (Files, Pages, Studio) of the course site are organised and articulate of the content they hold ']),
-                                    Li([Class('is-size-7')], ['When viewed as a student, the student experience is as expected with clear wayfinding and links/LTIs working as intended.'])
-                                )  
-                            )  
-                        ),
+                        )
+                    )
+                    #    ),
+                    #    Div([Class('column is-1')]),
+                    #    Div([Class('column')],
+                    #        '<br>',
+                    #        Head([Class('message-header is-size-5 has-text-weight-bold')], 'Heuristics'),
+                    #            Ul([],
+                    #                Li([Class('is-size-7')], ['The side navigation is refined to necessary course links and are organised so mutual content is next to each other (ie. content and assessment).']),
+                    #                Li([Class('is-size-7')], ['The modules are easy to follow and not overwhelming to scroll through.']),
+                    #                Li([Class('is-size-7')], ['The page accurately presents content that is clear and easy to follow.']),
+                    #                Li([Class('is-size-7')], ['The discussions has been set up correctly.']),
+                    #                Li([Class('is-size-7')], ['The content is accessible to those using screen-readers.']),
+                    #                Li([Class('is-size-7')], ['The library areas (Files, Pages, Studio) of the course site are organised and articulate of the content they hold ']),
+                    #                Li([Class('is-size-7')], ['When viewed as a student, the student experience is as expected with clear wayfinding and links/LTIs working as intended.'])
+                    #            )  
+                    #        )  
+                    #    ),
                     ),
-                    htmlModule,
-                    htmlUnattachedPages,
-                    htmlFileStructure,
-                    htmlAssignments,
-                    htmlLinks,
-                    htmlImages,
-                    htmlEmbeddedContent,
-                    htmlPlaceholders,
-                    htmlBBIssues,
+                    [value['html'] for key, value in sorted(canvasQa['issues'].items(), key=lambda x: x[1]['count'], reverse=True)],
                 ), 
             )
         ),

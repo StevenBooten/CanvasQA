@@ -33,15 +33,15 @@ def mainProgram():
         canvasQa = {}
         canvasQa['usedFiles'] = []
         canvasQa['issues'] = {}
-        canvasQa['issues']['Images'] = { 'id':"collapsible-img-check", 'count' : 0 }
-        canvasQa['issues']['Assignments'] = { 'id':"collapsible-assignment-check", 'count' : 0 }
-        canvasQa['issues']['Blackboard Residuals'] = { 'id':"collapsible-bb-check", 'count' : 0 }
-        canvasQa['issues']['File Structure'] = {'id': "collapsible-filestructure-check", 'count' : 0 }
-        canvasQa['issues']['Modules'] = { 'id':"collapsible-modules-check", 'count' : 0 }
-        canvasQa['issues']['Placeholders'] = { 'id':"collapsible-placeholder-check", 'count' : 0 }
-        canvasQa['issues']['Unattached Pages'] = { 'id':"collapsible-unattachedpages-check", 'count' : 0 }
-        canvasQa['issues']['Course Links'] = { 'id':"collapsible-link-check", 'count' : 0 }
-        canvasQa['issues']['Embedded Content'] = { 'id':"collapsible-video-check", 'count' : 0 }
+        canvasQa['issues']['Images'] = { 'id':"collapsible-img-check", 'count' : 0, 'html' : ''}
+        canvasQa['issues']['Assignments'] = { 'id':"collapsible-assignment-check", 'count' : 0, 'html' : '' }
+        canvasQa['issues']['Blackboard Residuals'] = { 'id':"collapsible-bb-check", 'count' : 0, 'html' : '' }
+        canvasQa['issues']['File Structure'] = {'id': "collapsible-filestructure-check", 'count' : 0, 'html' : '' }
+        canvasQa['issues']['Modules'] = { 'id':"collapsible-modules-check", 'count' : 0, 'html' : '' }
+        canvasQa['issues']['Placeholders'] = { 'id':"collapsible-placeholder-check", 'count' : 0, 'html' : '' }
+        canvasQa['issues']['Unattached Pages'] = { 'id':"collapsible-unattachedpages-check", 'count' : 0, 'html' : '' }
+        canvasQa['issues']['Course Links'] = { 'id':"collapsible-link-check", 'count' : 0, 'html' : '' }
+        canvasQa['issues']['Embedded Content'] = { 'id':"collapsible-video-check", 'count' : 0, 'html' : ''}
         
         myCanvas.getCourse(course['canvasCourseId'])
         print(f'Running: {myCanvas.courseCode}')
@@ -52,8 +52,7 @@ def mainProgram():
         canvasQa['pages'] = collectCoursePages(myCanvas)
         updateBar(count, bar)
         
-        canvasQa['modules'], usedFiles = collectCourseModules(myCanvas)
-        canvasQa['usedFiles'] += usedFiles
+        canvasQa['usedFiles'] += collectCourseModules(myCanvas, canvasQa)
         updateBar(count, bar)
         
         usedFiles = collectCourseAssignments(myCanvas, canvasQa)
@@ -67,18 +66,18 @@ def mainProgram():
         canvasQa['usedFiles'] += usedFiles
         updateBar(count, bar)
         
-        canvasQa['files'], canvasQa['fileReference'] = collectCourseFiles(myCanvas, canvasQa)
-        updateBar(count, bar)
-        
-        
-            
-        canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
-        saveQaHtml(canvasQaHtml, myCanvas)
+        canvasQa['files'] = collectCourseFiles(myCanvas, canvasQa)
         updateBar(count, bar)
         
         with open(f'./jsons/{myCanvas.courseCode} QA.json', 'w') as outfile:
             json.dump(canvasQa, outfile, indent=4)
         updateBar(count, bar)
+            
+        canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
+        saveQaHtml(canvasQaHtml, myCanvas)
+        updateBar(count, bar)
+        
+        
         
         bar.finish()
     

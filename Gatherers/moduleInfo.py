@@ -4,19 +4,23 @@ from pprint import pprint
 
 #- Purpose of this module is  to cycle through every module in a course and pulls all necessary information
 #- Any manipulation of the data is done elsewhere
-def collectCourseModules(myCanvas):
+def collectCourseModules(myCanvas, canvasQa):
     
     moduleItem = {}
     
-    moduleQa = {}
+    canvasQa['modules'] = {}
+    canvasQa['issues']['Modules']['unpublishedModules'] = 0
+    canvasQa['issues']['Modules']['unpublishedItems'] = 0
     usedFiles = []
+    
     
     for module in myCanvas.getModules():
         moduleItemList = [] 
+        unpublishedCountItems = 0
         for item in myCanvas.getModuleItems(module.id):
             #- Clears the dictionary for each module item
             moduleItem = {}
-            
+           
             #- Adds the module item's information a the dictionary
             moduleItem['position'] = str(item.position)
             moduleItem['indent'] = str(item.indent)
@@ -40,6 +44,10 @@ def collectCourseModules(myCanvas):
                 moduleItem['published'] = 'Yes'
             else:
                 moduleItem['published'] = 'No' 
+                unpublishedCountItems += 1
+                canvasQa['issues']['Modules']['count'] += 1
+                canvasQa['issues']['Modules']['unpublishedItems'] += 1
+                
                 
             if item.type == 'File':
                 usedFiles.append(item.content_id)
@@ -47,20 +55,24 @@ def collectCourseModules(myCanvas):
             moduleItemList.append(moduleItem)
             
         #- Collects all module information including all the module items.      
-        moduleQa[module.id] = {}
-        moduleQa[module.id]['id'] = str(module.id)
-        moduleQa[module.id]['position'] = str(module.position)
-        moduleQa[module.id]['title'] = str(module.name)
-        moduleQa[module.id]['itemsCount'] = module.items_count
-        moduleQa[module.id]['url'] = str(f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/modules/#module_{module.id}')
-        moduleQa[module.id]['items'] = moduleItemList
+        canvasQa['modules'][module.id] = {}
+        canvasQa['modules'][module.id]['id'] = str(module.id)
+        canvasQa['modules'][module.id]['position'] = str(module.position)
+        canvasQa['modules'][module.id]['title'] = str(module.name)
+        canvasQa['modules'][module.id]['itemsCount'] = module.items_count
+        canvasQa['modules'][module.id]['url'] = str(f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/modules/#module_{module.id}')
+        canvasQa['modules'][module.id]['items'] = moduleItemList
+        canvasQa['modules'][module.id]['unpublishedItems'] = unpublishedCountItems
+        
         #- Publishes returns a boolean value, so it needs to be converted to a string
         if module.published:
-            moduleQa[module.id]['published'] = 'Yes'
+            canvasQa['modules'][module.id]['published'] = 'Yes'
         else:
-            moduleQa[module.id]['published'] = 'No'
+            canvasQa['modules'][module.id]['published'] = 'No'
+            canvasQa['issues']['Modules']['count'] += 1
+            canvasQa['issues']['Modules']['unpublishedModules'] += 1
             
-    return moduleQa, usedFiles
+    return usedFiles
 
 #- finds all pages in a course and checks them against the module items dataset to attain
 #- whether they are linked to a module
@@ -70,7 +82,7 @@ def unattachedPages(myCanvas, canvasQa):
     pagesInModules = []
     
     for key, value in canvasQa['modules'].items():
-        for item in value['items']:
+        for item in value.get('items', []):
             if item['type'] == 'Page':
                 pagesInModules.append(item['url'])
                 

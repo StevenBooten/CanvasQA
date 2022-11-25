@@ -14,7 +14,6 @@ def generateContentsTable(canvasQa):
                         )
                     ),
                     Tbody([],
-                    
                         contentsTableBody(canvasQa['issues']),
                     )
                 )
@@ -25,7 +24,7 @@ def generateContentsTable(canvasQa):
 def contentsTableBody(issueList):
     html = ''
     
-    for title, value in sorted(issueList.items()):
+    for title, value in sorted(issueList.items(), key=lambda x: x[1]['count'], reverse=True):
         
         if value['count'] > 0 or title not in ['Unattached Pages', 'Blackboard Residuals', 'Placeholders']:
             html = (html,
