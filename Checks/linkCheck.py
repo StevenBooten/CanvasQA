@@ -52,8 +52,8 @@ def linkCheck(url, myCanvas):
         return 999, badLink
     elif 'mailto' in url:
         return 298, goodLink
-    #elif 'https://griffitheduau.sharepoint.com' in url:
-    #    return 297, 0
+    elif 'https://griffitheduau.sharepoint.com' in url:
+        return 297, 0
     elif 'tel:' in url:
         return 296, goodLink
     

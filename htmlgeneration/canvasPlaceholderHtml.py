@@ -53,8 +53,8 @@ def htmlPlaceholdersGenerate(placeholderIssues, id):
                 ),
                 Div([Id(id), Class('message-body is-collapsible')],
                     Div([Class('message-body-content')],
-                        Div([Class('columns is-multiline')],
-                            Div([Class('column is-8 is-narrow')],
+                        Div([Class('columns is-multiline is-variable is-8')],
+                            Div([Class('column is-7')],
                                 htmlPlaceholdersAccordian(placeholderIssues)
                             ), 
                             about('Placeholders Check', getDescriptions('Placeholder'))

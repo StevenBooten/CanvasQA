@@ -7,10 +7,10 @@ def generateContentsTable(canvasQa):
 
     html = (
             Table([ Class('table')],
-                Thead([Class('table-header')],
+                Thead([Class('table-header has-text-is-medium')],
                     Tr([],
                         Th([], 'Catagory Name'),
-                        Th([], 'Flagged Issue Count'),
+                        Th([Class('has-text-centred')], 'Flagged Issue Count'),
                         )
                     ),
                     Tbody([],

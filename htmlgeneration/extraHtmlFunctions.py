@@ -8,7 +8,7 @@ def about(title, description):
     html = (
         Div([Class('column is-1')]
         ),
-            Div([Class('column is-3')],
+            Div([Class('column')],
                 Article([Class('message is-primary')],
                     Div([Class('message-header')],
                         P([], title,)
@@ -256,7 +256,7 @@ def longName(name, length = 80):
 def statusCodeInfo(statusCode):
     if statusCode >= 200 and statusCode < 300:
         html = (
-                Span([Class("tag is-success has-tooltip-right has-tooltip-multiline"), Data_('tooltip', getStatusCode(str(statusCode)))],[str(statusCode)]  
+                Span([Class("tag is-success has-tooltip-right has-tooltip-multiline width=30rem"), Data_('tooltip', getStatusCode(str(statusCode)))],[str(statusCode)]  
                 )
         )
     elif statusCode > 200 and statusCode < 400:

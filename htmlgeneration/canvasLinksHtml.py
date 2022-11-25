@@ -3,7 +3,7 @@ from htmlBuilder.tags import *
 from htmlBuilder.attributes import Class, Style
 from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
-from htmlgeneration.extraHtmlFunctions import statusCodeInfo, errorBrokenLink
+from htmlgeneration.extraHtmlFunctions import statusCodeInfo, errorBrokenLink, longName
 from Checks.linkCheck import linkCheck
 from pprint import pprint
 
@@ -54,8 +54,8 @@ def htmlLinksGenerate(linksData, id, myCanvas):
                 ),
                 Div([Id(id), Class('message-body is-collapsible')],
                     Div([Class('message-body-content')],
-                        Div([Class('columns is-multiline')],
-                            Div([Class('column is-8 is-narrow')],
+                        Div([Class('columns is-multiline is-variable is-8')],
+                            Div([Class('column is-7')],
                                 htmlLinksAccordian(linksData
                             , myCanvas)
                             ), 
@@ -144,8 +144,8 @@ def htmlLinksItems(info, myCanvas):
                     statusCodeInfo(source['statusCode'])
                 ),
                 Td([], altTag if altTag is not None else ''),
-                Td([], 
-                    A([Href(source['source']), Target('_blank'), Rel('noopener noreferrer')], source['source']))
+                Td([Class('is-multiline')], 
+                    A([Href(source['source']), Target('_blank'), Rel('noopener noreferrer')], longName(source['source'])))
                 ),
             )   
         )

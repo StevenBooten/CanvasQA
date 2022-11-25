@@ -47,7 +47,7 @@ def generateQaHtml(myCanvas, canvasQa):
     jsScript = "function sectionExpand(id) {\n" + \
         "const collapsible = document.getElementById(id);\n" + \
         f'const linkList = [{accordianIds}];\n' + \
-        'if (collapsible.ariaExpanded == "false") {\n' + \
+        'if (collapsible.getAttribute("aria-expanded") === "false") {\n' + \
         "    console.log('found it');\n" + \
         "    //scroll to collapsible\n" + \
         "    //collapsible.scrollIntoView(true);\n" + \
@@ -90,18 +90,26 @@ def generateQaHtml(myCanvas, canvasQa):
                 H1([Id('top'), Class('title')], [f'Quality Assurance report for Course: {myCanvas.courseCode.replace("_"," ")}']),
                 
                 Div([Class('content')],
-                        #Head([Class('message-header is-size-10')], 'Heuristics'),
-                        #    Ul([],
-                        #    Li([Class('is-size-7')], ['The side navigation is refined to necessary course links and are organised so mutual content is next to each other (ie. content and assessment).']),
-                        #    Li([Class('is-size-7')], ['The modules are easy to follow and not overwhelming to scroll through.']),
-                        #    Li([Class('is-size-7')], ['The page accurately presents content that is clear and easy to follow.']),
-                        #    Li([Class('is-size-7')], ['The discussions has been set up correctly.']),
-                        #    Li([Class('is-size-7')], ['The content is accessible to those using screen-readers.']),
-                        #    Li([Class('is-size-7')], ['The library areas (Files, Pages, Studio) of the course site are organised and articulate of the content they hold ']),
-                        #    Li([Class('is-size-7')], ['When viewed as a student, the student experience is as expected with clear wayfinding and links/LTIs working as intended.'])
-                        #)    
+                    Div([Class('columns is-multiline')],
+                        Div([Class('column is-3')],
+                            htmlContentsTable,
+                        ),
+                        Div([Class('column is-1')]),
+                        Div([Class('column')],
+                            '<br>',
+                            Head([Class('message-header is-size-5 has-text-weight-bold')], 'Heuristics'),
+                                Ul([],
+                                    Li([Class('is-size-7')], ['The side navigation is refined to necessary course links and are organised so mutual content is next to each other (ie. content and assessment).']),
+                                    Li([Class('is-size-7')], ['The modules are easy to follow and not overwhelming to scroll through.']),
+                                    Li([Class('is-size-7')], ['The page accurately presents content that is clear and easy to follow.']),
+                                    Li([Class('is-size-7')], ['The discussions has been set up correctly.']),
+                                    Li([Class('is-size-7')], ['The content is accessible to those using screen-readers.']),
+                                    Li([Class('is-size-7')], ['The library areas (Files, Pages, Studio) of the course site are organised and articulate of the content they hold ']),
+                                    Li([Class('is-size-7')], ['When viewed as a student, the student experience is as expected with clear wayfinding and links/LTIs working as intended.'])
+                                )  
+                            )  
+                        ),
                     ),
-                    htmlContentsTable,
                     htmlModule,
                     htmlUnattachedPages,
                     htmlFileStructure,
@@ -111,7 +119,6 @@ def generateQaHtml(myCanvas, canvasQa):
                     htmlEmbeddedContent,
                     htmlPlaceholders,
                     htmlBBIssues,
-                    
                 ), 
             )
         ),

@@ -21,7 +21,7 @@ def fileStructureAccordian(canvasQa, id):
     html = (   
         Article([Class('message')],
             Div([Class('message-header')],
-                P([], Span([], 'File Structure'), #accordionError(qaInfo.errorFiles['total']),
+                P([], Span([], 'File Structure'),
                     Span([Class('tag is-info ml-6')], 
                         A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                     ),
@@ -32,8 +32,8 @@ def fileStructureAccordian(canvasQa, id):
             ),
             Div([Id(id), Class('message-body is-collapsible')],
                 Div([Class('message-body-content')],
-                    Div([Class('columns is-multiline')],
-                        Div([Class('column is-8 is-narrow toggle')],
+                    Div([Class('columns is-multiline is-variable is-8')],
+                        Div([Class('column is-7')],
                             Div([Class('table-container')],
                                 Table([Class('table')],
                                     Thead([],
