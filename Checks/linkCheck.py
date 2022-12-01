@@ -44,6 +44,8 @@ def linkCheck(url, myCanvas):
     
     if '@X@EmbeddedFile.requestUrlStub/' in url:
         return 999, badLink
+    elif 'webapps/echo-library' in url:
+        return 999, badLink
     elif 'bbcollab' in url:
         return 999, badLink
     elif 'blackboard' in url:
