@@ -11,7 +11,7 @@ def generateAssignmentHtml(myCanvas, canvasQa):
     
     if canvasQa.get('assignments') is None:
         return ''
-    htmlAssignment = AssignmentAccordian(canvasQa, canvasQa['issues']['Assignments']['id'])
+    htmlAssignment = AssignmentAccordian(canvasQa, canvasQa['issues']['Assignments']['id']) if len(canvasQa['assignments']) > 0 else ''
     
     return htmlAssignment
     
@@ -37,8 +37,10 @@ def AssignmentAccordian(canvasQa, id):
                             Div([Class('table-container')],
                                 Table([Class('table')],
                                     Thead([],
-                                            P([], Em([], ['This is a complete breakdown of the file structure in the course.'])), 
-                                            P([], Em([], ['Please ensure the structure is logical consistent within the course.'])),
+                                            P([], Em([], ['This is a complete breakdown of the Courses Assignment Structure by Assignment Group<br>' \
+                                                            'Under each assignment group will be a breakdown of each assignment in that group and relavent information from Canvas.<br>' \
+                                                            'If an assignment is a quiz there will be a third level showing the questions in that quiz,<br>' \
+                                                            'with a breakdown of relevant data points from Canvas and any errors found in each question.'])), 
                                         Tr([], 
                                             Th([], 'Assignment Group'),
                                             Th([], '# of Assessment Items'),
@@ -51,7 +53,7 @@ def AssignmentAccordian(canvasQa, id):
                                     )
                                 )
                             )
-                        ),#about('Assignments', getDescriptions('Assignments'))
+                        ),
                     )
                 )
             )  

@@ -55,7 +55,7 @@ def htmlBBIssuesGenerate(bbIssues, id):
     html = (html, 
                 Article([Class('message')],
                     Div([Class('message-header')],
-                        P([], Span([], 'Blackboard Residuals'), #accordionError(len(qaInfo.bbTermsInPages.values())),
+                        P([], Span([], 'Blackboard Artefacts and Terminology'),
                             Span([Class('tag is-info ml-6')], 
                                 A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                             ),
@@ -70,7 +70,6 @@ def htmlBBIssuesGenerate(bbIssues, id):
                                 Div([Class('column')],
                                     htmlBBIssuesAccordian(bbIssues)
                                 ), 
-                                #about('Blackboard Issues Check', getDescriptions('Blackboard Terms'))
                             )
                         )
                     )
@@ -86,8 +85,9 @@ def htmlBBIssuesAccordian(bbIssues):
         html = (html,
                     Table([Class('table')],
                         Thead([],
-                            #P([], Em([], ['This is a list of any Blackboard Terms used in the course and associated items'])),
-                            #P([], Em([], ['These will need to be changed to reflect tools used in Canvas'])),
+                            P([], Em([], ['This is a collection of errors that have origination from the migration from Blackboard.<br>' \
+                                        "This picks up HTML artifacts that should be deleted but aren't urgent fixed.<br>" \
+                                            "It also lists terms that can be referring specifically to Blackboard products that no longer exist."])),
                             Tr([], 
                                 Th([], f'{key} Name'),
                                 Th([], '# of Items'),

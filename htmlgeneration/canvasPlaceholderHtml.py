@@ -32,7 +32,8 @@ def generatePlaceholderHtml(myCanvas, canvasQa):
                 placeholderIssues['Quizzes'][assessmentId]['url'] = assessmentData['url']
                 placeholderIssues['Quizzes'][assessmentId]['placeholders'] = quizData['placeholders']
                 canvasQa['issues']['Placeholders']['count'] += len(quizData['placeholders']) if quizData['placeholders'] is not None else 0
-    if placeholderIssues.get('pages') is None and placeholderIssues.get('quizzes') is None:
+                
+    if placeholderIssues.get('Pages') is None and placeholderIssues.get('Quizzes') is None:
         return ''
     htmlPlaceholders = htmlPlaceholdersGenerate(placeholderIssues, canvasQa['issues']['Placeholders']['id'])
     
@@ -57,7 +58,6 @@ def htmlPlaceholdersGenerate(placeholderIssues, id):
                             Div([Class('column')],
                                 htmlPlaceholdersAccordian(placeholderIssues)
                             ), 
-                            about('Placeholders Check', getDescriptions('Placeholder'))
                         )
                     )
                 )
@@ -73,8 +73,9 @@ def htmlPlaceholdersAccordian(placeholderIssues):
         html = (html,
                     Table([Class('table')],
                         Thead([],
-                            #P([], Em([], ['This is a list of any Blackboard Terms used in the course and associated items'])),
-                            #P([], Em([], ['These will need to be changed to reflect tools used in Canvas'])),
+                            P([], Em([], ['A placeholder is a term/phrase used inside of a Canvas Course site to indicate work still to be done.<br>'\
+                                        "The table shows indicates a distinction between placeholders created by Word 2 Canvas and those created by someone manually within the course."])),
+                            
                             Tr([], 
                                 Th([], f'{key} Name'),
                                 Th([], '# of Items'),

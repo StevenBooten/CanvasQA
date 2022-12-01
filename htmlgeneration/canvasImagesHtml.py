@@ -59,7 +59,6 @@ def htmlImagesGenerate(imagesData, id, myCanvas):
                                 htmlImagesAccordian(imagesData
                             , myCanvas)
                             ), 
-                            #about('Placeholders Check', getDescriptions('Placeholder'))
                         )
                     )
                 )
@@ -75,8 +74,8 @@ def htmlImagesAccordian(imagesData, myCanvas):
         html = (html,
                     Table([Class('table')],
                         Thead([],
-                            #P([], Em([], ['This is a list of any Blackboard Terms used in the course and associated items'])),
-                            #P([], Em([], ['These will need to be changed to reflect tools used in Canvas'])),
+                            P([], Em([], ['This is a collection of the images used in the course broken down by course page.<br> '\
+                                        'Shows you the status and relevant information for each image.'])),
                             Tr([], 
                                 Th([], f'{key} Name'),
                                 Th([], '# of Items'),

@@ -10,7 +10,7 @@ def generateUnattachedPagesHtml(myCanvas, canvasQa):
     if canvasQa.get('unattachedPages') is None:
         return ''
     
-    htmlUnattachedPages = htmlUnattachedPagesGenerate(canvasQa['unattachedPages'], canvasQa['issues']['Unattached Pages']['id'], myCanvas)
+    htmlUnattachedPages = htmlUnattachedPagesGenerate(canvasQa['unattachedPages'], canvasQa['issues']['Unattached Pages']['id'], myCanvas) if len(canvasQa['unattachedPages']) > 0 else ''
     
     return htmlUnattachedPages
 
@@ -37,8 +37,6 @@ def htmlUnattachedPagesGenerate(UnattachedPages, id, myCanvas):
                                     )
                                 )
                             ), 
-                            
-                            #about('Placeholders Check', getDescriptions('Placeholder'))
                         )
                     )
                 )
@@ -49,12 +47,13 @@ def htmlUnattachedPagesGenerate(UnattachedPages, id, myCanvas):
 def htmlUnattachedPagesAccordion(UnattachedPages, myCanvas):
     html = ''
     html = (html,
-            #P([], Em([], ['This is a list of any Blackboard Terms used in the course and associated items'])),
-            #P([], Em([], ['These will need to be changed to reflect tools used in Canvas'])),
+            P([], Em([], ["An unattached page is any page in the Canvas Course site that isn't attached to a Module.<br>"\
+                    "There are a few instances where this is expected, known pages that aren't intended to be attached to modules are ignored by this check,<br>"\
+                        "as a general rule anything not attached is likely not being used in the course in which can you can consider deleting such items."])),
+            
             Tr([], 
                 Th([], "Page Title"),
                 Th([], 'Published'),
-                #Th([], 'Show/Hide')
             ),
             Tbody([],
                 htmlUnattachedPagesHeader(UnattachedPages, myCanvas)

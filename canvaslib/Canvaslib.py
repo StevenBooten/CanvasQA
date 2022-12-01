@@ -66,7 +66,7 @@ def canvasLogin(browser, courseId=3294):
     return browser
 
 
-def getCanvasCourseList(group, accountId, oua = False, school = None, term = None, year = None, course = None, ignoreJoined = False):
+def getCanvasCourseList(group, accountId, oua = False, org = False, school = None, term = None, year = None, course = None, ignoreJoined = False):
     database = f"sqlite:///{settings.MIGRATION_DATABASE}"
 
     engine = create_engine(database, echo=False)
@@ -78,7 +78,10 @@ def getCanvasCourseList(group, accountId, oua = False, school = None, term = Non
         query += f" and accountId='{accountId}'"
     
     if oua:
-        query += f" and ouaCourse=1"
+        query += f" and oua=1"
+        
+    if org:
+        query += f" and org=1"
         
     if school is not None:
         query += f" and school='{school}'"
@@ -201,6 +204,7 @@ def parseArgsCanvas():
     parser.add_argument('--accountId', action="store", default='Live')
     parser.add_argument('--course', action="store", default=None)
     parser.add_argument('--oua', action="store_true", default=False)
+    parser.add_argument('--org', action="store_true", default=False)
     parser.add_argument('--school', action="store", default=None)
     parser.add_argument('--ignoreJoined', action="store_true", default=False)
     parser.add_argument('--term', action="store", default=None)
@@ -209,17 +213,17 @@ def parseArgsCanvas():
     return parser.parse_args()
     
 
-def databaseSearchCanvas(group, status, oua = False, school = None, courseList = None, list = None, term = None, year = None, course = None, ignoreJoined = False):
+def databaseSearchCanvas(group, status, oua = False, org = False, school = None, courseList = None, list = None, term = None, year = None, course = None, ignoreJoined = False):
     
     if list:
         courseDetails = []
         for course in courseList:
-            course = getCanvasCourseList(group, status, oua=oua, school=school, term=term, year=year, course=course, ignoreJoined=ignoreJoined)
+            course = getCanvasCourseList(group, status, oua=oua, org=org, school=school, term=term, year=year, course=course, ignoreJoined=ignoreJoined)
             courseDetails.append(course[0])
 #    elif course != None:
 #        courseDetails = getCanvasCourseList(group, status, oua=oua, school=school, term=term, year=year, course=course, ignorejoined=ignoreJoined)
     else:
-        courseDetails = getCanvasCourseList(group, status, oua=oua, school=school, term=term, year=year, course=course, ignoreJoined=ignoreJoined)
+        courseDetails = getCanvasCourseList(group, status, oua=oua, org=org, school=school, term=term, year=year, course=course, ignoreJoined=ignoreJoined)
         
     return courseDetails
 

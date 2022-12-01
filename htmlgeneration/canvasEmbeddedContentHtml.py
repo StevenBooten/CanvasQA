@@ -56,7 +56,6 @@ def htmlEmbeddedContentGenerate(embeddedContentData, id, myCanvas):
                             Div([Class('column')],
                                 htmlEmbeddedContentAccordian(embeddedContentData, myCanvas)
                             ), 
-                            #about('Embedded Content', getDescriptions('Embedded Content'))
                         )
                     )
                 )
@@ -72,11 +71,14 @@ def htmlEmbeddedContentAccordian(embeddedContentData, myCanvas):
         html = (html,
                     Table([Class('table')],
                         Thead([],
-                            Tr([], 
-                                Th([], f'{key} Name'),
-                                Th([], '# of Items'),
-                                Th([], 'Show/Hide')
-                            )
+                               P([], Em([], ['This is a complete list of every piece of embedded content in the Canvas course site.<br>'\
+                                            'This is broken down by Page, each item has a link check run and show you the link and the host.']
+                               )),
+                                Tr([], 
+                                    Th([], f'{key} Name'),
+                                    Th([], '# of Items'),
+                                    Th([], 'Show/Hide')
+                                )
                         ),
                         Tbody([],
                             htmlEmbeddedContentHeader(values, myCanvas)
@@ -89,19 +91,19 @@ def htmlEmbeddedContentAccordian(embeddedContentData, myCanvas):
 def htmlEmbeddedContentHeader(values, myCanvas):
     
     html = ''
+    statusCodeErrors = []
     for id, info in sorted(values.items()):
         sumItems = len(info['embeddedContent']) if info['embeddedContent'] is not None else 0
         if sumItems == 0:
             continue
-        statusCodeError = False
         for altTag, source in info['embeddedContent'].items():
             if 200 > source['statusCode'] or source['statusCode'] >= 300:
-                statusCodeError = True
-                break
+                statusCodeErrors.append(source['statusCode'])
+        statusCodeErrors = list(set(statusCodeErrors))
         html = (html,
                 Tr([],
                     Td([], 
-                        A([Href(info['url']), Target('_blank'), Rel('noopener noreferrer')], info['title']), errorBrokenLink() if statusCodeError else ''
+                        A([Href(info['url']), Target('_blank'), Rel('noopener noreferrer')], info['title']), errorBrokenLink(statusCodeErrors) if len(statusCodeErrors) > 0 else ''
                     ),
                     Td([], str(sumItems)),
                     Td([],

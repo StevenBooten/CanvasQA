@@ -11,7 +11,7 @@ def generateModulesHtml(myCanvas, canvasQa):
     if canvasQa.get('modules') is None:
         return ''
     
-    htmlFileStructure = moduleAccordian(canvasQa, canvasQa['issues']['Modules']['id'])
+    htmlFileStructure = moduleAccordian(canvasQa, canvasQa['issues']['Modules']['id']) if len(canvasQa['modules']) > 0 else ''
     
     return htmlFileStructure
     
@@ -34,9 +34,9 @@ def moduleAccordian(canvasQa, id):
                         Div([Class('column')],
                             Table([Class('table')],
                                 Thead([],
-                                    P([], Em([Class('is-multiline')], ['In Canvas, Modules are the primary tool for structuring student learning activities. \
-                                                                        The ability for students to easily find learning activities is the most significant predictor of student self-efficacy \
-                                                                        and motivation (Crews et al, 2017). The naming and availability of modules and module items can help. The UDL for Module Design page provides more advice'])), 
+                                    P([], Em([Class('is-multiline')], ['In Canvas, Modules are the primary tool for structuring student learning activities. <br>\
+                                                                        The ability for students to easily find learning activities is the most significant predictor of student self-efficacy<br> \
+                                                                        and motivation (Crews et al, 2017). The naming and availability of modules and module items can help. The UDL for Module Design page provides more advice.'])), 
                                     Tr([], 
                                         Th([], 'Position'),
                                         Th([], 'Module Name'),
@@ -49,7 +49,7 @@ def moduleAccordian(canvasQa, id):
                                     moduleHtml(canvasQa['modules'])
                                 )
                             )
-                        ), #about('Modules Check', getDescriptions('Module'))
+                        ), 
                     )
                 )
             )  

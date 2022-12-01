@@ -42,6 +42,8 @@ def collectCourseModules(myCanvas, canvasQa):
             #- Publishes returns a boolean value, so it needs to be converted to a string
             if item.published:
                 moduleItem['published'] = 'Yes'
+            elif item.type.lower() == 'subheader':
+                moduleItem['published'] = 'Yes'
             else:
                 moduleItem['published'] = 'No' 
                 unpublishedCountItems += 1
@@ -78,7 +80,7 @@ def collectCourseModules(myCanvas, canvasQa):
 #- whether they are linked to a module
 def unattachedPages(myCanvas, canvasQa):
     
-    ignoredPages = ['canvas-collections-configuration', 'home page', 'home page - banner', 'learning journey', 'assessment overview', 'learning journey 2', 'teaching staff']
+    ignoredPages = ['canvas collections configuration', 'home page', 'home page - banner', 'learning journey', 'assessment overview', 'learning journey 2', 'teaching staff']
     pagesInModules = []
     
     for key, value in canvasQa['modules'].items():

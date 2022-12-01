@@ -68,6 +68,7 @@ def checkQuizBody(questions, myCanvas, canvasQa):
         question['imgTags'] = getPageImgTags(soup, myCanvas, canvasQa)
         question['links'] = getPageLinks(soup, myCanvas, canvasQa)
         question['videoIframes'] = getVideoIframes(soup, myCanvas, canvasQa)
+        question['embeddedContent'] = getVideoIframes(soup, myCanvas, canvasQa)
         
         
         usedFiles += checkForCanvasFileLink(question['links']) if question['links'] is not None else []
@@ -187,6 +188,8 @@ def getPageImgTags(soup, myCanvas, canvasQa):
                 imageSource = img.get('src')[:verifierPos]
             else:
                 imageSource = img.get('src')
+            if imageSource.startswith('..'):
+                imageSource = f"https://lms.griffith.edu.au/{myCanvas.courseId}/files{imageSource[2:]}"
             statusCode, error = linkCheck(imageSource, myCanvas)
             imageErrorCount += error
             imgs[img.get('alt')] = {'source': imageSource, 'statusCode' : statusCode}

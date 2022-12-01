@@ -57,6 +57,9 @@ def linkCheck(url, myCanvas):
     elif 'tel:' in url:
         return 296, goodLink
     
+    elif url.startswith('#'):
+        return 299, goodLink
+    
     start = re.match('https://lms.griffith.edu.au/courses/', url)
     if start is not None:
         end = re.match('/[a-z]*', url[start.end()::])

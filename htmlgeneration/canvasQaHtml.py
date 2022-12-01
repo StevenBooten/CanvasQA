@@ -89,7 +89,7 @@ def generateQaHtml(myCanvas, canvasQa):
                 Script([], f'{jsScript}'), '<br><br>',
                 
                 
-                H1([Id('top'), Class('title')], [f'Quality Assurance report for Course Site: {myCanvas.courseCode.replace("_"," ")}']),
+                H1([Id('top'), Class('title')], [f'Quality Assurance report for Canvas Course Site: {myCanvas.courseCode.replace("_"," ")}']),
                 
                 Div([Class('content')],
                     Div([Class('columns is-multiline')],

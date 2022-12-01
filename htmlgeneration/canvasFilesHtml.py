@@ -11,7 +11,7 @@ def generateFileStructureHtml(myCanvas, canvasQa):
     
     if canvasQa.get('files') is None:
         return ''
-    htmlFileStructure = fileStructureAccordian(canvasQa, canvasQa['issues']['File Structure']['id'])
+    htmlFileStructure = fileStructureAccordian(canvasQa, canvasQa['issues']['File Structure']['id']) if len(canvasQa['files']) > 0 else ''
     
     return htmlFileStructure
     
@@ -37,8 +37,9 @@ def fileStructureAccordian(canvasQa, id):
                             Div([Class('table-container')],
                                 Table([Class('table')],
                                     Thead([],
-                                            P([], Em([], ['This is a complete breakdown of the file structure in the course.'])), 
-                                            P([], Em([], ['Please ensure the structure is logical consistent within the course.'])),
+                                            P([], Em([], ['This is a complete breakdown of the file structure in the course. Please ensure the structure is logical consistent within the course.<br>'\
+                                                            'There is also an idication if the file has been used within the course and whether there are duplicate version of a file - <br>'\
+                                                            'this can only tell you if there are multiple files with the same filename, not if there are multiple different version of the same file.'])), 
                                         Tr([], 
                                             Th([], 'Folder'),
                                             Th([], '# of files'),
@@ -50,7 +51,7 @@ def fileStructureAccordian(canvasQa, id):
                                     )
                                 )
                             )
-                        ),#about('File Structure Check', getDescriptions('File Structure'))
+                        ),
                     )
                 )
             )  

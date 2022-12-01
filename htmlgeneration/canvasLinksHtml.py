@@ -59,7 +59,6 @@ def htmlLinksGenerate(linksData, id, myCanvas):
                                 htmlLinksAccordian(linksData
                             , myCanvas)
                             ), 
-                            #about('Course Links', getDescriptions('Course Links'))
                         )
                     )
                 )
@@ -75,6 +74,8 @@ def htmlLinksAccordian(linksData, myCanvas):
         html = (html,
                     Table([Class('table')],
                         Thead([],
+                            P([], Em([], ['This is a collection of the all links found in the course broken down by course page.<br> '\
+                                    'Shows you the status and relevant information for each link.'])),
                             Tr([], 
                                 Th([], f'{key} Name'),
                                 Th([], '# of Items'),
