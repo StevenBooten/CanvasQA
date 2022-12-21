@@ -271,7 +271,7 @@ def errorFileDuplicates(fileName, fileref):
     html = ''
     for count, values in enumerate(fileref[fileName]['folders']):
         for folder, url in values.items():
-            html = (html, A([Href(f"url"), Data_('tooltip', f"A copy of this file is in folder: {folder}" )], f'{count+1}'),
+            html = (html, A([Class('has-tooltip-left'), Href(f"url"), Data_('tooltip', f"A copy of this file is in folder: {folder}")], count+1),
             "&nbsp;&nbsp;" if count < len(fileref[fileName]['folders']) else ''
             )
     
