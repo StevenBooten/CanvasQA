@@ -55,7 +55,7 @@ def linkCheck(url, myCanvas):
     elif 'mailto' in url:
         return 298, goodLink
     elif 'https://griffitheduau.sharepoint.com' in url:
-        return 297, 0
+        return 297, goodLink
     elif 'tel:' in url:
         return 296, goodLink
     
@@ -71,17 +71,21 @@ def linkCheck(url, myCanvas):
                 return 322, badLink
             
     
-    #statusCode = 200
     statusCode = validate_url(url)
     
-    if statusCode < 399 or statusCode < 300:
-        if 'http://' in url:
+    if statusCode < 400 or statusCode >= 300:
+        if url.startswith('http://'):
             return 998, badLink
+        
     if statusCode == 302:
         if url.startswith('https://lms.griffith.edu.au/'):
             statusCode = 200
-            
-    if 200 <= statusCode < 300:
-        return statusCode, goodLink
     
-    return statusCode, badLink
+    if statusCode < 200:
+        return statusCode, badLink  
+    elif statusCode < 300:
+        return statusCode, goodLink
+    else:
+        return statusCode, badLink
+    
+    

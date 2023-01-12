@@ -13,7 +13,6 @@ class CanvasAPI():
         self.courseId = courseId
         self.course = self.canvasConnection.get_course(courseId, **kwargs)
         self.courseCode = self.course.sis_course_id
-        self.courseId = courseId
         
     def getTeachers(self):
         return self.course.get_enrollments(type='TeacherEnrollment')

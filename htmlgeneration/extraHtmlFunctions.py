@@ -221,11 +221,44 @@ def statusCodeInfo(statusCode):
         )
     return html
 
+def statusErrorSummary(summary):
+    html = ''
+    
+    html = (
+            Span([Class("tag is-info has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"These are all the links found in the Canvas Course")], f"{summary['total']} Course Links"),
+            
+            Span([Class("tag is-success has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"The number of working links found in the Canvas Course")], f"{summary['good']} Working") if summary['good'] > 0 else '',
+            
+            Span([Class("tag is-warning has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"The number of links with minor errors found in the Canvas Course. These will need to be looked into at some point but currently work.")], f"{summary['warning']} Warning(s)") if summary['warning'] > 0 else '',
+            
+            Span([Class("tag is-danger has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"The number of broken links found in the course. These will need to be fixed.")], f"{summary['errors']} Error(s)")if summary['errors'] > 0 else ''
+            )
+
+    return html
+
+def fileStructureSummary(summary):
+    unusedHtml = ''
+    duplicateHtml = ''
+    
+    if summary['unused'] > 0:
+        unusedHtml = ('&nbsp;',
+            Span([Class('tag is-warning has-tooltip-multiline has-tooltip-right'), Data_('tooltip', "How many files in the Files area that aren't being used in the course")],
+                f'{summary["unused"]} Unused Files'
+            )
+        ),
+    if summary['duplicate'] > 0:
+        duplicateHtml = ('&nbsp;',
+            Span([Class('tag is-info has-tooltip-multiline has-tooltip-right'), Data_('tooltip', 'How many files in the Files area that are duplicates in the course')],
+                f'{summary["duplicate"]} Duplicate Files'
+            )
+        ),
+    
+    return duplicateHtml, unusedHtml
+
 #adds a warning to the folder title of an accordion if there are any issues with files within that folder
 def fileStructureFolderError(files):
     unusedHtml = ''
     duplicateHtml = ''
-    
     
     for item in files:
         if item['used'] == False:

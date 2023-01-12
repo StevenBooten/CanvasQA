@@ -98,3 +98,13 @@ htmlgeneration/__pycache__/canvasEmbeddedContentHtml.cpython-311.pyc
 htmlgeneration/__pycache__/canvasLinksHtml.cpython-311.pyc
 htmlgeneration/__pycache__/canvasSummaryHtml.cpython-311.pyc
 canvaslib/__pycache__/CanvasAPIClass.cpython-311.pyc
+htmlgeneration/__pycache__/canvasAssignmentsHtml.cpython-39.pyc
+htmlgeneration/__pycache__/CanvasBBIssuesHtml.cpython-39.pyc
+htmlgeneration/__pycache__/canvasEmbeddedContentHtml.cpython-39.pyc
+htmlgeneration/__pycache__/canvasImagesHtml.cpython-39.pyc
+htmlgeneration/__pycache__/canvasLinksHtml.cpython-39.pyc
+htmlgeneration/__pycache__/canvasPlaceholderHtml.cpython-39.pyc
+htmlgeneration/__pycache__/canvasSummaryHtml.cpython-39.pyc
+htmlgeneration/__pycache__/canvasUnattachedPageshtml.cpython-39.pyc
+Gatherers/__pycache__/assignments.cpython-39.pyc
+canvaslib/__pycache__/Canvaslib.cpython-39.pyc

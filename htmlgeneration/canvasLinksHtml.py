@@ -3,7 +3,7 @@ from htmlBuilder.tags import *
 from htmlBuilder.attributes import Class, Style
 from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
-from htmlgeneration.extraHtmlFunctions import statusCodeInfo, errorBrokenLink, longName
+from htmlgeneration.extraHtmlFunctions import statusCodeInfo, errorBrokenLink, longName, statusErrorSummary
 from Checks.linkCheck import linkCheck
 from pprint import pprint
 
@@ -13,6 +13,8 @@ def generateLinksHtml(myCanvas, canvasQa):
     linksData['Page'] = {}
     linksData['Quiz'] = {}
     
+    canvasQa['issues']['Course Links']['Summary'] = {}
+    
     for pageId, pageData in canvasQa['pages'].items():
         if pageData.get('links') == None:
             continue
@@ -20,6 +22,21 @@ def generateLinksHtml(myCanvas, canvasQa):
         linksData['Page'][pageId]['title'] = pageData['title']
         linksData['Page'][pageId]['url'] = pageData['url']
         linksData['Page'][pageId]['links'] = pageData['links']
+        
+        for altTag, data in pageData['links'].items():
+            canvasQa['issues']['Course Links']['Summary']['total'] = canvasQa['issues']['Course Links']['Summary'].get('total', 0) + 1
+            if data['statusCode'] == 0:
+                canvasQa['issues']['Course Links']['Summary']['errors'] = canvasQa['issues']['Course Links']['Summary'].get('errors', 0) + 1
+            elif data['statusCode'] < 200:
+                canvasQa['issues']['Course Links']['Summary']['warning'] = canvasQa['issues']['Course Links']['Summary'].get('warning', 0) + 1
+            elif data['statusCode'] < 300:
+                canvasQa['issues']['Course Links']['Summary']['good'] = canvasQa['issues']['Course Links']['Summary'].get('good', 0) + 1
+            elif data['statusCode'] < 400:
+                canvasQa['issues']['Course Links']['Summary']['warning'] = canvasQa['issues']['Course Links']['Summary'].get('warning', 0) + 1
+            else:
+                canvasQa['issues']['Course Links']['Summary']['errors'] = canvasQa['issues']['Course Links']['Summary'].get('errors', 0) + 1
+            
+            
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
@@ -33,17 +50,30 @@ def generateLinksHtml(myCanvas, canvasQa):
                 linksData['Quiz'][assessmentId]['url'] = assessmentData['url']
                 linksData['Quiz'][assessmentId]['links'] = quizData['links']
                 
+                for altTag, data in quizData['links'].items():
+                    canvasQa['issues']['Course Links']['Summary']['total'] = canvasQa['issues']['Course Links']['Summary'].get('total', 0) + 1
+                    if data['statusCode'] == 0:
+                        canvasQa['issues']['Course Links']['Summary']['errors'] = canvasQa['issues']['Course Links']['Summary'].get('errors', 0) + 1
+                    elif data['statusCode'] < 200:
+                        canvasQa['issues']['Course Links']['Summary']['warning'] = canvasQa['issues']['Course Links']['Summary'].get('warning', 0) + 1
+                    elif data['statusCode'] < 300:
+                        canvasQa['issues']['Course Links']['Summary']['good'] = canvasQa['issues']['Course Links']['Summary'].get('good', 0) + 1
+                    elif data['statusCode'] < 400:
+                        canvasQa['issues']['Course Links']['Summary']['warning'] = canvasQa['issues']['Course Links']['Summary'].get('warning', 0) + 1
+                    else:
+                        canvasQa['issues']['Course Links']['Summary']['errors'] = canvasQa['issues']['Course Links']['Summary'].get('errors', 0) + 1
+                
     if linksData.get('Page') is None and linksData.get('Quiz') is None:
         return ''
-    htmllinks = htmlLinksGenerate(linksData, canvasQa['issues']['Course Links']['id'], myCanvas) 
+    htmllinks = htmlLinksGenerate(linksData, canvasQa['issues']['Course Links']['id'], myCanvas, canvasQa) 
     
     return htmllinks
 
-def htmlLinksGenerate(linksData, id, myCanvas):
+def htmlLinksGenerate(linksData, id, myCanvas, canvasQa):
     html = (
             Article([Class('message')],
                 Div([Class('message-header')],
-                    P([], Span([], 'Course Links'),
+                    P([], Span([], 'Course Links'), statusErrorSummary(canvasQa['issues']['Course Links']['Summary']),
                         Span([Class('tag is-info ml-6')], 
                             A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                         ),

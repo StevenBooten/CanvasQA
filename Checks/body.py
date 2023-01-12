@@ -173,7 +173,7 @@ def getBBEcho(soup):
     instancesFound = {}
     for item in soup.findAll('iframe'):
         if item.has_attr('src'):
-            if item['src'].find("echo-library-BB5bb") > -1:
+            if item['src'].find("echo-library-BB") > -1:
                 instancesFound[item.get('title')] = item['src']
    
     return instancesFound if len(instancesFound) > 0 else None

@@ -66,7 +66,7 @@ def htmlBBIssuesGenerate(bbIssues, id):
                     ),
                     Div([Id(id), Class('message-body is-collapsible')],
                         Div([Class('message-body-content')],
-                            Div([Class('columns is-multiline is-variable is-8')],
+                            Div([Class('columns is-multiline is-variable')],
                                 Div([Class('column')],
                                     htmlBBIssuesAccordian(bbIssues)
                                 ), 

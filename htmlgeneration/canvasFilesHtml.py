@@ -4,7 +4,7 @@ from htmlBuilder.attributes import Class, Style as InlineStyle
 from Checks.linkCheck import linkCheck
 from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
-from htmlgeneration.extraHtmlFunctions import fileStructureFolderError, errorFileDuplicates
+from htmlgeneration.extraHtmlFunctions import fileStructureFolderError, errorFileDuplicates, fileStructureSummary
 
 
 def generateFileStructureHtml(myCanvas, canvasQa):
@@ -21,7 +21,7 @@ def fileStructureAccordian(canvasQa, id):
     html = (   
         Article([Class('message')],
             Div([Class('message-header')],
-                P([], Span([], 'File Structure'),
+                P([], Span([], 'File Structure'), fileStructureSummary(canvasQa['issues']['File Structure']),
                     Span([Class('tag is-info ml-6')], 
                         A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                     ),
