@@ -1,7 +1,7 @@
 from htmlBuilder.attributes import *
 from htmlBuilder.tags import *
 from htmlBuilder.attributes import Class, Style
-from htmlgeneration.extraHtmlFunctions import about
+from htmlgeneration.extraHtmlFunctions import placeholderSummary
 from lib.InfoPacks import getDescriptions
 from pprint import pprint
 
@@ -35,15 +35,15 @@ def generatePlaceholderHtml(myCanvas, canvasQa):
                 
     if placeholderIssues.get('Pages') is None and placeholderIssues.get('Quizzes') is None:
         return ''
-    htmlPlaceholders = htmlPlaceholdersGenerate(placeholderIssues, canvasQa['issues']['Placeholders']['id'])
+    htmlPlaceholders = htmlPlaceholdersGenerate(placeholderIssues, canvasQa['issues']['Placeholders']['id'], canvasQa)
     
     return htmlPlaceholders
 
-def htmlPlaceholdersGenerate(placeholderIssues, id):
+def htmlPlaceholdersGenerate(placeholderIssues, id, canvasQa):
     html = (
             Article([Class('message')],
                 Div([Class('message-header')],
-                    P([], Span([], 'Placeholders'),
+                    P([], Span([], 'Placeholders'), placeholderSummary(canvasQa['issues']['Placeholders']['count']),
                         Span([Class('tag is-info ml-6')], 
                             A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                         ),

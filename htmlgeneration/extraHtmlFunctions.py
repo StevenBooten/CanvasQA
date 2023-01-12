@@ -236,6 +236,15 @@ def statusErrorSummary(summary):
 
     return html
 
+def placeholderSummary(count):
+    if count > 0:
+        html = (
+                Span([Class("tag is-warning has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"These are the total number of placeholders within the Canvas Course")], f"{count} Placeholder(s)"),
+                )
+        return html
+    else:
+        return ''
+
 def fileStructureSummary(summary):
     unusedHtml = ''
     duplicateHtml = ''
@@ -304,7 +313,7 @@ def errorFileDuplicates(fileName, fileref):
     html = ''
     for count, values in enumerate(fileref[fileName]['folders']):
         for folder, url in values.items():
-            html = (html, A([Class('has-tooltip-left'), Href(f"url"), Data_('tooltip', f"A copy of this file is in folder: {folder}")], count+1),
+            html = (html, A([Class('has-tooltip-left'), Href(f"url"), Data_('tooltip', f"A copy of this file is in folder: {folder}")], str(count+1)),
             "&nbsp;&nbsp;" if count < len(fileref[fileName]['folders']) else ''
             )
     

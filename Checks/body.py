@@ -32,11 +32,11 @@ def checkPageBody(canvasQa, myCanvas):
 
 def highlightText(text, term):
     start = 0
-    highlightedText = f' <mark><strong>{term}</strong></mark> '
-    searchTerm = f' {term} '
+    highlightedText = f' <mark><strong>{term.upper()}</strong></mark> '
+    searchTerm = f'{term}'
     
     while start < len(text):
-        match = re.search(searchTerm, text[start:])#.find(searchTerm)
+        match = re.search(searchTerm, text[start:], re.IGNORECASE)#.find(searchTerm)
         if match == None:
             return text
         end = start + match.end()
@@ -116,10 +116,12 @@ def placeholderBodyCheck(soup, title):
                     placeholderCheck[term] = placeholderCheck.get(term, '') + lineText
 
         if title.lower().find(term) > -1:
+            
+            title = highlightText(title, term)
             if placeholderCheck.get(term, None) == None:
                 placeholderCheck[term] = f'Found in Title: {title}'
-            else:
-                placeholderCheck[term] = f'Found in Title: {title} and\n' + placeholderCheck[term]
+            else:    
+                placeholderCheck[term] = f'Found in Title: {title} and' + placeholderCheck[term]
     
     #method 2 for placeholder checking - w2c tags
     for span in soup.findAll('span'):
@@ -130,7 +132,6 @@ def placeholderBodyCheck(soup, title):
     #method 3 for placeholder checking - word style tags
     marks = []
     for mark in soup.findAll('mark'):
-        #marks.append(re.sub('<[^<]+?>', '', str(mark)))
         placeholderCheck[re.sub('<[^<]+?>', '', str(mark).strip('[]'))] = 'Author Placeholder'
         
     return placeholderCheck if placeholderCheck != {} else None
