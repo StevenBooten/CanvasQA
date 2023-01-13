@@ -1,7 +1,7 @@
 from htmlBuilder.attributes import *
 from htmlBuilder.tags import *
 from htmlBuilder.attributes import Class, Style
-from htmlgeneration.extraHtmlFunctions import about
+from htmlgeneration.extraHtmlFunctions import about, itemSummary
 from lib.InfoPacks import getDescriptions
 from pprint import pprint
 
@@ -21,9 +21,9 @@ def generateBBIssuesHtml(myCanvas, canvasQa):
         bbIssues['Pages'][pageId]['bbTerms'] = pageData['bbTerms']
         bbIssues['Pages'][pageId]['bbEcho'] = pageData['bbEcho']
         bbIssues['Pages'][pageId]['bbHtml'] = pageData['bbHtml']
-        canvasQa['issues']['Blackboard Residuals']['count'] += len(pageData['bbTerms']) if pageData['bbTerms'] is not None else 0
-        canvasQa['issues']['Blackboard Residuals']['count'] += len(pageData['bbEcho']) if pageData['bbEcho'] is not None else 0
-        canvasQa['issues']['Blackboard Residuals']['count'] += len(pageData['bbHtml']) if pageData['bbHtml'] is not None else 0
+        canvasQa['issues']['Blackboard Residuals']['count'] = canvasQa['issues']['Blackboard Residuals'].get('count', 0) + len(bbIssues['Pages'][pageId]['bbTerms']) if bbIssues['Pages'][pageId]['bbTerms'] is not None else 0
+        canvasQa['issues']['Blackboard Residuals']['count'] = canvasQa['issues']['Blackboard Residuals'].get('count', 0) + len(bbIssues['Pages'][pageId]['bbEcho']) if bbIssues['Pages'][pageId]['bbEcho'] is not None else 0
+        canvasQa['issues']['Blackboard Residuals']['count'] = canvasQa['issues']['Blackboard Residuals'].get('count', 0) + len(bbIssues['Pages'][pageId]['bbHtml']) if bbIssues['Pages'][pageId]['bbHtml'] is not None else 0
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
@@ -38,24 +38,25 @@ def generateBBIssuesHtml(myCanvas, canvasQa):
                 bbIssues['Quizzes'][assessmentId]['bbTerms'] = quizData['bbTerms']
                 bbIssues['Quizzes'][assessmentId]['bbEcho'] = quizData['bbEcho']
                 bbIssues['Quizzes'][assessmentId]['bbHtml'] = quizData['bbHtml']
-                canvasQa['issues']['Blackboard Residuals']['count'] += len(quizData['bbTerms']) if quizData['bbTerms'] is not None else 0
-                canvasQa['issues']['Blackboard Residuals']['count'] += len(quizData['bbEcho']) if quizData['bbEcho'] is not None else 0
-                canvasQa['issues']['Blackboard Residuals']['count'] += len(quizData['bbHtml']) if quizData['bbHtml'] is not None else 0
-                
+                canvasQa['issues']['Blackboard Residuals']['count'] = canvasQa['issues']['Blackboard Residuals'].get('count', 0) + len(bbIssues['Quizzes'][assessmentId]['bbTerms']) if bbIssues['Quizzes'][assessmentId]['bbTerms'] is not None else 0
+                canvasQa['issues']['Blackboard Residuals']['count'] = canvasQa['issues']['Blackboard Residuals'].get('count', 0) + len(bbIssues['Quizzes'][assessmentId]['bbEcho']) if bbIssues['Quizzes'][assessmentId]['bbEcho'] is not None else 0
+                canvasQa['issues']['Blackboard Residuals']['count'] = canvasQa['issues']['Blackboard Residuals'].get('count', 0) + len(bbIssues['Quizzes'][assessmentId]['bbHtml']) if bbIssues['Quizzes'][assessmentId]['bbHtml'] is not None else 0 
+    
+    canvasQa['issues']['Blackboard Residuals']['count'] = len(bbIssues['Pages']) + len(bbIssues['Quizzes'])
     if bbIssues.get('Pages') is None and bbIssues.get('Quizzes') is None:
         return ''
-    htmlBBIssues = htmlBBIssuesGenerate(bbIssues, canvasQa['issues']['Blackboard Residuals']['id'])
+    htmlBBIssues = htmlBBIssuesGenerate(bbIssues, canvasQa['issues']['Blackboard Residuals']['id'], canvasQa)
     
     return htmlBBIssues
 
 
-def htmlBBIssuesGenerate(bbIssues, id):
+def htmlBBIssuesGenerate(bbIssues, id, canvasQa):
     
     html = ''
     html = (html, 
                 Article([Class('message')],
                     Div([Class('message-header')],
-                        P([], Span([], 'Blackboard Artefacts and Terminology'),
+                        P([], Span([], 'Blackboard Artefacts and Terminology'), itemSummary(canvasQa['issues']['Blackboard Residuals']['count']),
                             Span([Class('tag is-info ml-6')], 
                                 A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                             ),

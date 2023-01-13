@@ -1,7 +1,7 @@
 from htmlBuilder.attributes import *
 from htmlBuilder.tags import *
 from htmlBuilder.attributes import Class, Style
-from htmlgeneration.extraHtmlFunctions import about
+from htmlgeneration.extraHtmlFunctions import itemSummary
 from lib.InfoPacks import getDescriptions
 
 def generateUnattachedPagesHtml(myCanvas, canvasQa):
@@ -10,15 +10,15 @@ def generateUnattachedPagesHtml(myCanvas, canvasQa):
     if canvasQa.get('unattachedPages') is None:
         return ''
     
-    htmlUnattachedPages = htmlUnattachedPagesGenerate(canvasQa['unattachedPages'], canvasQa['issues']['Unattached Pages']['id'], myCanvas) if len(canvasQa['unattachedPages']) > 0 else ''
+    htmlUnattachedPages = htmlUnattachedPagesGenerate(canvasQa['unattachedPages'], canvasQa['issues']['Unattached Pages']['id'], myCanvas, canvasQa) if len(canvasQa['unattachedPages']) > 0 else ''
     
     return htmlUnattachedPages
 
-def htmlUnattachedPagesGenerate(UnattachedPages, id, myCanvas):
+def htmlUnattachedPagesGenerate(UnattachedPages, id, myCanvas, canvasQa):
     html = (
             Article([Class('message')],
                 Div([Class('message-header')],
-                    P([], Span([], 'Unattached Pages'),
+                    P([], Span([], 'Unattached Pages'), itemSummary(canvasQa['issues']['Unattached Pages']['count']),
                         Span([Class('tag is-info ml-6')], 
                             A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                         ),

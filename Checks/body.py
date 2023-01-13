@@ -25,8 +25,8 @@ def checkPageBody(canvasQa, myCanvas):
         page['links'] = getPageLinks(soup, myCanvas, canvasQa)
         page['embeddedContent'] = getVideoIframes(soup, myCanvas, canvasQa)
         
-        usedFiles += checkForCanvasFileLink(page['links']) if page['links'] is not None else []
-        usedFiles += checkForCanvasFileLink(page['imgTags']) if page['imgTags'] is not None else []
+        usedFiles += checkForCanvasFileLink(page['links']) if page['links'] is not None else {}
+        usedFiles += checkForCanvasFileLink(page['imgTags']) if page['imgTags'] is not None else {}
         
     return usedFiles
 

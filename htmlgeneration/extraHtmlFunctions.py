@@ -223,23 +223,33 @@ def statusCodeInfo(statusCode):
 
 def statusErrorSummary(summary):
     html = ''
-    
-    html = (
-            Span([Class("tag is-info has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"These are all the links found in the Canvas Course")], f"{summary['total']} Course Links"),
+    if summary.get('total', 0) == 0:
+        return html
+    html = ( 
+            Span([Class("tag is-info has-tooltip-multiline has-tooltip-right ml-2"), Data_('tooltip', f"These are all the links found in the Canvas Course")], f"{summary['total']} Course Links"),
             
-            Span([Class("tag is-success has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"The number of working links found in the Canvas Course")], f"{summary['good']} Working") if summary['good'] > 0 else '',
+            Span([Class("tag is-success has-tooltip-multiline has-tooltip-right ml-2"), Data_('tooltip', f"The number of working links found in the Canvas Course")], f"{summary['good']} Working") if summary.get('good', 0) > 0 else '',
             
-            Span([Class("tag is-warning has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"The number of links with minor errors found in the Canvas Course. These will need to be looked into at some point but currently work.")], f"{summary['warning']} Warning(s)") if summary['warning'] > 0 else '',
+            Span([Class("tag is-warning has-tooltip-multiline has-tooltip-right ml-2"), Data_('tooltip', f"The number of links with minor errors found in the Canvas Course. These will need to be looked into at some point but currently work.")], f"{summary['warning']} Warning(s)") if summary.get('warning', 0) > 0 else '',
             
-            Span([Class("tag is-danger has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"The number of broken links found in the course. These will need to be fixed.")], f"{summary['errors']} Error(s)")if summary['errors'] > 0 else ''
+            Span([Class("tag is-danger has-tooltip-multiline has-tooltip-right ml-2"), Data_('tooltip', f"The number of broken links found in the course. These will need to be fixed.")], f"{summary['errors']} Error(s)")if summary.get('errors', 0) > 0 else ''
             )
 
     return html
 
 def placeholderSummary(count):
     if count > 0:
-        html = (
-                Span([Class("tag is-warning has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"These are the total number of placeholders within the Canvas Course")], f"{count} Placeholder(s)"),
+        html = ( 
+                Span([Class("tag is-warning has-tooltip-multiline has-tooltip-right ml-2"), Data_('tooltip', f"These are the total number of placeholders within the Canvas Course")], f"{count} Placeholder(s)"),
+                )
+        return html
+    else:
+        return ''
+    
+def itemSummary(count):
+    if count > 0:
+        html = ( 
+                Span([Class("tag is-warning has-tooltip-multiline has-tooltip-right ml-2"), Data_('tooltip', f"These are the total number of items of this catagory within the Canvas Course")], f"{count} Item(s)"),
                 )
         return html
     else:
@@ -249,15 +259,15 @@ def fileStructureSummary(summary):
     unusedHtml = ''
     duplicateHtml = ''
     
-    if summary['unused'] > 0:
-        unusedHtml = ('&nbsp;',
-            Span([Class('tag is-warning has-tooltip-multiline has-tooltip-right'), Data_('tooltip', "How many files in the Files area that aren't being used in the course")],
+    if summary.get('unused', 0) > 0:
+        unusedHtml = (
+            Span([Class('tag is-warning has-tooltip-multiline has-tooltip-right ml-2'), Data_('tooltip', "How many files in the Files area that aren't being used in the course")],
                 f'{summary["unused"]} Unused Files'
             )
         ),
-    if summary['duplicate'] > 0:
-        duplicateHtml = ('&nbsp;',
-            Span([Class('tag is-info has-tooltip-multiline has-tooltip-right'), Data_('tooltip', 'How many files in the Files area that are duplicates in the course')],
+    if summary.get('duplicate', 0) > 0:
+        duplicateHtml = (
+            Span([Class('tag is-info has-tooltip-multiline has-tooltip-right ml-2'), Data_('tooltip', 'How many files in the Files area that are duplicates in the course')],
                 f'{summary["duplicate"]} Duplicate Files'
             )
         ),
@@ -271,21 +281,15 @@ def fileStructureFolderError(files):
     
     for item in files:
         if item['used'] == False:
-            unusedHtml = ('&nbsp;',
-                Span([Class('tag is-warning has-tooltip-multiline has-tooltip-right'), Data_('tooltip', "There are file(s) in this folder that are not linked in the course.")],
+            unusedHtml = (
+                Span([Class('tag is-warning has-tooltip-multiline has-tooltip-right ml-2'), Data_('tooltip', "There are file(s) in this folder that are not linked in the course.")],
                     'Unused Files',
-                    #Span([Class('icon is-small')], 
-                    #    I([Class("fas fa-exclamation-triangle")])
-                    #)
                 )
             ),
         if item['count'] > 1:
-            duplicateHtml = ('&nbsp;',
-                Span([Class('tag is-info has-tooltip-multiline has-tooltip-right'), Data_('tooltip', 'This contains a file which has a duplicate copy in the file structure.')],
+            duplicateHtml = (
+                Span([Class('tag is-info has-tooltip-multiline has-tooltip-right ml-2'), Data_('tooltip', 'This contains a file which has a duplicate copy in the file structure.')],
                     'Duplicate Files',
-                    #Span([Class('icon is-small')], 
-                    #    I([Class("fas fa-exclamation-triangle")])
-                    #)
                 )
             ),
     
@@ -294,7 +298,7 @@ def fileStructureFolderError(files):
 def errorUnpublishedItems(count, title):
     if count > 0:
         html = ( 
-                Span([Class("tag is-warning has-tooltip-multiline has-tooltip-right"), Data_('tooltip', f"There are unpublished {title} in this folder, Students are unable to see unpublished {title}. Publish if students need to see it.")], f'{count} Unpublished {title.capitalize()}',)
+                Span([Class("tag is-warning has-tooltip-multiline has-tooltip-right ml-2"), Data_('tooltip', f"There are unpublished {title} in this folder, Students are unable to see unpublished {title}. Publish if students need to see it.")], f'{count} Unpublished {title.capitalize()}',)
                 )
     
     return html if count > 0 else ""

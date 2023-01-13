@@ -3,7 +3,7 @@ from htmlBuilder.tags import *
 from htmlBuilder.attributes import Class, Style
 from htmlgeneration.extraHtmlFunctions import about
 from lib.InfoPacks import getDescriptions
-from htmlgeneration.extraHtmlFunctions import statusCodeInfo, errorBrokenLink
+from htmlgeneration.extraHtmlFunctions import statusCodeInfo, errorBrokenLink, statusErrorSummary
 from Checks.linkCheck import linkCheck
 from pprint import pprint
 
@@ -12,6 +12,7 @@ def generateImagesHtml(myCanvas, canvasQa):
     imagesData = {}
     imagesData['Page'] = {}
     imagesData['Quiz'] = {}
+    canvasQa['issues']['Images']['Summary'] = {}
     
     for pageId, pageData in canvasQa['pages'].items():
         if pageData.get('imgTags') == None:
@@ -20,6 +21,19 @@ def generateImagesHtml(myCanvas, canvasQa):
         imagesData['Page'][pageId]['title'] = pageData['title']
         imagesData['Page'][pageId]['url'] = pageData['url']
         imagesData['Page'][pageId]['images'] = pageData['imgTags']
+        
+        for altTag, data in pageData['imgTags'].items():
+            canvasQa['issues']['Images']['Summary']['total'] = canvasQa['issues']['Images']['Summary'].get('total', 0) + 1
+            if data['statusCode'] == 0:
+                canvasQa['issues']['Images']['Summary']['errors'] = canvasQa['issues']['Images']['Summary'].get('errors', 0) + 1
+            elif data['statusCode'] < 200:
+                canvasQa['issues']['Images']['Summary']['warning'] = canvasQa['issues']['Images']['Summary'].get('warning', 0) + 1
+            elif data['statusCode'] < 300:
+                canvasQa['issues']['Images']['Summary']['good'] = canvasQa['issues']['Images']['Summary'].get('good', 0) + 1
+            elif data['statusCode'] < 400:
+                canvasQa['issues']['Images']['Summary']['warning'] = canvasQa['issues']['Images']['Summary'].get('warning', 0) + 1
+            else:
+                canvasQa['issues']['Images']['Summary']['errors'] = canvasQa['issues']['Images']['Summary'].get('errors', 0) + 1
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
@@ -33,17 +47,30 @@ def generateImagesHtml(myCanvas, canvasQa):
                 imagesData['Quiz'][assessmentId]['url'] = assessmentData['url']
                 imagesData['Quiz'][assessmentId]['images'] = quizData['imgTags']
                 
+                for altTag, data in quizData['imgTags'].items():
+                    canvasQa['issues']['Images']['Summary']['total'] = canvasQa['issues']['Images']['Summary'].get('total', 0) + 1
+                    if data['statusCode'] == 0:
+                        canvasQa['issues']['Images']['Summary']['errors'] = canvasQa['issues']['Images']['Summary'].get('errors', 0) + 1
+                    elif data['statusCode'] < 200:
+                        canvasQa['issues']['Images']['Summary']['warning'] = canvasQa['issues']['Images']['Summary'].get('warning', 0) + 1
+                    elif data['statusCode'] < 300:
+                        canvasQa['issues']['Images']['Summary']['good'] = canvasQa['issues']['Images']['Summary'].get('good', 0) + 1
+                    elif data['statusCode'] < 400:
+                        canvasQa['issues']['Images']['Summary']['warning'] = canvasQa['issues']['Images']['Summary'].get('warning', 0) + 1
+                    else:
+                        canvasQa['issues']['Images']['Summary']['errors'] = canvasQa['issues']['Images']['Summary'].get('errors', 0) + 1
+                
     if imagesData.get('Page') is None and imagesData.get('Quiz') is None:
         return ''
-    htmlImages = htmlImagesGenerate(imagesData, canvasQa['issues']['Images']['id'], myCanvas) 
+    htmlImages = htmlImagesGenerate(imagesData, canvasQa['issues']['Images']['id'], myCanvas, canvasQa) 
     
     return htmlImages
 
-def htmlImagesGenerate(imagesData, id, myCanvas):
+def htmlImagesGenerate(imagesData, id, myCanvas, canvasQa):
     html = (
             Article([Class('message')],
                 Div([Class('message-header')],
-                    P([], Span([], 'Images'),
+                    P([], Span([], 'Images'), statusErrorSummary(canvasQa['issues']['Images']['Summary']),
                         Span([Class('tag is-info ml-6')], 
                             A([Onclick(f'sectionExpand("{id}");')], 'collapse/expand')
                         ),

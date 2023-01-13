@@ -62,7 +62,7 @@ def getStatusCode(code):
                 '297': 'This is a Sharepoint Link and is locked behind a login.',
                 '298': 'This is an Email Link',
                 '299': 'This is an interal link used by the html inside of a page.',
-                '998': 'The requested resource has moved, but was found. It needs http:// to be replaced with https:// to become a valid link.',
+                '398': 'The requested resource has moved, but was found. It needs http:// to be replaced with https:// as soon as possible.',
                 '999': "This is a Blackboard Link is either already broken or will stop working when Blackboard is taken down. Please fix asap."
                 }
     

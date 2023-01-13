@@ -93,7 +93,7 @@ def generateQaHtml(myCanvas, canvasQa):
                 
                 Div([Class('content')],
                     Div([Class('columns is-multiline')],
-                        Div([Class('column is-4')],
+                        Div([Class('column is-2')],
                             htmlContentsTable,
                         )
                     )

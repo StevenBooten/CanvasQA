@@ -12,6 +12,7 @@ from htmlgeneration.canvasQaHtml import generateQaHtml
 import json
 from pprint import pprint
 from pathlib import Path
+from time import sleep
 
 sys.setrecursionlimit(2000)
 
@@ -44,51 +45,56 @@ def mainProgram():
         canvasQa['issues']['Embedded Content'] = { 'id':"collapsible-video-check", 'count' : 0, 'html' : ''}
         
         myCanvas.getCourse(course['canvasCourseId'])
+        print('-' * 80)
         print(f'Running: {myCanvas.courseCode}')
-        bar = progressbar.ProgressBar(maxval=MAXBAR, \
-            widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+        print(f'{count} of {len(courseDetails)}')
+        #bar = progressbar.ProgressBar(maxval=MAXBAR, \
+        #    widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
         
-        bar.start()
+        #bar.start()
+        
         canvasQa['pages'] = collectCoursePages(myCanvas)
-        updateBar(count, bar)
+        #updateBar(count, bar)
         
         canvasQa['usedFiles'] += collectCourseModules(myCanvas, canvasQa)
-        updateBar(count, bar)
+        #updateBar(count, bar)
         
         usedFiles = collectCourseAssignments(myCanvas, canvasQa)
         canvasQa['usedFiles'] += usedFiles
-        updateBar(count, bar)
+        #updateBar(count, bar)
         
         canvasQa['unattachedPages'] = unattachedPages(myCanvas, canvasQa)
-        updateBar(count, bar)
+        #updateBar(count, bar)
         
         usedFiles = checkPageBody(canvasQa, myCanvas)
         canvasQa['usedFiles'] += usedFiles
-        updateBar(count, bar)
+        #updateBar(count, bar)
         
         canvasQa['files'] = collectCourseFiles(myCanvas, canvasQa)
-        updateBar(count, bar)
+        #updateBar(count, bar)
         
         with open(f'./jsons/{myCanvas.courseCode} QA.json', 'w') as outfile:
             json.dump(canvasQa, outfile, indent=4)
-        updateBar(count, bar)
+        #updateBar(count, bar)
             
         canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
         saveQaHtml(canvasQaHtml, myCanvas)
-        updateBar(count, bar)
+        #updateBar(count, bar)
         
+        #bar.finish()
         
-        
-        bar.finish()
+        print(f'Successfully completed')
     
 def saveQaHtml(canvasQaHtml, myCanvas):
     
     filePath = f'{settings.CANVAS_QA_DOWNLOAD_FOLDER}'
-    fileName = f'{myCanvas.courseCode.replace("_"," ").replace("/", "-").replace(":", "-").replace("?", "")} QA.html'
+    fileName = f'{myCanvas.courseCode.replace("_"," ").replace("/", "-").replace(":", "-").replace("?", "")} QA v2.html'
     
     # uploads the HTML report to the canvas course site
     with open(Path(filePath, fileName), 'w', encoding="utf-8") as f:
         f.write(canvasQaHtml.render(pretty=True, doctype=True))
+        
+    myCanvas.uploadFile(filePath, fileName, '/QA Info')
     
 
 def setupVariables():

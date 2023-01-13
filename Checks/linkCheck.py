@@ -75,7 +75,7 @@ def linkCheck(url, myCanvas):
     
     if statusCode < 400 or statusCode >= 300:
         if url.startswith('http://'):
-            return 998, badLink
+            return 398, badLink
         
     if statusCode == 302:
         if url.startswith('https://lms.griffith.edu.au/'):
