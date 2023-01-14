@@ -25,8 +25,8 @@ def checkPageBody(canvasQa, myCanvas):
         page['links'] = getPageLinks(soup, myCanvas, canvasQa)
         page['embeddedContent'] = getVideoIframes(soup, myCanvas, canvasQa)
         
-        usedFiles += checkForCanvasFileLink(page['links']) if page['links'] is not None else {}
-        usedFiles += checkForCanvasFileLink(page['imgTags']) if page['imgTags'] is not None else {}
+        usedFiles += checkForCanvasFileLink(page['links']) if page['links'] is not None else []
+        usedFiles += checkForCanvasFileLink(page['imgTags']) if page['imgTags'] is not None else []
         
     return usedFiles
 
@@ -216,7 +216,7 @@ def getPageLinks(soup, myCanvas, canvasQa):
                 if link.get('class')[0].startswith('instructure_file_link'):
                     tempHold.clear()
                 else:
-                    links[tempHold.keys()[0]] = tempHold['canvasFile']
+                    #links[tempHold.keys()] = tempHold['canvasFile']
                     tempHold.clear()
 
             verifierPos = link.get('href').find('?verifier=')
@@ -237,7 +237,7 @@ def getPageLinks(soup, myCanvas, canvasQa):
             
     canvasQa['issues']['Course Links']['count'] += linkErrorCount
 
-    return links if len(links) > 0 else None
+    return links if len(links) > 0 else {}
 
 def getVideoIframes(soup, myCanvas, canvasQa):
     iframeVideos = {}

@@ -13,6 +13,8 @@ import json
 from pprint import pprint
 from pathlib import Path
 from time import sleep
+import time
+
 
 sys.setrecursionlimit(2000)
 
@@ -29,7 +31,8 @@ def mainProgram():
     args, courseDetails, myCanvas = setupVariables()
     
     
-    for course in courseDetails:
+    for prog, course in enumerate(courseDetails):
+        sys.setrecursionlimit(10000)
         count = 1
         canvasQa = {}
         canvasQa['usedFiles'] = []
@@ -47,43 +50,43 @@ def mainProgram():
         myCanvas.getCourse(course['canvasCourseId'])
         print('-' * 80)
         print(f'Running: {myCanvas.courseCode}')
-        print(f'{count} of {len(courseDetails)}')
-        #bar = progressbar.ProgressBar(maxval=MAXBAR, \
-        #    widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+        print(f'{prog+1} of {len(courseDetails)}')
+        sys.stdout.flush()
+        bar = progressbar.ProgressBar(maxval=MAXBAR, \
+            widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
         
-        #bar.start()
+        bar.start()
         
         canvasQa['pages'] = collectCoursePages(myCanvas)
-        #updateBar(count, bar)
+        updateBar(count, bar)
         
         canvasQa['usedFiles'] += collectCourseModules(myCanvas, canvasQa)
-        #updateBar(count, bar)
+        updateBar(count, bar)
         
         usedFiles = collectCourseAssignments(myCanvas, canvasQa)
         canvasQa['usedFiles'] += usedFiles
-        #updateBar(count, bar)
+        updateBar(count, bar)
         
         canvasQa['unattachedPages'] = unattachedPages(myCanvas, canvasQa)
-        #updateBar(count, bar)
+        updateBar(count, bar)
         
         usedFiles = checkPageBody(canvasQa, myCanvas)
         canvasQa['usedFiles'] += usedFiles
-        #updateBar(count, bar)
+        updateBar(count, bar)
         
         canvasQa['files'] = collectCourseFiles(myCanvas, canvasQa)
-        #updateBar(count, bar)
+        updateBar(count, bar)
         
         with open(f'./jsons/{myCanvas.courseCode} QA.json', 'w') as outfile:
             json.dump(canvasQa, outfile, indent=4)
-        #updateBar(count, bar)
+        updateBar(count, bar)
             
         canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
         saveQaHtml(canvasQaHtml, myCanvas)
         #updateBar(count, bar)
         
-        #bar.finish()
-        
-        print(f'Successfully completed')
+        bar.finish()
+        sys.stdout.flush()
     
 def saveQaHtml(canvasQaHtml, myCanvas):
     
@@ -112,5 +115,8 @@ def setupVariables():
         
     
 if __name__ == '__main__':
-    
+    st = time.time()
     mainProgram()
+    et = time.time()
+    
+    print(f'Finished in {et-st} seconds')

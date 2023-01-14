@@ -118,7 +118,7 @@ def collectCoursePages(myCanvas):
         #- page url only holds "my-page-title" so creating a valid URL to the actual page in the course.
         myPages[page.page_id]['url'] = f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/pages/{page.url}'
         myPages[page.page_id]['body'] = myCanvas.getPage(page.page_id).body
-        myPages[page.page_id]['links'] = []
+        myPages[page.page_id]['links'] = {}
         
         #- Publishes returns a boolean value, so it needs to be converted to a string
         if page.published:
