@@ -1,4 +1,8 @@
-from simple_settings import settings
+try:
+    from simple_settings import settings
+except:
+    from lib.CanvasSettings import CanvasSettings
+    settings = CanvasSettings()
 from canvasapi import Canvas
 from sqlalchemy import create_engine
 import pandas as pd
@@ -209,6 +213,10 @@ def parseArgsCanvas():
     parser.add_argument('--ignoreJoined', action="store_true", default=False)
     parser.add_argument('--term', action="store", default=None)
     parser.add_argument('--year', action="store", default=None)
+    
+    #these arguments are used for small runs of Canvas QA without needing any sort of database
+    parser.add_argument('--url', action="store", default=None)
+    parser.add_argument('--spreadsheet', action="store", default=None)
     
     return parser.parse_args()
     

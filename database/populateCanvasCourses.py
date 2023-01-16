@@ -10,8 +10,11 @@ from asyncio.windows_events import NULL
 from statistics import multimode
 from unicodedata import numeric
 from numpy import place
-from simple_settings import settings
-from simple_settings import LazySettings
+try:
+    from simple_settings import settings
+except:
+    from lib.CanvasSettings import CanvasSettings
+    settings = CanvasSettings()
 from pathlib import Path
 from datetime import datetime
 

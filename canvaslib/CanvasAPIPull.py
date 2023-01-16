@@ -1,7 +1,11 @@
 from importlib.util import module_for_loader
 from os import link
 from pydoc import pager
-from simple_settings import settings
+try:
+    from simple_settings import settings
+except:
+    from lib.CanvasSettings import CanvasSettings
+    settings = CanvasSettings()
 from canvasapi import Canvas
 from sqlalchemy import null
 from pprint import pprint

@@ -1,4 +1,8 @@
-from simple_settings import settings
+try:
+    from simple_settings import settings
+except:
+    from lib.CanvasSettings import CanvasSettings
+    settings = CanvasSettings()
 from Checks.body import checkQuizBody
 from pprint import pprint
 
@@ -67,10 +71,10 @@ def quizQa(myCanvas, quiz, canvasQa):
             questionInfo[question.id]['bbBrokenLinks'] = {'Question Text': "Broken embed inside Question Body"}
         if question.correct_comments_html is not None:
             if question.correct_comments_html.find(bbSearchTerm) > -1:
-                questionInfo[question.id]['bbBrokenLinks'] += {'Correct Comment': "Broken embed inside Correct Comments"}
+                questionInfo[question.id]['bbBrokenLinks'] = {'Correct Comment': "Broken embed inside Correct Comments"}
         if question.incorrect_comments_html is not None:
             if question.incorrect_comments_html.find(bbSearchTerm) > -1:
-                questionInfo[question.id]['bbBrokenLinks'] += {'Incorrect Comments' : "Broken embed inside Incorrect Comments"}
+                questionInfo[question.id]['bbBrokenLinks'] = {'Incorrect Comments' : "Broken embed inside Incorrect Comments"}
     
     
     

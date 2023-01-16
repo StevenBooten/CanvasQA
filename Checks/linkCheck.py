@@ -1,6 +1,8 @@
 import requests
 import re
-from simple_settings import settings
+#from simple_settings import settings
+from lib.CanvasSettings import CanvasSettings
+settings = CanvasSettings()
 
 
 TIMEOUT = 20

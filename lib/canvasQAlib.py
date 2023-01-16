@@ -1,5 +1,9 @@
 import logging
-from simple_settings import settings
+try:
+    from simple_settings import settings
+except:
+    from lib.CanvasSettings import CanvasSettings
+    settings = CanvasSettings()
 
 def initialiseLogging(logFileName=None):
     """Set up basic logging information for all CAR generation

@@ -1,5 +1,9 @@
 
-from simple_settings import settings
+try:
+    from simple_settings import settings
+except:
+    from lib.CanvasSettings import CanvasSettings
+    settings = CanvasSettings()
 from canvasapi import Canvas
 from pathlib import Path
 
@@ -80,5 +84,8 @@ class CanvasAPI():
     
     def updateCourse(self, **kwargs):
         return self.course.update(**kwargs)
+    
+    def getAccounts(self):
+        return self.canvasConnection.get_accounts()
 
     

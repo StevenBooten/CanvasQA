@@ -1,7 +1,11 @@
 import sys
-from simple_settings import settings
 import progressbar
 sys.path.append("../")
+try:
+    from simple_settings import settings
+except:
+    from lib.CanvasSettings import CanvasSettings
+    settings = CanvasSettings()
 from canvaslib.Canvaslib import databaseSearchCanvas, parseArgsCanvas, initialiseLogging
 from canvaslib.CanvasAPIClass import CanvasAPI
 from Checks.body import checkPageBody
@@ -27,9 +31,27 @@ def updateBar(count, bar):
     bar.update((MAXBAR/step) * count)
 
 def mainProgram():
-    
+     
     args, courseDetails, myCanvas = setupVariables()
     
+    
+    # This input takes a single course code or a comma separated list of course codes.
+    # can either be course code ie 1270 or the full url ie https://lms.griffith.edu.au/courses/1270 seperated by commas (,)
+    if args.url is not None:
+        urlList = args.url.split(',')
+        
+        courseDetails = []
+        for url in urlList:
+            if url.startswith('https://'):
+                url = url.replace(f'{settings.CANVAS_API_URL}courses/', '')
+                url = url[:url.find('/')]
+                
+            if not url.isdigit():
+                print(f'Invalid course code: {url}')
+                continue
+            
+            courseDetails.append({'canvasCourseId': url})
+            
     
     for prog, course in enumerate(courseDetails):
         sys.setrecursionlimit(10000)
