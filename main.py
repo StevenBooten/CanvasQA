@@ -18,6 +18,7 @@ from pprint import pprint
 from pathlib import Path
 from time import sleep
 import time
+from openpyxl import load_workbook
 
 
 sys.setrecursionlimit(2000)
@@ -51,6 +52,9 @@ def mainProgram():
                 continue
             
             courseDetails.append({'canvasCourseId': url})
+            
+    if args.spreadsheet is not None:
+        courseDetails = pullDataFromSpreadsheet(args.spreadsheet)
             
     
     for prog, course in enumerate(courseDetails):
@@ -109,6 +113,25 @@ def mainProgram():
         
         bar.finish()
         sys.stdout.flush()
+        
+    if args.loop:
+        return 1
+    else:
+        return 0
+
+def pullDataFromSpreadsheet(spreadsheet):
+    courseDetails = []
+    
+    workbook = load_workbook(filename=spreadsheet)
+    
+    sheet = workbook.active
+    
+    for row in sheet.iter_rows():
+        if row[0].value == 'Canvas Course ID':
+            continue
+        courseDetails.append({'canvasCourseId' : row[0].value}) 
+    
+    return courseDetails
     
 def saveQaHtml(canvasQaHtml, myCanvas):
     
@@ -137,8 +160,8 @@ def setupVariables():
         
     
 if __name__ == '__main__':
-    st = time.time()
-    mainProgram()
-    et = time.time()
+    runProgram = 1
     
-    print(f'Finished in {et-st} seconds')
+    while runProgram:
+        runProgram = mainProgram() 
+    
