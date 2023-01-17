@@ -103,12 +103,14 @@ def mainProgram():
         canvasQa['files'] = collectCourseFiles(myCanvas, canvasQa)
         updateBar(count, bar)
         
-        with open(f'./jsons/{myCanvas.courseCode} QA.json', 'w') as outfile:
+        filename = f'{myCanvas.courseCode.replace("_"," ").replace("/", "-").replace(":", "-").replace("?", "").replace("*.*", "")} QA'
+        
+        with open(f'./jsons/{filename} QA.json', 'w') as outfile:
             json.dump(canvasQa, outfile, indent=4)
         updateBar(count, bar)
             
         canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
-        saveQaHtml(canvasQaHtml, myCanvas)
+        saveQaHtml(canvasQaHtml, myCanvas, filename)
         #updateBar(count, bar)
         
         bar.finish()
@@ -133,10 +135,10 @@ def pullDataFromSpreadsheet(spreadsheet):
     
     return courseDetails
     
-def saveQaHtml(canvasQaHtml, myCanvas):
+def saveQaHtml(canvasQaHtml, myCanvas, filename):
     
     filePath = f'{settings.CANVAS_QA_DOWNLOAD_FOLDER}'
-    fileName = f'{myCanvas.courseCode.replace("_"," ").replace("/", "-").replace(":", "-").replace("?", "").replace("*.*", "")} QA v2.html'
+    fileName =  f'{filename} v2.html'
     
     # uploads the HTML report to the canvas course site
     with open(Path(filePath, fileName), 'w', encoding="utf-8") as f:
