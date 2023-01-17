@@ -50,6 +50,8 @@ def linkCheck(url, myCanvas):
         return 999, badLink
     elif 'bbcollab' in url:
         return 999, badLink
+    elif 'bblearn' in url:
+        return 999, badLink
     elif 'blackboard' in url:
         return 999, badLink
     elif 'EmbeddedFile.request' in url:
