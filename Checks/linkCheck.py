@@ -61,6 +61,10 @@ def linkCheck(url, myCanvas):
     elif 'tel:' in url:
         return 296, goodLink
     
+    #added for Jtool recognition.
+    if 'app.secure.griffith' in url and '@user.id@' in url:
+        return 998, badLink
+    
     elif url.startswith('#'):
         return 299, goodLink
     

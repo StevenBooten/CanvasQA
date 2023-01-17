@@ -63,6 +63,7 @@ def getStatusCode(code):
                 '298': 'This is an Email Link',
                 '299': 'This is an interal link used by the html inside of a page.',
                 '398': 'The requested resource has moved, but was found. It needs http:// to be replaced with https:// as soon as possible.',
+                '998': 'This is a link or embed to Jtool. This does not work in Canvas. These links will need to be removed. You can migrate the content to Response Tool if still needed.',
                 '999': "This is a Blackboard Link is either already broken or will stop working when Blackboard is taken down. Please fix asap."
                 }
     
