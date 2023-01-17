@@ -191,6 +191,7 @@ def addCoursetoDict(course, sisid, joined=False):
         courseDict['oua'] = 1
     else:
         courseDict['oua'] = 0
+    
     courseDict['school'] = re.sub('[0-9]', '', courseDict['course'])[:3]
     courseDict['year'], courseDict['period'] = str('20' + courseDict['termCode'][1:3]), courseDict['termCode'][3:4]
     courseDict['canvasCourseId'] = course.id

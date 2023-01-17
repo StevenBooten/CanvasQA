@@ -136,7 +136,7 @@ def pullDataFromSpreadsheet(spreadsheet):
 def saveQaHtml(canvasQaHtml, myCanvas):
     
     filePath = f'{settings.CANVAS_QA_DOWNLOAD_FOLDER}'
-    fileName = f'{myCanvas.courseCode.replace("_"," ").replace("/", "-").replace(":", "-").replace("?", "")} QA v2.html'
+    fileName = f'{myCanvas.courseCode.replace("_"," ").replace("/", "-").replace(":", "-").replace("?", "").replace("*.*", "")} QA v2.html'
     
     # uploads the HTML report to the canvas course site
     with open(Path(filePath, fileName), 'w', encoding="utf-8") as f:
