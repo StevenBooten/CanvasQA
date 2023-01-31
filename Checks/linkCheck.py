@@ -8,7 +8,11 @@ settings = CanvasSettings()
 TIMEOUT = 20
 REQUEST_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:77.0) Gecko/20100101 Firefox/77.0',
-    'Authorization' : settings.CANVAS_API_KEY
+    'Accept-Encoding' : '*',
+    'Connection' : 'keep-alive',
+    'Authorization' : settings.CANVAS_API_KEY,
+    'Content-Type' : 'application/json',
+    'accept' : 'application/json'
 }
 
 def validate_url(url):
