@@ -2,6 +2,8 @@ from canvasapi import Canvas
 import re
 from pprint import pprint
 
+IGNORED_PAGES = ['Canvas Collections Configuration']
+
 #- Purpose of this module is  to cycle through every module in a course and pulls all necessary information
 #- Any manipulation of the data is done elsewhere
 def collectCourseModules(myCanvas, canvasQa):
@@ -112,6 +114,9 @@ def collectCoursePages(myCanvas):
     myPages = {}
     
     for page in myCanvas.getPages():
+        
+        if page.title in IGNORED_PAGES:
+            continue
         
         myPages[page.page_id] = {}
         myPages[page.page_id]['title'] = str(page.title)
