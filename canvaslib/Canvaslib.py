@@ -245,7 +245,7 @@ def initialiseLogging(logFileName=None):
     if logFileName is None:
         logFileName = settings.MIGRATION_LOGFILE
     else:
-        logFileName = f"{settings.MIGRATION_BASE}{logFileName}"
+        logFileName = f"{settings.LOGS}{logFileName}"
 
     logging.basicConfig( level=logging.INFO,
         format='%(asctime)s %(levelname)s: %(filename)s %(funcName)s %(lineno)d: %(message)s',
