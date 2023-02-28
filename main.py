@@ -103,11 +103,13 @@ def mainProgram():
         canvasQa['files'] = collectCourseFiles(myCanvas, canvasQa)
         updateBar(count, bar)
         
+        filename = f'{myCanvas.courseCode.replace("_"," ").replace("/", "-").replace(":", "-").replace("?", "").replace("*.*", "")}'
+        
         canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
         saveQaHtml(canvasQaHtml, myCanvas, filename)
         #updateBar(count, bar)
         
-        filename = f'{myCanvas.courseCode.replace("_"," ").replace("/", "-").replace(":", "-").replace("?", "").replace("*.*", "")}'
+        
         
         with open(f'{settings.CANVAS_QA_DOWNLOAD_FOLDER}\\jsons\\{filename} QA.json', 'w') as outfile:
             json.dump(canvasQa, outfile, indent=4)
