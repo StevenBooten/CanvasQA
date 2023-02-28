@@ -28,20 +28,20 @@ def generateQaHtml(myCanvas, canvasQa):
     updateTime = dateUpdate.strftime("%I:%M %p")
     
     generatedHtml = {}
-    generatedHtml['Modules']['html'] = generateModulesHtml(myCanvas, canvasQa)
-    generatedHtml['File Structure']['html'] = generateFileStructureHtml(myCanvas, canvasQa)
-    generatedHtml['Blackboard Residuals']['html'] = generateBBIssuesHtml(myCanvas, canvasQa)
-    generatedHtml['Placeholders']['html'] = generatePlaceholderHtml(myCanvas, canvasQa)
-    generatedHtml['Images']['html'] = generateImagesHtml(myCanvas, canvasQa)
-    generatedHtml['Unattached Pages']['html'] = generateUnattachedPagesHtml(myCanvas, canvasQa)
-    generatedHtml['Assignments']['html'] = generateAssignmentHtml(myCanvas, canvasQa)
-    generatedHtml['Course Links']['html'] = generateLinksHtml(myCanvas, canvasQa)
-    generatedHtml['Embedded Content']['html'] = generateEmbeddedContentHtml(myCanvas, canvasQa)
+    generatedHtml['Modules'] = generateModulesHtml(myCanvas, canvasQa)
+    generatedHtml['File Structure'] = generateFileStructureHtml(myCanvas, canvasQa)
+    generatedHtml['Blackboard Residuals'] = generateBBIssuesHtml(myCanvas, canvasQa)
+    generatedHtml['Placeholders'] = generatePlaceholderHtml(myCanvas, canvasQa)
+    generatedHtml['Images'] = generateImagesHtml(myCanvas, canvasQa)
+    generatedHtml['Unattached Pages'] = generateUnattachedPagesHtml(myCanvas, canvasQa)
+    generatedHtml['Assignments'] = generateAssignmentHtml(myCanvas, canvasQa)
+    generatedHtml['Course Links'] = generateLinksHtml(myCanvas, canvasQa)
+    generatedHtml['Embedded Content'] = generateEmbeddedContentHtml(myCanvas, canvasQa)
     htmlContentsTable = generateContentsTable(canvasQa)
     
     #create the string of ID's for the JS to use
     accordianIds = ''
-    for key, value in generatedHtml.items():
+    for key, value in canvasQa['issues'].items():
         accordianIds += f'"{value["id"]}",'
     
     
@@ -115,7 +115,7 @@ def generateQaHtml(myCanvas, canvasQa):
                     #        )  
                     #    ),
                     ),
-                    [value['html'] for key, value in sorted(generatedHtml.items(), key=lambda x: x[1]['count'], reverse=True)],
+                    [generatedHtml[key] for key, value in sorted(canvasQa['issues'].items(), key=lambda x: x[1]['count'], reverse=True)],
                 ), 
             )
         ),
