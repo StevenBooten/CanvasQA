@@ -27,20 +27,21 @@ def generateQaHtml(myCanvas, canvasQa):
     updateDate = dateUpdate.strftime("%d-%B")
     updateTime = dateUpdate.strftime("%I:%M %p")
     
-    canvasQa['issues']['Modules']['html'] = generateModulesHtml(myCanvas, canvasQa)
-    canvasQa['issues']['File Structure']['html'] = generateFileStructureHtml(myCanvas, canvasQa)
-    canvasQa['issues']['Blackboard Residuals']['html'] = generateBBIssuesHtml(myCanvas, canvasQa)
-    canvasQa['issues']['Placeholders']['html'] = generatePlaceholderHtml(myCanvas, canvasQa)
-    canvasQa['issues']['Images']['html'] = generateImagesHtml(myCanvas, canvasQa)
-    canvasQa['issues']['Unattached Pages']['html'] = generateUnattachedPagesHtml(myCanvas, canvasQa)
-    canvasQa['issues']['Assignments']['html'] = generateAssignmentHtml(myCanvas, canvasQa)
-    canvasQa['issues']['Course Links']['html'] = generateLinksHtml(myCanvas, canvasQa)
-    canvasQa['issues']['Embedded Content']['html'] = generateEmbeddedContentHtml(myCanvas, canvasQa)
+    generatedHtml = {}
+    generatedHtml['Modules']['html'] = generateModulesHtml(myCanvas, canvasQa)
+    generatedHtml['File Structure']['html'] = generateFileStructureHtml(myCanvas, canvasQa)
+    generatedHtml['Blackboard Residuals']['html'] = generateBBIssuesHtml(myCanvas, canvasQa)
+    generatedHtml['Placeholders']['html'] = generatePlaceholderHtml(myCanvas, canvasQa)
+    generatedHtml['Images']['html'] = generateImagesHtml(myCanvas, canvasQa)
+    generatedHtml['Unattached Pages']['html'] = generateUnattachedPagesHtml(myCanvas, canvasQa)
+    generatedHtml['Assignments']['html'] = generateAssignmentHtml(myCanvas, canvasQa)
+    generatedHtml['Course Links']['html'] = generateLinksHtml(myCanvas, canvasQa)
+    generatedHtml['Embedded Content']['html'] = generateEmbeddedContentHtml(myCanvas, canvasQa)
     htmlContentsTable = generateContentsTable(canvasQa)
     
     #create the string of ID's for the JS to use
     accordianIds = ''
-    for key, value in canvasQa['issues'].items():
+    for key, value in generatedHtml.items():
         accordianIds += f'"{value["id"]}",'
     
     
@@ -114,7 +115,7 @@ def generateQaHtml(myCanvas, canvasQa):
                     #        )  
                     #    ),
                     ),
-                    [value['html'] for key, value in sorted(canvasQa['issues'].items(), key=lambda x: x[1]['count'], reverse=True)],
+                    [value['html'] for key, value in sorted(generatedHtml.items(), key=lambda x: x[1]['count'], reverse=True)],
                 ), 
             )
         ),
