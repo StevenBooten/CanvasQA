@@ -103,15 +103,17 @@ def mainProgram():
         canvasQa['files'] = collectCourseFiles(myCanvas, canvasQa)
         updateBar(count, bar)
         
+        canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
+        saveQaHtml(canvasQaHtml, myCanvas, filename)
+        #updateBar(count, bar)
+        
         filename = f'{myCanvas.courseCode.replace("_"," ").replace("/", "-").replace(":", "-").replace("?", "").replace("*.*", "")}'
         
         with open(f'{settings.CANVAS_QA_DOWNLOAD_FOLDER}\\jsons\\{filename} QA.json', 'w') as outfile:
             json.dump(canvasQa, outfile, indent=4)
         updateBar(count, bar)
             
-        canvasQaHtml = generateQaHtml(myCanvas, canvasQa)
-        saveQaHtml(canvasQaHtml, myCanvas, filename)
-        #updateBar(count, bar)
+        
         
         bar.finish()
         sys.stdout.flush()
@@ -135,7 +137,7 @@ def pullDataFromSpreadsheet(spreadsheet):
     
     return courseDetails
     
-def saveQaHtml(canvasQaHtml, myCanvas, filename):
+def saveQaHtml(canvasQaHtml, myCanvas, filename, attempt=0):
     
     filePath = f'{settings.CANVAS_QA_DOWNLOAD_FOLDER}'
     fileName =  f'{filename} QA v2.html'
@@ -143,9 +145,13 @@ def saveQaHtml(canvasQaHtml, myCanvas, filename):
     # uploads the HTML report to the canvas course site
     with open(Path(filePath, fileName), 'w', encoding="utf-8") as f:
         f.write(canvasQaHtml.render(pretty=True, doctype=True))
-        
-    myCanvas.uploadFile(filePath, fileName, '/QA Info')
-    
+    try:    
+        myCanvas.uploadFile(filePath, fileName, '/QA Info')
+    except:
+        if attempt < 1:
+            saveQaHtml(canvasQaHtml, myCanvas, filename, 1)
+        else:
+            pass
 
 def setupVariables():
         
