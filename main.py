@@ -17,6 +17,7 @@ import json
 from pprint import pprint
 from pathlib import Path
 from time import sleep
+import logging
 import time
 from openpyxl import load_workbook
 
@@ -149,10 +150,12 @@ def saveQaHtml(canvasQaHtml, myCanvas, filename, attempt=0):
         f.write(canvasQaHtml.render(pretty=True, doctype=True))
     try:    
         myCanvas.uploadFile(filePath, fileName, '/QA Info')
-    except:
+    except Exception as e:
         if attempt < 1:
             saveQaHtml(canvasQaHtml, myCanvas, filename, 1)
         else:
+            logging.error(f'{e}\n{filename} multiple fails uploading to canvas')
+            print(f'{e}\n{filename} multiple fails uploading to canvas')
             pass
 
 def setupVariables():
