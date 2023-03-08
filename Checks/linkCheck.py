@@ -48,37 +48,37 @@ def linkCheck(url, myCanvas):
     badLink = 1
     goodLink = 0
     
-    if '@X@EmbeddedFile.requestUrlStub/' in url:
+    if '@X@EmbeddedFile.requestUrlStub/' in url.lower():
         return 999, badLink
-    elif 'webapps/echo-library' in url:
+    elif 'webapps/echo-library' in url.lower():
         return 999, badLink
-    elif 'bbcollab' in url:
+    elif 'bbcollab' in url.lower():
         return 999, badLink
-    elif 'bblearn' in url:
+    elif 'bblearn' in url.lower():
         return 999, badLink
-    elif 'blackboard' in url:
+    elif 'blackboard' in url.lower():
         return 999, badLink
-    elif 'EmbeddedFile.request' in url:
+    elif 'EmbeddedFile.request' in url.lower():
         return 999, badLink
-    elif 'mailto' in url:
+    elif 'mailto' in url.lower():
         return 298, goodLink
-    elif 'https://griffitheduau.sharepoint.com' in url:
+    elif 'https://griffitheduau.sharepoint.com' in url.lower():
         return 297, goodLink
-    elif 'tel:' in url:
+    elif 'tel:' in url.lower():
         return 296, goodLink
     
     #added for Jtool recognition.
-    if 'app.secure.griffith' in url and '@user.id@' in url:
+    if 'app.secure.griffith' in url.lower() and '@user.id@' in url.lower():
         return 998, badLink
     
-    elif url.startswith('#'):
+    elif url.lower().startswith('#'):
         return 299, goodLink
     
-    start = re.match('https://lms.griffith.edu.au/courses/', url)
+    start = re.match('https://lms.griffith.edu.au/courses/', url.lower())
     if start is not None:
-        end = re.match('/[a-z]*', url[start.end()::])
+        end = re.match('/[a-z]*', url.lower()[start.end()::])
         if end is not None:
-            courseId = url[start.end():end.start()]
+            courseId = url.lower()[start.end():end.start()]
             if courseId != myCanvas.courseId:
                 return 322, badLink
             
@@ -86,11 +86,11 @@ def linkCheck(url, myCanvas):
     statusCode = validate_url(url)
     
     if statusCode < 400 or statusCode >= 300:
-        if url.startswith('http://'):
+        if url.lower().startswith('http://'):
             return 398, badLink
         
     if statusCode == 302:
-        if url.startswith('https://lms.griffith.edu.au/'):
+        if url.lower().startswith('https://lms.griffith.edu.au/'):
             statusCode = 200
     
     if statusCode < 200:
