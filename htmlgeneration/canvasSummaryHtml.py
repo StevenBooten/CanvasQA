@@ -30,7 +30,7 @@ def contentsTableBody(issueList):
             html = (html,
                     Tr([],
                         Td([Class('is-size-7')],
-                            A([Onclick(f'sectionExpand("{value["id"]}");')], title)
+                            A([Onclick(f'sectionExpand("{value["id"]}");')], title if title is not 'Blackboard Residuals' else 'Blackboard Artefacts and Terminology')
                         ),
                         Td([Class('is-size-7 has-text-centered')], str(value['count'])) if value['count'] > 0 else Td([Class('is-size-7 has-text-centered')], 'None')
                         )

@@ -10,10 +10,10 @@ def checkPageBody(canvasQa, myCanvas):
             
         body = page.get('body', None)
         
-        #if body is not None and type(body) == str:
+        if body is None: # not None and type(body) == str:
         #    body = body.lower()
         #else:
-        #    continue
+            continue
             
         soup = bs.BeautifulSoup(body, features="html.parser")
         
