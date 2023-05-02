@@ -14,7 +14,8 @@ def checkPageBody(canvasQa, myCanvas):
         #    body = body.lower()
         #else:
         #    continue
-            
+        if body is None:
+            continue    
         soup = bs.BeautifulSoup(body, features="html.parser")
         
         page['bbTerms'] = BBtermCheck(soup, page['title'])
