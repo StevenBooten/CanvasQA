@@ -272,7 +272,6 @@ def getVideoIframes(soup, myCanvas, canvasQa):
             linkErrorCount += error
                 
             iframeVideos.append({'host': host, 'source' : item.get('src'), 'statusCode' : statusCode})
-    pprint(iframeVideos)
             
     canvasQa['issues']['Embedded Content']['count'] += linkErrorCount
     
