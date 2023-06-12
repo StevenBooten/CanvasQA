@@ -240,7 +240,7 @@ def getPageLinks(soup, myCanvas, canvasQa):
     return links if len(links) > 0 else {}
 
 def getVideoIframes(soup, myCanvas, canvasQa):
-    iframeVideos = {}
+    iframeVideos = []
     linkErrorCount = 0
     for item in soup.findAll('iframe'):
         if item.has_attr('src'):
@@ -266,13 +266,14 @@ def getVideoIframes(soup, myCanvas, canvasQa):
             else:
                 host = 'Unknown'
             
-            if iframeVideos.get(host, None) == None:
-                iframeVideos[host] = {}
+            #if iframeVideos.get(host, None) == None:
+            #    iframeVideos[host] = []
                 
             statusCode, error = linkCheck(item.get('src'), myCanvas)
             linkErrorCount += error
                 
-            iframeVideos[host] = {'source' : item.get('src'), 'statusCode' : statusCode}
+            iframeVideos.append({'host': host, 'source' : item.get('src'), 'statusCode' : statusCode})
+    pprint(iframeVideos)
             
     canvasQa['issues']['Embedded Content']['count'] += linkErrorCount
     

@@ -21,18 +21,19 @@ def generateEmbeddedContentHtml(myCanvas, canvasQa):
         embeddedContentData['Page'][pageId]['embeddedContent'] = pageData['embeddedContent']
         
         
-        for altTag, data in pageData['embeddedContent'].items():
-            canvasQa['issues']['Embedded Content']['Summary']['total'] = canvasQa['issues']['Embedded Content']['Summary'].get('total', 0) + 1
-            if data['statusCode'] == 0:
-                canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
-            elif data['statusCode'] < 200:
-                canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
-            elif data['statusCode'] < 300:
-                canvasQa['issues']['Embedded Content']['Summary']['good'] = canvasQa['issues']['Embedded Content']['Summary'].get('good', 0) + 1
-            elif data['statusCode'] < 400:
-                canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
-            else:
-                canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
+        for data in pageData['embeddedContent']:
+            #for data in embeddedItems:
+                canvasQa['issues']['Embedded Content']['Summary']['total'] = canvasQa['issues']['Embedded Content']['Summary'].get('total', 0) + 1
+                if data['statusCode'] == 0:
+                    canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
+                elif data['statusCode'] < 200:
+                    canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
+                elif data['statusCode'] < 300:
+                    canvasQa['issues']['Embedded Content']['Summary']['good'] = canvasQa['issues']['Embedded Content']['Summary'].get('good', 0) + 1
+                elif data['statusCode'] < 400:
+                    canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
+                else:
+                    canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
@@ -46,18 +47,19 @@ def generateEmbeddedContentHtml(myCanvas, canvasQa):
                 embeddedContentData['Quiz'][assessmentId]['url'] = assessmentData['url']
                 embeddedContentData['Quiz'][assessmentId]['embeddedContent'] = quizData['embeddedContent']
                 
-                for altTag, data in quizData['embeddedContent'].items():
-                    canvasQa['issues']['Embedded Content']['Summary']['total'] = canvasQa['issues']['Embedded Content']['Summary'].get('total', 0) + 1
-                    if data['statusCode'] == 0:
-                        canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
-                    elif data['statusCode'] < 200:
-                        canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
-                    elif data['statusCode'] < 300:
-                        canvasQa['issues']['Embedded Content']['Summary']['good'] = canvasQa['issues']['Embedded Content']['Summary'].get('good', 0) + 1
-                    elif data['statusCode'] < 400:
-                        canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
-                    else:
-                        canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
+                for data in quizData['embeddedContent']:
+                    #for data in embeddedItems:
+                        canvasQa['issues']['Embedded Content']['Summary']['total'] = canvasQa['issues']['Embedded Content']['Summary'].get('total', 0) + 1
+                        if data['statusCode'] == 0:
+                            canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
+                        elif data['statusCode'] < 200:
+                            canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
+                        elif data['statusCode'] < 300:
+                            canvasQa['issues']['Embedded Content']['Summary']['good'] = canvasQa['issues']['Embedded Content']['Summary'].get('good', 0) + 1
+                        elif data['statusCode'] < 400:
+                            canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
+                        else:
+                            canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
                 
                 
     if embeddedContentData.get('Page') is None and embeddedContentData.get('Quiz') is None:
@@ -125,9 +127,9 @@ def htmlEmbeddedContentHeader(values, myCanvas):
         sumItems = len(info['embeddedContent']) if info['embeddedContent'] is not None else 0
         if sumItems == 0:
             continue
-        for altTag, source in info['embeddedContent'].items():
-            if 200 > source['statusCode'] or source['statusCode'] >= 300:
-                statusCodeErrors.append(source['statusCode'])
+        for data in info['embeddedContent']:
+            if 200 > data['statusCode'] or data['statusCode'] >= 300:
+                statusCodeErrors.append(data['statusCode'])
         statusCodeErrors = list(set(statusCodeErrors))
         html = (html,
                 Tr([],
@@ -166,15 +168,15 @@ def htmlEmbeddedContentHeader(values, myCanvas):
 
 def htmlEmbeddedContentItems(info, myCanvas):
     html = ''
-    for host, source in sorted(info['embeddedContent'].items(), key=lambda x: x[1]['statusCode']):
+    for embed in info['embeddedContent']: #sorted(info['embeddedContent'].items(), key=lambda x: x[1]['statusCode']):
         html = (html,
             Tr([],
                 Td([], 
-                    statusCodeInfo(source['statusCode'])
+                    statusCodeInfo(embed['statusCode'])
                 ),
-                Td([], host),
+                Td([], embed['host']),
                 Td([], 
-                    A([Href(source['source']), Target('_blank'), Rel('noopener noreferrer')], source['source']))
+                    A([Href(embed['source']), Target('_blank'), Rel('noopener noreferrer')], embed['source']))
                 ),
             )   
     return html
