@@ -91,6 +91,7 @@ def AssignmentHtml(assignments):
                                                 Th([], 'Submission Type'),
                                                 Th([], 'Max Score'),
                                                 Th([], 'Published'), 
+                                                Th([], 'Rubric'),
                                                 Th([], 'Quiz Questions'),               
                                             )
                                         ),
@@ -116,9 +117,10 @@ def AssignmentItems(items):
                     Td([],
                     A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['title']), #errorUnusedFiles(item[6]), errorDuplicateFiles(item[5])
                     ),
-                    Td([], ', '.join(item['submissionTypes']).replace('_', ' ').capitalize()),
+                    Td([], ', '.join(item['submissionTypes']).replace('_', ' ').replace('external_tool', 'Turnitin').capitalize()),
                     Td([], str(item['points'])),
                     Td([], 'Yes' if item['published'] is True else 'No'),
+                    Td([], 'Yes' if item['rubric'] is not None else 'No'),
                     Td([],  
                         Span([Class('tag is-info is-size-7')],
                             A([Href(f'#collapsible-items-{key}-quizzes'), Data_('action','collapse')], f'{item.get("questionCount", 0)} Questions')

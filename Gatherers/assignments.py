@@ -18,6 +18,8 @@ def collectCourseAssignments(myCanvas, canvasQa):
         canvasQa['assignments'][group.id]['assignments'] = {}
         #pprint(group.assignments)
         for assignment in group.assignments:
+            pprint(myCanvas.getAssignment(assignment['id'], include=['submission_types', 'quiz_id', 'rubric', 'turnitin_enabled']))
+            #pprint(assignment)
             canvasQa['assignments'][group.id]['assignments'][assignment['id']] = {}
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['title'] = assignment['name']
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['description'] = assignment['description']
@@ -25,6 +27,7 @@ def collectCourseAssignments(myCanvas, canvasQa):
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['due'] = assignment['due_at']
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['published'] = assignment['published']
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['submissionTypes'] = assignment['submission_types']
+            canvasQa['assignments'][group.id]['assignments'][assignment['id']]['rubric'] = assignment.get('rubric')
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['url'] = assignment['html_url']
             
             if 'online_quiz' in assignment['submission_types']:

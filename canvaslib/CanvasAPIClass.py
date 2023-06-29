@@ -30,6 +30,9 @@ class CanvasAPI():
     def getAssignmentGroups(self, include):
         return self.course.get_assignment_groups(include=include)
     
+    def getAssignment(self, id, include=None):
+        return self.course.get_assignment(id, include=include)
+    
     def getQuiz(self, quizId):
         return self.course.get_quiz(quizId)
     

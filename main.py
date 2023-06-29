@@ -143,19 +143,19 @@ def pullDataFromSpreadsheet(spreadsheet):
 def saveQaHtml(canvasQaHtml, myCanvas, filename, attempt=0):
     
     filePath = f'{settings.CANVAS_QA_DOWNLOAD_FOLDER}'
-    fileName =  f'{filename} QA v2.html'
+    htmlFileName =  f'{filename} QA v2.html'
     
     # uploads the HTML report to the canvas course site
-    with open(Path(filePath, fileName), 'w', encoding="utf-8") as f:
+    with open(Path(filePath, htmlFileName), 'w', encoding="utf-8") as f:
         f.write(canvasQaHtml.render(pretty=True, doctype=True))
     try:    
-        myCanvas.uploadFile(filePath, fileName, '/QA Info')
+        myCanvas.uploadFile(filePath, htmlFileName, '/QA Info')
     except Exception as e:
         if attempt < 1:
-            saveQaHtml(canvasQaHtml, myCanvas, filename, 1)
+            saveQaHtml(canvasQaHtml, myCanvas, htmlFileName, 1)
         else:
-            logging.error(f'{e}\n{filename} multiple fails uploading to canvas')
-            print(f'{e}\n{filename} multiple fails uploading to canvas')
+            logging.error(f'{e}\n{htmlFileName} multiple fails uploading to canvas')
+            print(f'{e}\n{htmlFileName} multiple fails uploading to canvas')
             pass
 
 def setupVariables():
