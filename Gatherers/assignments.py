@@ -18,7 +18,6 @@ def collectCourseAssignments(myCanvas, canvasQa):
         canvasQa['assignments'][group.id]['assignments'] = {}
         #pprint(group.assignments)
         for assignment in group.assignments:
-            pprint(myCanvas.getAssignment(assignment['id'], include=['submission_types', 'quiz_id', 'rubric', 'turnitin_enabled']))
             #pprint(assignment)
             canvasQa['assignments'][group.id]['assignments'][assignment['id']] = {}
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['title'] = assignment['name']

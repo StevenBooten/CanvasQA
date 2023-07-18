@@ -117,7 +117,7 @@ def AssignmentItems(items):
                     Td([],
                     A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['title']), #errorUnusedFiles(item[6]), errorDuplicateFiles(item[5])
                     ),
-                    Td([], ', '.join(item['submissionTypes']).replace('_', ' ').replace('external_tool', 'Turnitin').capitalize()),
+                    Td([], ', '.join(item['submissionTypes']).replace('external_tool', 'Turnitin').replace('_', ' ').capitalize()),
                     Td([], str(item['points'])),
                     Td([], 'Yes' if item['published'] is True else 'No'),
                     Td([], 'Yes' if item['rubric'] is not None else 'No'),
