@@ -97,11 +97,11 @@ def getCanvasCourseList(group, accountId, oua = False, org = False, school = Non
         if len(term.split('-')) > 1:
             query += ' and ('
             for term in term.split('-'):
-                query += f" termCode='{term}' or"
+                query += f" termCode like '%{term}%' or"
             query = query[:-3]
             query += ')'
         else:
-            query += f" and termCode='{term}'"
+            query += f" and termCode like '%{term}%'"
     
     if course is not None:
         query += f" and course like '%{course}%'"
