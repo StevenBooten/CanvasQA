@@ -124,6 +124,7 @@ def collectCoursePages(myCanvas):
         myPages[page.page_id]['url'] = f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/pages/{page.url}'
         myPages[page.page_id]['body'] = myCanvas.getPage(page.page_id).body
         myPages[page.page_id]['links'] = {}
+        myPages[page.page_id]['frontPage'] = page.front_page
         
         #- Publishes returns a boolean value, so it needs to be converted to a string
         if page.published:

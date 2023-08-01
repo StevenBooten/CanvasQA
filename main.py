@@ -84,6 +84,8 @@ def mainProgram():
         
         bar.start()
         
+        canvasQa['defaultView'] = myCanvas.course.default_view
+        
         canvasQa['pages'] = collectCoursePages(myCanvas)
         updateBar(count, bar)
         
