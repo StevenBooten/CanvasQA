@@ -166,7 +166,7 @@ def setupVariables():
     
     courseList = ['7917QCA']
         
-    courseDetails = databaseSearchCanvas(args.group, args.accountId, courseList=courseList, oua=args.oua, list=args.list, term=args.term, year=args.year, course=args.course, ignoreJoined=args.ignoreJoined)
+    courseDetails = databaseSearchCanvas(args.group, args.accountId, courseList=courseList, oua=args.oua, list=args.list, term=args.term, year=args.year, course=args.course, ignoreJoined=args.ignoreJoined, school=args.school)
     
     return args, courseDetails, CanvasAPI()
        
