@@ -67,6 +67,10 @@ def collectCourseModules(myCanvas, canvasQa):
         canvasQa['modules'][module.id]['url'] = str(f'http://lms.griffith.edu.au/courses/{myCanvas.courseId}/modules/#module_{module.id}')
         canvasQa['modules'][module.id]['items'] = moduleItemList
         canvasQa['modules'][module.id]['unpublishedItems'] = unpublishedCountItems
+        canvasQa['modules'][module.id]['unlockedAt'] = module.unlock_at
+        canvasQa['modules'][module.id]['sequential'] = module.require_sequential_progress
+        canvasQa['modules'][module.id]['preReq'] = module.prerequisite_module_ids
+        
         
         #- Publishes returns a boolean value, so it needs to be converted to a string
         if module.published:

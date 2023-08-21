@@ -13,9 +13,12 @@ class CanvasAPI():
         self.course = None
         self.courseId = None
         
-    def getCourse(self, courseId, **kwargs):
+    def getCourse(self, courseId, include=None):
         self.courseId = courseId
-        self.course = self.canvasConnection.get_course(courseId, **kwargs)
+        if include is None:
+            self.course = self.canvasConnection.get_course(self.courseId)
+        else:
+            self.course = self.canvasConnection.get_course(self.courseId, include=include)
         self.courseCode = self.course.sis_course_id
         
     def getTeachers(self):

@@ -36,6 +36,15 @@ def mainProgram():
      
     args, courseDetails, myCanvas = setupVariables()
     
+    if args.accountId == 'Live':
+    #include = {}
+    #include['include[]'] = 'total_students' 'term'
+    #include['include[total_students]'] = True
+    #include['include[term]'] = True
+        include = ['total_students', 'term']
+    else:
+        include = []
+    
     
     # This input takes a single course code or a comma separated list of course codes.
     # can either be course code ie 1270 or the full url ie https://lms.griffith.edu.au/courses/1270 seperated by commas (,)
@@ -74,7 +83,7 @@ def mainProgram():
         canvasQa['issues']['Course Links'] = { 'id':"collapsible-link-check", 'count' : 0, 'html' : '' }
         canvasQa['issues']['Embedded Content'] = { 'id':"collapsible-video-check", 'count' : 0, 'html' : ''}
         
-        myCanvas.getCourse(course['canvasCourseId'])
+        myCanvas.getCourse(course['canvasCourseId'], include)
         print('-' * 80)
         print(f'Running: {myCanvas.courseCode}')
         print(f'{prog+1} of {len(courseDetails)}')
@@ -85,6 +94,10 @@ def mainProgram():
         bar.start()
         
         canvasQa['defaultView'] = myCanvas.course.default_view
+        try:
+            canvasQa['students'] = myCanvas.course.total_students
+        except:
+            canvasQa['students'] = 0
         
         canvasQa['pages'] = collectCoursePages(myCanvas)
         updateBar(count, bar)
