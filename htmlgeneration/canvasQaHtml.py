@@ -30,7 +30,7 @@ def generateQaHtml(myCanvas, canvasQa):
     generatedHtml = {}
     generatedHtml['Modules'] = generateModulesHtml(myCanvas, canvasQa)
     generatedHtml['File Structure'] = generateFileStructureHtml(myCanvas, canvasQa)
-    generatedHtml['Blackboard Residuals'] = generateBBIssuesHtml(myCanvas, canvasQa)
+    #generatedHtml['Blackboard Residuals'] = generateBBIssuesHtml(myCanvas, canvasQa)
     generatedHtml['Placeholders'] = generatePlaceholderHtml(myCanvas, canvasQa)
     generatedHtml['Images'] = generateImagesHtml(myCanvas, canvasQa)
     generatedHtml['Unattached Pages'] = generateUnattachedPagesHtml(myCanvas, canvasQa)
@@ -85,7 +85,7 @@ def generateQaHtml(myCanvas, canvasQa):
             
             Body([],
             Section([Class('section')],
-                    P([Class('header'), Style('font-size:10px')],  [f'This report was automatically generated {runDate} at {runTime}<br>Canvas QA designed and built by'],# and will be updated {updateDate} by {updateTime}'],
+                    P([Class('header'), Style('font-size:10px')],  [f'This report was automatically generated {runDate} at {runTime}<br>Canvas QA designed and built by'],
                         A([Href('mailto:s.booten@griffith.edu.au'), Target('_blank'), Rel('noopener noreferrer')], 'Steven Booten'),
                 Script([], f'{jsScript}'), '<br><br>',
                 
@@ -119,8 +119,25 @@ def generateQaHtml(myCanvas, canvasQa):
                 ), 
             )
         ),
-        Script([], 'bulmaCollapsible.attach()')
+        Script([], 'bulmaCollapsible.attach()'),
+        
     )
+    """Div([Class('modal)')],
+            Div([Class('modal-background')]),
+            Div([Class('modal-card')],
+                Header([Class('modal-card-head')],
+                        P([Class('modal-card-title')], 'Modal title'),
+                        Button([Class('delete'), Aria_('lable', 'close')]),                       
+                    ),
+                Section([Class('modal-card-body')],
+                        'Stuff and things'
+                    ),
+                Footer([Class('modal-card-foot')],
+                    Button([Class('button is-success')], 'Save changes'),
+                    Button([Class('button')], 'Cancel')
+                    )
+                )
+            )"""
     
     return html
 

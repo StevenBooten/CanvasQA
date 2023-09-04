@@ -115,16 +115,16 @@ def AssignmentItems(items):
         html = (html,
                 Tr([],
                     Td([],
-                    A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['title']), #errorUnusedFiles(item[6]), errorDuplicateFiles(item[5])
+                    A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['title']),
                     ),
-                    Td([], ', '.join(item['submissionTypes']).replace('external_tool', 'Turnitin').replace('_', ' ').capitalize()),
+                    Td([], item['submissionTypes']),
                     Td([], str(item['points'])),
                     Td([], 'Yes' if item['published'] is True else 'No'),
                     Td([], 'Yes' if item['rubric'] is not None else 'No'),
                     Td([],  
                         Span([Class('tag is-info is-size-7')],
                             A([Href(f'#collapsible-items-{key}-quizzes'), Data_('action','collapse')], f'{item.get("questionCount", 0)} Questions')
-                        ) if item.get("questionCount", 0) > 0 else 'Quiz has 0 Questions' if item.get('quiz', None) is not None else 'Not a Quiz'
+                        ) if item.get("questionCount", 0) > 0 else 'Quiz has 0 Questions' if item.get('quiz', None) is not None else '-'
                     ), quizQuestionHtml(item['quiz'], key, item.get("questionCount", 0)) if item.get('quiz', None) is not None else '' 
                 ),  
             )
@@ -144,9 +144,7 @@ def quizQuestionHtml(questions, key, questionCount):
                                         Th([], 'Question Title'),
                                         Th([], 'Question Type'),
                                         Th([], 'Points'),
-                                        Th([], 'Has Correct Answer'),  
-                                        Th([], 'Migration Issues'), 
-                                        Th([], 'BB Residual Issues'),              
+                                        Th([], 'Has Correct Answer'),            
                                     )
                                 ),
                                 Tbody([],
@@ -174,12 +172,10 @@ def questionItems(items, questionCount):
         
         html = (
                 Tr([],
-                    Td([], item['title'] if item['title'] is not None else 'No Title'), #errorUnusedFiles(item[6]), errorDuplicateFiles(item[5])
+                    Td([], item['title'] if item['title'] is not None else 'No Title'),
                     Td([], item['questionType'].replace('_', ' ').capitalize()),
                     Td([], str(item['points'])),
                     Td([], 'Yes' if item['hasCorrectAnswer'] is True else 'No'),
-                    Td([], ', '.join(item['quizIssues'].values()) if len(item['quizIssues'].values()) > 1 else item['quizIssues'].values() if len(item['quizIssues'].values()) == 1 else 'No Migration Issues'),
-                    Td([], ', '.join(item['bbBrokenLinks'].values()) if len(item['bbBrokenLinks'].values()) > 1 else item['bbBrokenLinks'].values() if len(item['bbBrokenLinks'].values()) == 1 else 'No BB Residual Issues'),
                 ),    
             )
     return html

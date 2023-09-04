@@ -22,16 +22,23 @@ def generatePlaceholderHtml(myCanvas, canvasQa):
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
-            if 'online_quiz' not in assessmentData['submissionTypes']:
-                continue
-            for questionId, quizData in assessmentData['quiz'].items():
-                if quizData['placeholders'] == None:
+            if 'online_quiz' in assessmentData['submissionTypes']:
+                for questionId, quizData in assessmentData['quiz'].items():
+                    if quizData['placeholders'] == None:
+                        continue
+                    placeholderIssues['Quizzes'][assessmentId] = {}
+                    placeholderIssues['Quizzes'][assessmentId]['title'] = assessmentData['title']
+                    placeholderIssues['Quizzes'][assessmentId]['url'] = assessmentData['url']
+                    placeholderIssues['Quizzes'][assessmentId]['placeholders'] = quizData['placeholders']
+                    canvasQa['issues']['Placeholders']['count'] += len(quizData['placeholders']) if quizData['placeholders'] is not None else 0
+            else:
+                if assessmentData['placeholders'] == None:
                     continue
                 placeholderIssues['Quizzes'][assessmentId] = {}
                 placeholderIssues['Quizzes'][assessmentId]['title'] = assessmentData['title']
                 placeholderIssues['Quizzes'][assessmentId]['url'] = assessmentData['url']
                 placeholderIssues['Quizzes'][assessmentId]['placeholders'] = quizData['placeholders']
-                canvasQa['issues']['Placeholders']['count'] += len(quizData['placeholders']) if quizData['placeholders'] is not None else 0
+                canvasQa['issues']['Placeholders']['count'] += len(assessmentData['placeholders']) if assessmentData['placeholders'] is not None else 0
                 
     if placeholderIssues.get('Pages') is None and placeholderIssues.get('Quizzes') is None:
         return ''

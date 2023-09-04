@@ -3,7 +3,7 @@ try:
 except:
     from lib.CanvasSettings import CanvasSettings
     settings = CanvasSettings()
-from Checks.body import checkQuizBody
+from Checks.body import checkQuizBody, checkAssessmentBody
 from pprint import pprint
 
 def collectCourseAssignments(myCanvas, canvasQa):
@@ -25,19 +25,63 @@ def collectCourseAssignments(myCanvas, canvasQa):
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['points'] = assignment['points_possible']
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['due'] = assignment['due_at']
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['published'] = assignment['published']
-            canvasQa['assignments'][group.id]['assignments'][assignment['id']]['submissionTypes'] = assignment['submission_types']
+            canvasQa['assignments'][group.id]['assignments'][assignment['id']]['submissionTypes'] = getAssignmentType(assignment['submission_types'], assignment['external_tool_tag_attributes'])
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['rubric'] = assignment.get('rubric')
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['url'] = assignment['html_url']
             
-            if 'online_quiz' in assignment['submission_types']:
+            if 'Online Quiz' in assignment['submission_types']:
                 quiz = myCanvas.getQuiz(assignment['quiz_id'])
                 canvasQa['assignments'][group.id]['assignments'][assignment['id']]['questionCount'] = quiz.question_count
                 canvasQa['assignments'][group.id]['assignments'][assignment['id']]['quiz'], usedFilestemp = quizQa(myCanvas, quiz, canvasQa)
             else:
-                canvasQa['assignments'][group.id]['assignments'][assignment['id']]['quiz'], usedFilestemp = None, []
+                canvasQa['assignments'][group.id]['assignments'][assignment['id']]['quiz'] = None
+                usedFilestemp = checkAssessmentBody(canvasQa['assignments'][group.id]['assignments'][assignment['id']], myCanvas, canvasQa)
             usedFiles += usedFilestemp
                 
     return usedFiles
+
+def getAssignmentType(canvasSubmissionType, externalToolAttributes):
+    for submissionType in canvasSubmissionType:
+        
+        if 'discussion_topic' in submissionType:
+            return 'Discussion Topic'
+        elif 'online_quiz' in submissionType:
+            return 'Online Quiz'
+        elif 'on_paper' in submissionType:
+            return 'On Paper'
+        elif 'online_text_entry' in submissionType:
+            return 'Online Text Entry'
+        elif 'online_url' in submissionType:
+            return 'Online Url'
+        elif 'online_upload' in submissionType:
+            return 'Online Upload'
+        elif 'media_recording' in submissionType:
+            return 'Media Recording'
+        elif 'student_annotation' in submissionType:
+            return 'Student Annotation'
+        elif 'none' in submissionType:
+            return 'None'
+        elif 'external_tool' in submissionType:
+            if 'https://lti.risingsoftware.com/launch?app=auralia' in externalToolAttributes['url']:
+                return 'Auralia'
+            elif 'https://lti.risingsoftware.com/launch?app=musition' in externalToolAttributes['url']:
+                return 'Musition'
+            elif 'https://padlet.com/' in externalToolAttributes['url']:
+                return 'Padlet'
+            elif 'https://au-lti.bbcollab.com/lti' in externalToolAttributes['url']:
+                return 'Collaborate'
+            elif 'https://echo360.net.au/lti' in externalToolAttributes['url']:
+                return 'Echo 360'
+            elif 'https://v3.pebblepad.com.au/atlas/pebble' in externalToolAttributes['url']:
+                return 'Pebblepad'
+            elif 'https://www.edu-apps.org/' in externalToolAttributes['url']:
+                return 'Student Support'
+            elif 'https://api.turnitin.com/api' in externalToolAttributes['url']:
+                return 'Turnitin LTI'
+            else:
+                return 'New External Tool'
+            
+        
 
     
 def quizQa(myCanvas, quiz, canvasQa):

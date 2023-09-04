@@ -10,6 +10,7 @@ def generateEmbeddedContentHtml(myCanvas, canvasQa):
     embeddedContentData = {}
     embeddedContentData['Page'] = {}
     embeddedContentData['Quiz'] = {}
+    embeddedContentData['Assignment'] = {}
     canvasQa['issues']['Embedded Content']['Summary'] = {}
     
     for pageId, pageData in canvasQa['pages'].items():
@@ -37,17 +38,37 @@ def generateEmbeddedContentHtml(myCanvas, canvasQa):
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
-            if 'online_quiz' not in assessmentData['submissionTypes']:
-                continue
-            for questionId, quizData in assessmentData['quiz'].items():
-                if quizData['embeddedContent'] == None:
-                    continue
-                embeddedContentData['Quiz'][assessmentId] = {}
-                embeddedContentData['Quiz'][assessmentId]['title'] = assessmentData['title']
-                embeddedContentData['Quiz'][assessmentId]['url'] = assessmentData['url']
-                embeddedContentData['Quiz'][assessmentId]['embeddedContent'] = quizData['embeddedContent']
+            if 'online_quiz' in assessmentData['submissionTypes']:
+                for questionId, quizData in assessmentData['quiz'].items():
+                    if quizData['embeddedContent'] == None:
+                        continue
+                    embeddedContentData['Quiz'][assessmentId] = {}
+                    embeddedContentData['Quiz'][assessmentId]['title'] = assessmentData['title']
+                    embeddedContentData['Quiz'][assessmentId]['url'] = assessmentData['url']
+                    embeddedContentData['Quiz'][assessmentId]['embeddedContent'] = quizData['embeddedContent']
+                    
+                    for data in quizData['embeddedContent']:
+                        #for data in embeddedItems:
+                            canvasQa['issues']['Embedded Content']['Summary']['total'] = canvasQa['issues']['Embedded Content']['Summary'].get('total', 0) + 1
+                            if data['statusCode'] == 0:
+                                canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
+                            elif data['statusCode'] < 200:
+                                canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
+                            elif data['statusCode'] < 300:
+                                canvasQa['issues']['Embedded Content']['Summary']['good'] = canvasQa['issues']['Embedded Content']['Summary'].get('good', 0) + 1
+                            elif data['statusCode'] < 400:
+                                canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
+                            else:
+                                canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
+            else:
+                if assessmentData['embeddedContent'] == None:
+                        continue
+                embeddedContentData['Assignment'][assessmentId] = {}
+                embeddedContentData['Assignment'][assessmentId]['title'] = assessmentData['title']
+                embeddedContentData['Assignment'][assessmentId]['url'] = assessmentData['url']
+                embeddedContentData['Assignment'][assessmentId]['embeddedContent'] = assessmentData['embeddedContent']
                 
-                for data in quizData['embeddedContent']:
+                for data in assessmentData['embeddedContent']:
                     #for data in embeddedItems:
                         canvasQa['issues']['Embedded Content']['Summary']['total'] = canvasQa['issues']['Embedded Content']['Summary'].get('total', 0) + 1
                         if data['statusCode'] == 0:
@@ -122,8 +143,9 @@ def htmlEmbeddedContentAccordian(embeddedContentData, myCanvas):
 def htmlEmbeddedContentHeader(values, myCanvas):
     
     html = ''
-    statusCodeErrors = []
+    
     for id, info in sorted(values.items()):
+        statusCodeErrors = []
         sumItems = len(info['embeddedContent']) if info['embeddedContent'] is not None else 0
         if sumItems == 0:
             continue

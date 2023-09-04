@@ -75,7 +75,7 @@ def mainProgram():
         canvasQa['issues'] = {}
         canvasQa['issues']['Images'] = { 'id':"collapsible-img-check", 'count' : 0, 'html' : ''}
         canvasQa['issues']['Assignments'] = { 'id':"collapsible-assignment-check", 'count' : 0, 'html' : '' }
-        canvasQa['issues']['Blackboard Residuals'] = { 'id':"collapsible-bb-check", 'count' : 0, 'html' : '' }
+        #canvasQa['issues']['Blackboard Residuals'] = { 'id':"collapsible-bb-check", 'count' : 0, 'html' : '' }
         canvasQa['issues']['File Structure'] = {'id': "collapsible-filestructure-check", 'count' : 0, 'html' : '' }
         canvasQa['issues']['Modules'] = { 'id':"collapsible-modules-check", 'count' : 0, 'html' : '' }
         canvasQa['issues']['Placeholders'] = { 'id':"collapsible-placeholder-check", 'count' : 0, 'html' : '' }

@@ -12,6 +12,7 @@ def generateLinksHtml(myCanvas, canvasQa):
     linksData = {}
     linksData['Page'] = {}
     linksData['Quiz'] = {}
+    linksData['Assignment'] = {}
     
     canvasQa['issues']['Course Links']['Summary'] = {}
     
@@ -40,17 +41,36 @@ def generateLinksHtml(myCanvas, canvasQa):
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
-            if 'online_quiz' not in assessmentData['submissionTypes']:
-                continue
-            for questionId, quizData in assessmentData['quiz'].items():
-                if quizData['links'] == None:
-                    continue
-                linksData['Quiz'][assessmentId] = {}
-                linksData['Quiz'][assessmentId]['title'] = assessmentData['title']
-                linksData['Quiz'][assessmentId]['url'] = assessmentData['url']
-                linksData['Quiz'][assessmentId]['links'] = quizData['links']
+            if 'online_quiz' in assessmentData['submissionTypes']:
+                for questionId, quizData in assessmentData['quiz'].items():
+                    if quizData['links'] == None:
+                        continue
+                    linksData['Quiz'][assessmentId] = {}
+                    linksData['Quiz'][assessmentId]['title'] = assessmentData['title']
+                    linksData['Quiz'][assessmentId]['url'] = assessmentData['url']
+                    linksData['Quiz'][assessmentId]['links'] = quizData['links']
+                    
+                    for altTag, data in quizData['links'].items():
+                        canvasQa['issues']['Course Links']['Summary']['total'] = canvasQa['issues']['Course Links']['Summary'].get('total', 0) + 1
+                        if data['statusCode'] == 0:
+                            canvasQa['issues']['Course Links']['Summary']['errors'] = canvasQa['issues']['Course Links']['Summary'].get('errors', 0) + 1
+                        elif data['statusCode'] < 200:
+                            canvasQa['issues']['Course Links']['Summary']['warning'] = canvasQa['issues']['Course Links']['Summary'].get('warning', 0) + 1
+                        elif data['statusCode'] < 300:
+                            canvasQa['issues']['Course Links']['Summary']['good'] = canvasQa['issues']['Course Links']['Summary'].get('good', 0) + 1
+                        elif data['statusCode'] < 400:
+                            canvasQa['issues']['Course Links']['Summary']['warning'] = canvasQa['issues']['Course Links']['Summary'].get('warning', 0) + 1
+                        else:
+                            canvasQa['issues']['Course Links']['Summary']['errors'] = canvasQa['issues']['Course Links']['Summary'].get('errors', 0) + 1
+            else:
+                if assessmentData['links'] == None:
+                        continue
+                linksData['Assignment'][assessmentId] = {}
+                linksData['Assignment'][assessmentId]['title'] = assessmentData['title']
+                linksData['Assignment'][assessmentId]['url'] = assessmentData['url']
+                linksData['Assignment'][assessmentId]['links'] = assessmentData['links']
                 
-                for altTag, data in quizData['links'].items():
+                for altTag, data in assessmentData['links'].items():
                     canvasQa['issues']['Course Links']['Summary']['total'] = canvasQa['issues']['Course Links']['Summary'].get('total', 0) + 1
                     if data['statusCode'] == 0:
                         canvasQa['issues']['Course Links']['Summary']['errors'] = canvasQa['issues']['Course Links']['Summary'].get('errors', 0) + 1
@@ -63,7 +83,7 @@ def generateLinksHtml(myCanvas, canvasQa):
                     else:
                         canvasQa['issues']['Course Links']['Summary']['errors'] = canvasQa['issues']['Course Links']['Summary'].get('errors', 0) + 1
                 
-    if linksData.get('Page') is None and linksData.get('Quiz') is None:
+    if linksData.get('Page') is None and linksData.get('Quiz') is None and linksData.get('Assignment') is None:
         return ''
     htmllinks = htmlLinksGenerate(linksData, canvasQa['issues']['Course Links']['id'], myCanvas, canvasQa) 
     

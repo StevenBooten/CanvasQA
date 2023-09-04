@@ -16,10 +16,10 @@ def checkPageBody(canvasQa, myCanvas):
             continue 
         soup = bs.BeautifulSoup(body, features="html.parser")
         
-        page['bbTerms'] = BBtermCheck(soup, page['title'])
+        #page['bbTerms'] = BBtermCheck(soup, page['title'])
         page['placeholders'] = placeholderBodyCheck(soup, page['title'])
-        page['bbHtml'] = bbhtmlCheck(soup)
-        page['bbEcho'] = getBBEcho(soup)
+        #page['bbHtml'] = bbhtmlCheck(soup)
+        #page['bbEcho'] = getBBEcho(soup)
         page['imgTags'] = getPageImgTags(soup, myCanvas, canvasQa)
         page['links'] = getPageLinks(soup, myCanvas, canvasQa)
         page['embeddedContent'] = getVideoIframes(soup, myCanvas, canvasQa)
@@ -60,13 +60,12 @@ def checkQuizBody(questions, myCanvas, canvasQa):
             
         soup = bs.BeautifulSoup(body, features="html.parser")
         
-        question['bbTerms'] = BBtermCheck(soup, question['title'])
+        #question['bbTerms'] = BBtermCheck(soup, question['title'])
         question['placeholders'] = placeholderBodyCheck(soup, question['title'])
-        question['bbHtml'] = bbhtmlCheck(soup)
-        question['bbEcho'] = getBBEcho(soup)
+        #question['bbHtml'] = bbhtmlCheck(soup)
+        #question['bbEcho'] = getBBEcho(soup)
         question['imgTags'] = getPageImgTags(soup, myCanvas, canvasQa)
         question['links'] = getPageLinks(soup, myCanvas, canvasQa)
-        question['videoIframes'] = getVideoIframes(soup, myCanvas, canvasQa)
         question['embeddedContent'] = getVideoIframes(soup, myCanvas, canvasQa)
         
         
@@ -74,6 +73,31 @@ def checkQuizBody(questions, myCanvas, canvasQa):
         usedFiles += checkForCanvasFileLink(question['imgTags']) if question['imgTags'] is not None else []
     
     return questions, usedFiles
+
+def checkAssessmentBody(assessment, myCanvas, canvasQa):
+    usedFiles = []
+    
+        
+    body = assessment.get('description', None)
+    
+    if body is None:
+        return []
+        
+    soup = bs.BeautifulSoup(body, features="html.parser")
+    
+    #question['bbTerms'] = BBtermCheck(soup, question['title'])
+    assessment['placeholders'] = placeholderBodyCheck(soup, assessment['title'])
+    #question['bbHtml'] = bbhtmlCheck(soup)
+    #question['bbEcho'] = getBBEcho(soup)
+    assessment['imgTags'] = getPageImgTags(soup, myCanvas, canvasQa)
+    assessment['links'] = getPageLinks(soup, myCanvas, canvasQa)
+    assessment['embeddedContent'] = getVideoIframes(soup, myCanvas, canvasQa)
+    
+    
+    usedFiles += checkForCanvasFileLink(assessment['links']) if assessment['links'] is not None else []
+    usedFiles += checkForCanvasFileLink(assessment['imgTags']) if assessment['imgTags'] is not None else []
+    
+    return usedFiles
 
 #checks links if they are a canvas file link to collect the ID for a later check of the file structure       
 def checkForCanvasFileLink(links):
@@ -103,7 +127,7 @@ def checkForCanvasFileLink(links):
 
 def placeholderBodyCheck(soup, title):
     #method 1 for placeholder checking
-    placeholderTerms = ['placeholder', 'unavailable', 'hidden', 'replace this text']
+    placeholderTerms = ['placeholder', 'unavailable', 'replace this text']
     placeholderCheck = {}
 
     for term in placeholderTerms:
@@ -254,6 +278,8 @@ def getVideoIframes(soup, myCanvas, canvasQa):
                 host = 'vimeo'
             elif re.search('microsoftstream.com', item['src'], re.IGNORECASE):
                 host = 'Microsoft Stream'
+            elif re.search('office.com', item['src'], re.IGNORECASE):
+                host = 'Microsoft Office'
             elif re.search('google.com', item['src'], re.IGNORECASE):
                 host = 'Google'
             elif re.search('griffitheduau-my.sharepoint.com', item['src'], re.IGNORECASE):
