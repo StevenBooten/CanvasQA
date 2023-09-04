@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from htmlgeneration.canvasModulesHtml import generateModulesHtml
 from htmlgeneration.canvasFilesHtml import generateFileStructureHtml
 from htmlgeneration.canvasPlaceholderHtml import generatePlaceholderHtml
-from htmlgeneration.CanvasBBIssuesHtml import generateBBIssuesHtml
+#from htmlgeneration.deprecated.CanvasBBIssuesHtml import generateBBIssuesHtml
 from htmlgeneration.canvasImagesHtml import generateImagesHtml
 from htmlgeneration.canvasUnattachedPageshtml import generateUnattachedPagesHtml
 from htmlgeneration.canvasAssignmentsHtml import generateAssignmentHtml

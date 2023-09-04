@@ -63,7 +63,7 @@ def generateLinksHtml(myCanvas, canvasQa):
                         else:
                             canvasQa['issues']['Course Links']['Summary']['errors'] = canvasQa['issues']['Course Links']['Summary'].get('errors', 0) + 1
             else:
-                if assessmentData['links'] == None:
+                if assessmentData.get('links', None) == None:
                         continue
                 linksData['Assignment'][assessmentId] = {}
                 linksData['Assignment'][assessmentId]['title'] = assessmentData['title']

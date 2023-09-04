@@ -61,7 +61,7 @@ def generateEmbeddedContentHtml(myCanvas, canvasQa):
                             else:
                                 canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
             else:
-                if assessmentData['embeddedContent'] == None:
+                if assessmentData.get('embeddedContent', None) == None:
                         continue
                 embeddedContentData['Assignment'][assessmentId] = {}
                 embeddedContentData['Assignment'][assessmentId]['title'] = assessmentData['title']

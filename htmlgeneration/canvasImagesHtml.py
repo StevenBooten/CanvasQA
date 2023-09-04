@@ -59,7 +59,7 @@ def generateImagesHtml(myCanvas, canvasQa):
                         else:
                             canvasQa['issues']['Images']['Summary']['errors'] = canvasQa['issues']['Images']['Summary'].get('errors', 0) + 1
             else:
-                if assessmentData['imgTags'] == None:
+                if assessmentData.get('imgTags', None) == None:
                     continue
                 imagesData['Quiz'][assessmentId] = {}
                 imagesData['Quiz'][assessmentId]['title'] = assessmentData['title']

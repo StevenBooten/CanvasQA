@@ -170,7 +170,7 @@ def questionItems(items, questionCount):
         
     for key, item in items.items():
         
-        html = (
+        html = (html,
                 Tr([],
                     Td([], item['title'] if item['title'] is not None else 'No Title'),
                     Td([], item['questionType'].replace('_', ' ').capitalize()),

@@ -25,18 +25,19 @@ def collectCourseAssignments(myCanvas, canvasQa):
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['points'] = assignment['points_possible']
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['due'] = assignment['due_at']
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['published'] = assignment['published']
-            canvasQa['assignments'][group.id]['assignments'][assignment['id']]['submissionTypes'] = getAssignmentType(assignment['submission_types'], assignment['external_tool_tag_attributes'])
+            canvasQa['assignments'][group.id]['assignments'][assignment['id']]['submissionTypes'] = getAssignmentType(assignment['submission_types'], assignment.get('external_tool_tag_attributes', None))
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['rubric'] = assignment.get('rubric')
             canvasQa['assignments'][group.id]['assignments'][assignment['id']]['url'] = assignment['html_url']
             
-            if 'Online Quiz' in assignment['submission_types']:
+            canvasQa['assignments'][group.id]['assignments'][assignment['id']]['quiz'] = None
+            usedFiles += checkAssessmentBody(canvasQa['assignments'][group.id]['assignments'][assignment['id']], myCanvas, canvasQa)
+            
+            if 'online_quiz' in assignment['submission_types']:
                 quiz = myCanvas.getQuiz(assignment['quiz_id'])
                 canvasQa['assignments'][group.id]['assignments'][assignment['id']]['questionCount'] = quiz.question_count
                 canvasQa['assignments'][group.id]['assignments'][assignment['id']]['quiz'], usedFilestemp = quizQa(myCanvas, quiz, canvasQa)
-            else:
-                canvasQa['assignments'][group.id]['assignments'][assignment['id']]['quiz'] = None
-                usedFilestemp = checkAssessmentBody(canvasQa['assignments'][group.id]['assignments'][assignment['id']], myCanvas, canvasQa)
-            usedFiles += usedFilestemp
+                
+                usedFiles += usedFilestemp
                 
     return usedFiles
 
@@ -89,8 +90,7 @@ def quizQa(myCanvas, quiz, canvasQa):
 
     questionInfo = {}
     
-    bbSearchTerm = '@X@EmbeddedFile.requestUrlStub@X@webapps' 
-    
+    #bbSearchTerm = '@X@EmbeddedFile.requestUrlStub@X@webapps' 
 
     for question in quiz.get_questions():
         
@@ -113,19 +113,17 @@ def quizQa(myCanvas, quiz, canvasQa):
         if question.question_type == 'Calculated Formula' or question.question_type == 'Calculated Numeric':
             questionInfo[question.id]['quizIssues'] = {question.question_type : "Question can't be edited"}
         
-        if question.question_text.find(bbSearchTerm) > -1:
-            questionInfo[question.id]['bbBrokenLinks'] = {'Question Text': "Broken embed inside Question Body"}
-        if question.correct_comments_html is not None:
-            if question.correct_comments_html.find(bbSearchTerm) > -1:
-                questionInfo[question.id]['bbBrokenLinks'] = {'Correct Comment': "Broken embed inside Correct Comments"}
-        if question.incorrect_comments_html is not None:
-            if question.incorrect_comments_html.find(bbSearchTerm) > -1:
-                questionInfo[question.id]['bbBrokenLinks'] = {'Incorrect Comments' : "Broken embed inside Incorrect Comments"}
-    
-    
-    
+        #if question.question_text.find(bbSearchTerm) > -1:
+        #    questionInfo[question.id]['bbBrokenLinks'] = {'Question Text': "Broken embed inside Question Body"}
+        #if question.correct_comments_html is not None:
+        #    if question.correct_comments_html.find(bbSearchTerm) > -1:
+        #        questionInfo[question.id]['bbBrokenLinks'] = {'Correct Comment': "Broken embed inside Correct Comments"}
+        #if question.incorrect_comments_html is not None:
+        #    if question.incorrect_comments_html.find(bbSearchTerm) > -1:
+        #        questionInfo[question.id]['bbBrokenLinks'] = {'Incorrect Comments' : "Broken embed inside Incorrect Comments"}
     
     return checkQuizBody(questionInfo, myCanvas, canvasQa)
+        
 
 def hascorrectAnswer(question):
     if question.question_type in ['matching_question', 'essay_question']:
