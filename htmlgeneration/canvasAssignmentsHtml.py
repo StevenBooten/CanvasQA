@@ -117,7 +117,7 @@ def AssignmentItems(items):
                     Td([],
                     A([Href(item['url']), Target('_blank'), Rel('noopener noreferrer')], item['title']),
                     ),
-                    Td([], item['submissionTypes']),
+                    Td([], str(item['submissionTypes'])),
                     Td([], str(item['points'])),
                     Td([], 'Yes' if item['published'] is True else 'No'),
                     Td([], 'Yes' if item['rubric'] is not None else 'No'),

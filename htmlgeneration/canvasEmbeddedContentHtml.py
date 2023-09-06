@@ -38,7 +38,7 @@ def generateEmbeddedContentHtml(myCanvas, canvasQa):
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
-            if 'online_quiz' in assessmentData['submissionTypes']:
+            if assessmentData['submissionTypes'] == 'Online Quiz':
                 for questionId, quizData in assessmentData['quiz'].items():
                     if quizData['embeddedContent'] == None:
                         continue
@@ -60,27 +60,27 @@ def generateEmbeddedContentHtml(myCanvas, canvasQa):
                                 canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
                             else:
                                 canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
-            else:
-                if assessmentData.get('embeddedContent', None) == None:
-                        continue
-                embeddedContentData['Assignment'][assessmentId] = {}
-                embeddedContentData['Assignment'][assessmentId]['title'] = assessmentData['title']
-                embeddedContentData['Assignment'][assessmentId]['url'] = assessmentData['url']
-                embeddedContentData['Assignment'][assessmentId]['embeddedContent'] = assessmentData['embeddedContent']
-                
-                for data in assessmentData['embeddedContent']:
-                    #for data in embeddedItems:
-                        canvasQa['issues']['Embedded Content']['Summary']['total'] = canvasQa['issues']['Embedded Content']['Summary'].get('total', 0) + 1
-                        if data['statusCode'] == 0:
-                            canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
-                        elif data['statusCode'] < 200:
-                            canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
-                        elif data['statusCode'] < 300:
-                            canvasQa['issues']['Embedded Content']['Summary']['good'] = canvasQa['issues']['Embedded Content']['Summary'].get('good', 0) + 1
-                        elif data['statusCode'] < 400:
-                            canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
-                        else:
-                            canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
+            
+            if assessmentData.get('embeddedContent', None) == None:
+                    continue
+            embeddedContentData['Assignment'][assessmentId] = {}
+            embeddedContentData['Assignment'][assessmentId]['title'] = assessmentData['title']
+            embeddedContentData['Assignment'][assessmentId]['url'] = assessmentData['url']
+            embeddedContentData['Assignment'][assessmentId]['embeddedContent'] = assessmentData['embeddedContent']
+            
+            for data in assessmentData['embeddedContent']:
+                #for data in embeddedItems:
+                    canvasQa['issues']['Embedded Content']['Summary']['total'] = canvasQa['issues']['Embedded Content']['Summary'].get('total', 0) + 1
+                    if data['statusCode'] == 0:
+                        canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
+                    elif data['statusCode'] < 200:
+                        canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
+                    elif data['statusCode'] < 300:
+                        canvasQa['issues']['Embedded Content']['Summary']['good'] = canvasQa['issues']['Embedded Content']['Summary'].get('good', 0) + 1
+                    elif data['statusCode'] < 400:
+                        canvasQa['issues']['Embedded Content']['Summary']['warning'] = canvasQa['issues']['Embedded Content']['Summary'].get('warning', 0) + 1
+                    else:
+                        canvasQa['issues']['Embedded Content']['Summary']['errors'] = canvasQa['issues']['Embedded Content']['Summary'].get('errors', 0) + 1
                 
                 
     if embeddedContentData.get('Page') is None and embeddedContentData.get('Quiz') is None:

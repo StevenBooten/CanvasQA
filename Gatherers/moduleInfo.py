@@ -86,7 +86,7 @@ def collectCourseModules(myCanvas, canvasQa):
 #- whether they are linked to a module
 def unattachedPages(myCanvas, canvasQa):
     
-    ignoredPages = ['canvas collections configuration', 'home page', 'home page - banner', 'learning journey', 'assessment overview', 'learning journey 2', 'teaching staff']
+    ignoredPages = ['canvas collections configuration', 'home page', 'home page - banner', 'learning journey', 'assessment overview', 'learning journey 2', 'teaching staff', 'canvas collectionsV2 configuration']
     pagesInModules = []
     
     for key, value in canvasQa['modules'].items():

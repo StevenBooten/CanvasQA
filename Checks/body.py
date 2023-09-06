@@ -246,21 +246,21 @@ def getPageLinks(soup, myCanvas, canvasQa):
             if verifierPos > -1:
                 statusCode, error = linkCheck(link.get('href')[:verifierPos], myCanvas)
                 linkErrorCount += error
-                links[link.get_text().strip()] =  {'source' : link['href'][:verifierPos], 'statusCode' : statusCode}
+                links[link.get_text().strip()] =  {'source' : link['href'][:verifierPos], 'statusCode' : statusCode, 'file' : None}
             else:
                 statusCode, error = linkCheck(link.get('href'), myCanvas)
                 linkErrorCount += error
-                links[link.get_text().strip()] = {'source' : link['href'], 'statusCode' : statusCode}
+                links[link.get_text().strip()] = {'source' : link['href'], 'statusCode' : statusCode, 'file' : None}
                 
     for link in soup.findAll('span'):
         if link.has_attr('href'):
             statusCode, error = linkCheck(link.get('href'), myCanvas)
             linkErrorCount += error
-            links[link.get_text().strip()] =  {'source' : link['href'], 'statusCode' : statusCode}
+            links[link.get_text().strip()] =  {'source' : link['href'], 'statusCode' : statusCode, 'file' : None}
             
     canvasQa['issues']['Course Links']['count'] += linkErrorCount
 
-    return links if len(links) > 0 else {}
+    return links if len(links) > 0 else None
 
 def getVideoIframes(soup, myCanvas, canvasQa):
     iframeVideos = []

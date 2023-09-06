@@ -12,6 +12,7 @@ def generateImagesHtml(myCanvas, canvasQa):
     imagesData = {}
     imagesData['Page'] = {}
     imagesData['Quiz'] = {}
+    imagesData['Assignment'] = {}
     canvasQa['issues']['Images']['Summary'] = {}
     
     for pageId, pageData in canvasQa['pages'].items():
@@ -37,7 +38,7 @@ def generateImagesHtml(myCanvas, canvasQa):
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
-            if 'online_quiz' in assessmentData['submissionTypes']:
+            if assessmentData['submissionTypes'] == 'Online Quiz':
                 for questionId, quizData in assessmentData['quiz'].items():
                     if quizData['imgTags'] == None:
                         continue
@@ -58,27 +59,27 @@ def generateImagesHtml(myCanvas, canvasQa):
                             canvasQa['issues']['Images']['Summary']['warning'] = canvasQa['issues']['Images']['Summary'].get('warning', 0) + 1
                         else:
                             canvasQa['issues']['Images']['Summary']['errors'] = canvasQa['issues']['Images']['Summary'].get('errors', 0) + 1
-            else:
-                if assessmentData.get('imgTags', None) == None:
-                    continue
-                imagesData['Quiz'][assessmentId] = {}
-                imagesData['Quiz'][assessmentId]['title'] = assessmentData['title']
-                imagesData['Quiz'][assessmentId]['url'] = assessmentData['url']
-                imagesData['Quiz'][assessmentId]['images'] = assessmentData['imgTags']
-                
-                for altTag, data in assessmentData['imgTags'].items():
-                    canvasQa['issues']['Images']['Summary']['total'] = canvasQa['issues']['Images']['Summary'].get('total', 0) + 1
-                    if data['statusCode'] == 0:
-                        canvasQa['issues']['Images']['Summary']['errors'] = canvasQa['issues']['Images']['Summary'].get('errors', 0) + 1
-                    elif data['statusCode'] < 200:
-                        canvasQa['issues']['Images']['Summary']['warning'] = canvasQa['issues']['Images']['Summary'].get('warning', 0) + 1
-                    elif data['statusCode'] < 300:
-                        canvasQa['issues']['Images']['Summary']['good'] = canvasQa['issues']['Images']['Summary'].get('good', 0) + 1
-                    elif data['statusCode'] < 400:
-                        canvasQa['issues']['Images']['Summary']['warning'] = canvasQa['issues']['Images']['Summary'].get('warning', 0) + 1
-                    else:
-                        canvasQa['issues']['Images']['Summary']['errors'] = canvasQa['issues']['Images']['Summary'].get('errors', 0) + 1
-                
+            
+            if assessmentData.get('imgTags', None) == None:
+                continue
+            imagesData['Assignment'][assessmentId] = {}
+            imagesData['Assignment'][assessmentId]['title'] = assessmentData['title']
+            imagesData['Assignment'][assessmentId]['url'] = assessmentData['url']
+            imagesData['Assignment'][assessmentId]['images'] = assessmentData['imgTags']
+            
+            for altTag, data in assessmentData['imgTags'].items():
+                canvasQa['issues']['Images']['Summary']['total'] = canvasQa['issues']['Images']['Summary'].get('total', 0) + 1
+                if data['statusCode'] == 0:
+                    canvasQa['issues']['Images']['Summary']['errors'] = canvasQa['issues']['Images']['Summary'].get('errors', 0) + 1
+                elif data['statusCode'] < 200:
+                    canvasQa['issues']['Images']['Summary']['warning'] = canvasQa['issues']['Images']['Summary'].get('warning', 0) + 1
+                elif data['statusCode'] < 300:
+                    canvasQa['issues']['Images']['Summary']['good'] = canvasQa['issues']['Images']['Summary'].get('good', 0) + 1
+                elif data['statusCode'] < 400:
+                    canvasQa['issues']['Images']['Summary']['warning'] = canvasQa['issues']['Images']['Summary'].get('warning', 0) + 1
+                else:
+                    canvasQa['issues']['Images']['Summary']['errors'] = canvasQa['issues']['Images']['Summary'].get('errors', 0) + 1
+            
     if imagesData.get('Page') is None and imagesData.get('Quiz') is None:
         return ''
     htmlImages = htmlImagesGenerate(imagesData, canvasQa['issues']['Images']['id'], myCanvas, canvasQa) 

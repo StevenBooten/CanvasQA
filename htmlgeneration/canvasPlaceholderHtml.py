@@ -10,6 +10,7 @@ def generatePlaceholderHtml(myCanvas, canvasQa):
     placeholderIssues = {}
     placeholderIssues['Pages'] = {}
     placeholderIssues['Quizzes'] = {}
+    placeholderIssues['Assignments'] = {}
     
     for pageId, pageData in canvasQa['pages'].items():
         if pageData.get('placeholders') == None:
@@ -22,7 +23,7 @@ def generatePlaceholderHtml(myCanvas, canvasQa):
         
     for assessmentGroupId, assessmentGroupData in canvasQa['assignments'].items():
         for assessmentId, assessmentData in assessmentGroupData['assignments'].items():
-            if 'online_quiz' in assessmentData['submissionTypes']:
+            if assessmentData['submissionTypes'] == 'Online Quiz':
                 for questionId, quizData in assessmentData['quiz'].items():
                     if quizData['placeholders'] == None:
                         continue
@@ -31,16 +32,17 @@ def generatePlaceholderHtml(myCanvas, canvasQa):
                     placeholderIssues['Quizzes'][assessmentId]['url'] = assessmentData['url']
                     placeholderIssues['Quizzes'][assessmentId]['placeholders'] = quizData['placeholders']
                     canvasQa['issues']['Placeholders']['count'] += len(quizData['placeholders']) if quizData['placeholders'] is not None else 0
-            else:
-                if assessmentData.get('placeholders', None) == None:
-                    continue
-                placeholderIssues['Quizzes'][assessmentId] = {}
-                placeholderIssues['Quizzes'][assessmentId]['title'] = assessmentData['title']
-                placeholderIssues['Quizzes'][assessmentId]['url'] = assessmentData['url']
-                placeholderIssues['Quizzes'][assessmentId]['placeholders'] = assessmentData['placeholders']
-                canvasQa['issues']['Placeholders']['count'] += len(assessmentData['placeholders']) if assessmentData['placeholders'] is not None else 0
-                
-    if placeholderIssues.get('Pages') is None and placeholderIssues.get('Quizzes') is None:
+            
+            if assessmentData.get('placeholders', None) == None:
+                continue
+            placeholderIssues['Assignments'][assessmentId] = {}
+            placeholderIssues['Assignments'][assessmentId]['title'] = assessmentData['title']
+            placeholderIssues['Assignments'][assessmentId]['url'] = assessmentData['url']
+            placeholderIssues['Assignments'][assessmentId]['placeholders'] = assessmentData['placeholders']
+            canvasQa['issues']['Placeholders']['count'] += len(assessmentData['placeholders']) if assessmentData['placeholders'] is not None else 0
+    if canvasQa['issues']['Placeholders']['count'] < 1:
+        return ''            
+    if placeholderIssues.get('Pages') is None and placeholderIssues.get('Quizzes') is None and placeholderIssues.get('Assignments') is None:
         return ''
     htmlPlaceholders = htmlPlaceholdersGenerate(placeholderIssues, canvasQa['issues']['Placeholders']['id'], canvasQa)
     
